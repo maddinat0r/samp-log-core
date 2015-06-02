@@ -1,0 +1,28 @@
+[Bb]in/
+build/
+[Rr]elease/
+[Dd]ebug/
+
+#Linux
+*.o
+*.so
+*~
+
+#Visual Studio
+*.sdf
+*.opensdf
+*.suo
+*.psess
+*.vsp
+*.user
+
+#Merge files
+*.orig
+
+#archives
+*.rar
+*.zip
+*.tar.gz
+
+#MacOS
+.DS_Store
