@@ -4,6 +4,8 @@
 #include "plugincommon.h"
 #include "amxdbg.h"
 
+#include "CSampConfigReader.hpp"
+
 
 typedef void(*logprintf_t)(const char* format, ...);
 
