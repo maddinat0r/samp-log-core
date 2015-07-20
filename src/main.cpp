@@ -5,6 +5,7 @@
 #include "amxdbg.h"
 
 #include "CSampConfigReader.hpp"
+#include "CAmxManager.hpp"
 
 
 typedef void(*logprintf_t)(const char* format, ...);
@@ -48,11 +49,12 @@ extern "C" const AMX_NATIVE_INFO native_list[] =
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 {
-	
+	CAmxManager::Get()->RegisterAmx(amx);
 	return amx_Register(amx, native_list, -1);
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX *amx)
 {
+	CAmxManager::Get()->EraseAmx(amx);
 	return AMX_ERR_NONE;
 }
