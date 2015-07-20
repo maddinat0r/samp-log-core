@@ -278,7 +278,7 @@ int AMXAPI dbg_LookupFunction(AMX_DBG *amxdbg, ucell address, const char **funcn
       break;
     }
   } /* for */
-  if (index >= amxdbg->hdr->symbols)
+  if (index < 0)
     return AMX_ERR_NOTFOUND;
 
   *funcname = amxdbg->symboltbl[index]->name;
