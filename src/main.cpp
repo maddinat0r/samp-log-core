@@ -1,6 +1,6 @@
 #include <cstdio>
 
-#include "amx\amx.h"
+#include <amx\amx.h>
 #include "plugincommon.h"
 #include "amxdbg.h"
 

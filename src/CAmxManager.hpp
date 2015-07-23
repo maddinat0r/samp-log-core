@@ -4,7 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "amx/amx.h"
+#include <amx/amx.h>
 #include "amxdbg.h"
 #include "CSingleton.hpp"
 

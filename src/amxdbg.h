@@ -30,7 +30,7 @@
 #include <stdio.h>
 
 #ifndef AMX_H_INCLUDED
-  #include "amx/amx.h"
+  #include <amx/amx.h>
 #endif
 
 #ifdef  __cplusplus
