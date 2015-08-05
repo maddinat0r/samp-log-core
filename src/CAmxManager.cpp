@@ -1,12 +1,7 @@
 #include "CAmxManager.hpp"
 #include "CSampConfigReader.hpp"
 
-#include <vector>
-#include <string>
 #include <cassert>
-
-using std::vector;
-using std::string;
 
 
 CAmxManager::CAmxManager()
@@ -26,8 +21,8 @@ CAmxManager::CAmxManager()
 		 The following two lines are stripped from AMX helper function "aux_LoadProgram".
 		 There are some additional endianess checks and alignments, but these are only 
 		 important if the system is using big endian. We assume that this library always runs on 
-		 litte-endian machines, since the SA-MP server only runs on x86 and x86-64 architecture.
-		 */
+		 litte-endian machines, since the SA-MP server only runs on x86(-64) architecture.
+		*/
 		AMX_HEADER hdr;
 		fread(&hdr, sizeof hdr, 1, amx_file);
 
