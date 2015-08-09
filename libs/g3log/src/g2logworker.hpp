@@ -100,11 +100,20 @@ namespace g2 {
 			   l->_impl._sinks.clear();
 	   }
 
-	   void LogFatalMsg(LogMessagePtr msg)
+	   inline  void LogFatalMsg(LogMessagePtr msg)
 	   {
 		   m_FatalLog->save(msg);
 	   }
-	   void FatalCall(FatalMessagePtr msg)
+	   inline void LogErrorMsg(LogMessagePtr msg)
+	   {
+		   m_ErrorLog->_impl._bg->send([this, msg] {m_ErrorLog->_impl.bgSave(msg); });
+	   }
+	   inline void LogWarningMsg(LogMessagePtr msg)
+	   {
+		   m_WarningLog->_impl._bg->send([this, msg] {m_WarningLog->_impl.bgSave(msg); });
+	   }
+
+	   inline void FatalCall(FatalMessagePtr msg)
 	   {
 		   m_FatalLog->fatal(msg);
 	   }

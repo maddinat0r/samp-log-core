@@ -114,7 +114,15 @@ namespace g2 {
    }
  
    void LogWorker::save(LogMessagePtr msg) {
-      _impl._bg->send([this, msg] {_impl.bgSave(msg); });}
+	   LogMessagePtr msgCopy{ std2::make_unique<LogMessage>(*msg.get()) };
+
+      _impl._bg->send([this, msg] {_impl.bgSave(msg); });
+
+	  if (g2::logLevel(msgCopy.get()->_level, LOGLEVEL::ERROR))
+		  LogWorkerManager::Get()->LogErrorMsg(msgCopy);
+	  else if (g2::logLevel(msgCopy.get()->_level, LOGLEVEL::WARNING))
+		  LogWorkerManager::Get()->LogWarningMsg(msgCopy);
+   }
 
    void LogWorker::fatal(FatalMessagePtr fatal_message) {
       _impl._bg->send([this, fatal_message] {_impl.bgFatal(fatal_message); });}
@@ -128,22 +136,27 @@ namespace g2 {
 
    namespace internal
    {
-	   class CFatalLogSink
+	   class CLogLevelSink
 	   {
 	   public:
+		   CLogLevelSink(std::string loglevel) :
+			   m_Logfile("logs/" + loglevel + ".log")
+		   { }
 		   void OnReceive(LogMessageMover m_msg)
 		   {
 			   LogMessage &msg = m_msg.get();
 			   m_Logfile << "[<DATE>] " << msg.message() << "(" << msg.file() << ":" << msg.line() << ")\n";
 		   }
 	   private:
-		   std::ofstream m_Logfile{ "logs/fatal.log" };
+		   std::ofstream m_Logfile;
 
 	   };
    }
    LogWorkerManager::LogWorkerManager()
    {
-	   m_FatalLog->addSink(std2::make_unique<internal::CFatalLogSink>(), &internal::CFatalLogSink::OnReceive);
+	   m_FatalLog->addSink(std2::make_unique<internal::CLogLevelSink>("fatal"), &internal::CLogLevelSink::OnReceive);
+	   m_ErrorLog->addSink(std2::make_unique<internal::CLogLevelSink>("error"), &internal::CLogLevelSink::OnReceive);
+	   m_WarningLog->addSink(std2::make_unique<internal::CLogLevelSink>("warning"), &internal::CLogLevelSink::OnReceive);
    }
 
 } // g2
