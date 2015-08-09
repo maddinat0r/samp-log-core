@@ -100,9 +100,13 @@ namespace g2 {
 			   l->_impl._sinks.clear();
 	   }
 
-	   void LogFatal(LogMessage msg)
+	   void LogFatal(FatalMessage msg)
 	   {
 		   m_FatalLog->_impl._sinks.front()->send(LogMessageMover(std::move(msg)));
+	   }
+	   void FatalCall(FatalMessagePtr msg)
+	   {
+		   m_FatalLog->fatal(msg);
 	   }
    private:
 	   std::forward_list<std::shared_ptr<LogWorker>> m_LogWorkers;

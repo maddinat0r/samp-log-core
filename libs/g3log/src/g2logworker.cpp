@@ -53,8 +53,9 @@ namespace g2 {
       const auto fatal_id = msgPtr.get()->_signal_id;
 
 
-      std::unique_ptr<LogMessage> uniqueMsg(std::move(msgPtr.get()));
-	  LogWorkerManager::Get()->LogFatal(*uniqueMsg);
+	  LogWorkerManager::Get()->LogFatal(*msgPtr.get());
+	  //TODO: format error message (more informations)
+
       /*uniqueMsg->write().append("\nExiting after fatal event  (").append(uniqueMsg->level());
      
 

@@ -21,6 +21,7 @@
 #include "crashhandler.hpp"
 #include "stacktrace_windows.hpp"
 #include "g2logmessage.hpp"
+#include "g2logworker.hpp"
 
 #define getpid _getpid
 
@@ -71,34 +72,32 @@ void ReverseToOriginalFatalHandling() {
 // called for fatal signals SIGABRT, SIGFPE, SIGSEGV, SIGILL, SIGTERM
 void signalHandler(int signal_number) {
    using namespace g2::internal;
-   std::string dump = stacktrace::stackdump();
+   //std::string dump = stacktrace::stackdump();
 
    std::ostringstream fatal_stream;
    fatal_stream << "\n***** Received fatal signal " << g2::internal::exitReasonName(LOGLEVEL::FATAL_SIGNAL, signal_number);
    fatal_stream << "(" << signal_number << ")\tPID: " << getpid() << std::endl;
 
-   /* //TODO: notify all loggers
-   LogCapture trigger(nullptr, LOGLEVEL::FATAL_SIGNAL, static_cast<g2::SignalType>(signal_number), dump.c_str());
-   trigger.stream() << fatal_stream.str();
-   */
+   g2::FatalMessagePtr fatal_message{ std2::make_unique<g2::FatalMessage>(
+	   g2::LogMessage(fatal_stream.str()), signal_number) };
+   g2::LogWorkerManager::Get()->FatalCall(fatal_message);
 }
 
 
 
 // Unhandled exception catching
 LONG WINAPI exceptionHandling(EXCEPTION_POINTERS* info, const std::string& handler) {
-   std::string dump = stacktrace::stackdump(info);
+   //std::string dump = stacktrace::stackdump(info);
 
    std::ostringstream fatal_stream;
    const g2::SignalType exception_code = info->ExceptionRecord->ExceptionCode;
    fatal_stream << "\n***** " << handler << ": Received fatal exception " << g2::internal::exitReasonName(LOGLEVEL::FATAL_EXCEPTION, exception_code);
    fatal_stream << "\tPID: " << getpid() << std::endl;
 
-   /* //TODO: notify all loggers
    const auto fatal_id = static_cast<g2::SignalType>(exception_code);
-   LogCapture trigger(nullptr, LOGLEVEL::FATAL_EXCEPTION, fatal_id, dump.c_str());
-   trigger.stream() << fatal_stream.str();
-   */
+   g2::FatalMessagePtr fatal_message{ std2::make_unique<g2::FatalMessage>(
+	   g2::LogMessage(fatal_stream.str()), fatal_id) };
+   g2::LogWorkerManager::Get()->FatalCall(fatal_message);
    // FATAL Exception: It doesn't necessarily stop here we pass on continue search
    // if no one else will catch that then it's goodbye anyhow.
    // The RISK here is if someone is cathing this and returning "EXCEPTION_EXECUTE_HANDLER"

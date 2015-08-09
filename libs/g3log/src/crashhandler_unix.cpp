@@ -8,7 +8,7 @@
 
 #include "crashhandler.hpp"
 #include "g2logmessage.hpp"
-#include "g2logmessagecapture.hpp"
+#include "g2logworker.hpp"
 
 #include <csignal>
 #include <cstring>
@@ -40,16 +40,17 @@ namespace {
 void signalHandler(int signal_number, siginfo_t* info, void* unused_context) {
    using namespace g2::internal;
    {
-      const auto dump = stackdump();
+      //const auto dump = stackdump();
       std::ostringstream fatal_stream;
       const auto fatal_reason = exitReasonName(g2::internal::FATAL_SIGNAL, signal_number);
       fatal_stream << "Received fatal signal: " << fatal_reason;
       fatal_stream << "(" << signal_number << ")\tPID: " << getpid() << std::endl;
       fatal_stream << "\n***** SIGNAL " << fatal_reason << "(" << signal_number << ")" << std::endl;
-      LogCapture trigger(nullptr, FATAL_SIGNAL, static_cast<g2::SignalType>(signal_number), dump.c_str());
-      trigger.stream() << fatal_stream.str();
+
+	  g2::FatalMessagePtr fatal_message{ std2::make_unique<g2::FatalMessage>(
+		  g2::LogMessage(fatal_stream.str()), signal_number) };
+	  g2::LogWorkerManager::Get()->FatalCall(fatal_message);
    } // message sent to g2LogWorker
-   // wait to die
 }
 } // end anonymous namespace
 
