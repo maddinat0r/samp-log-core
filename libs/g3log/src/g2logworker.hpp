@@ -98,9 +98,13 @@ namespace g2 {
 	   {
 		   for (auto &l : m_LogWorkers)
 			   l->_impl._sinks.clear();
+
+		   m_WarningLog->_impl._sinks.clear();
+		   m_ErrorLog->_impl._sinks.clear();
+		   m_FatalLog->_impl._sinks.clear();
 	   }
 
-	   inline  void LogFatalMsg(LogMessagePtr msg)
+	   inline void LogFatalMsg(LogMessagePtr msg)
 	   {
 		   m_FatalLog->save(msg);
 	   }
