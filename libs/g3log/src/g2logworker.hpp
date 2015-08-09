@@ -100,9 +100,9 @@ namespace g2 {
 			   l->_impl._sinks.clear();
 	   }
 
-	   void LogFatal(FatalMessage msg)
+	   void LogFatalMsg(LogMessagePtr msg)
 	   {
-		   m_FatalLog->_impl._sinks.front()->send(LogMessageMover(std::move(msg)));
+		   m_FatalLog->save(msg);
 	   }
 	   void FatalCall(FatalMessagePtr msg)
 	   {
