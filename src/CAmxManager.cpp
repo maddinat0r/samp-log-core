@@ -2,6 +2,7 @@
 #include "CSampConfigReader.hpp"
 
 #include <cassert>
+#include <tinydir.h>
 
 
 CAmxManager::CAmxManager()
@@ -13,34 +14,27 @@ CAmxManager::CAmxManager()
 	for (auto &g : gamemodes)
 	{
 		string amx_filepath = "gamemodes/" + g + ".amx";
-		FILE* amx_file = fopen(amx_filepath.c_str(), "rb");
-		if (amx_file == nullptr)
-			continue;
-			
-		/*
-		 The following two lines are stripped from AMX helper function "aux_LoadProgram".
-		 There are some additional endianess checks and alignments, but these are only 
-		 important if the system is using big endian. We assume that this library always runs on 
-		 litte-endian machines, since the SA-MP server only runs on x86(-64) architecture.
-		*/
-		AMX_HEADER hdr;
-		fread(&hdr, sizeof hdr, 1, amx_file);
-
-		/*if (hdr.magic != AMX_MAGIC) {
-			fclose(fp);
-			return AMX_ERR_FORMAT;
-		}*/
-
-		AMX_DBG amxdbg;
-		//dbg_LoadInfo already seeks to the beginning of the file
-		int error = dbg_LoadInfo(&amxdbg, amx_file);
-
-		fclose(amx_file);
-
-		if (error == AMX_ERR_NONE)
-			m_AvailableDebugInfo.emplace(new AMX_HEADER(hdr), new AMX_DBG(amxdbg));
+		InitDebugData(amx_filepath);
 	}
 	
+
+	//load ALL filterscripts (there's no other way since filterscripts can be dynamically (un)loaded
+	tinydir_dir dir;
+	tinydir_open(&dir, "filterscripts");
+
+	while (dir.has_next)
+	{
+		tinydir_file file;
+		tinydir_readfile(&dir, &file);
+		
+		//TODO: if(file.is_dir) -> recurse
+		if (!strcmp(file.extension, "amx"))
+			InitDebugData(file.path);
+
+		tinydir_next(&dir);
+	}
+
+	tinydir_close(&dir);
 }
 
 CAmxManager::~CAmxManager()
@@ -52,11 +46,41 @@ CAmxManager::~CAmxManager()
 	}
 }
 
+bool CAmxManager::InitDebugData(string filepath)
+{
+	FILE* amx_file = fopen(filepath.c_str(), "rb");
+	if (amx_file == nullptr)
+		return false;
+
+	/*
+	The following two lines are stripped from AMX helper function "aux_LoadProgram".
+	There are some additional endianess checks and alignments, but these are only
+	important if the system is using big endian. We assume that this library always runs on
+	litte-endian machines, since the SA-MP server only runs on x86(-64) architecture.
+	*/
+	AMX_HEADER hdr;
+	fread(&hdr, sizeof hdr, 1, amx_file);
+
+	/*if (hdr.magic != AMX_MAGIC) {
+	fclose(fp);
+	return AMX_ERR_FORMAT;
+	}*/
+
+	AMX_DBG amxdbg;
+	//dbg_LoadInfo already seeks to the beginning of the file
+	int error = dbg_LoadInfo(&amxdbg, amx_file);
+
+	fclose(amx_file);
+
+	if (error == AMX_ERR_NONE)
+		m_AvailableDebugInfo.emplace(new AMX_HEADER(hdr), new AMX_DBG(amxdbg));
+
+	return (error == AMX_ERR_NONE);
+}
+
 void CAmxManager::RegisterAmx(AMX *amx)
 {
-	//TODO: filterscripts?! (can be dynamically loaded/unloaded)
-	auto it = m_AmxDebugMap.find(amx);
-	if (it != m_AmxDebugMap.end()) //amx already registered
+	if (m_AmxDebugMap.find(amx) != m_AmxDebugMap.end()) //amx already registered
 		return;
 
 	for (auto &d : m_AvailableDebugInfo)

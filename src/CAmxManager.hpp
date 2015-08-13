@@ -19,6 +19,10 @@ private:
 	CAmxManager();
 	~CAmxManager();
 
+private:
+	bool InitDebugData(string filepath);
+
+
 public:
 	void RegisterAmx(AMX *amx);
 	void EraseAmx(AMX *amx);
@@ -26,6 +30,7 @@ public:
 	bool GetLastAmxLine(AMX * const amx, long &line);
 	bool GetLastAmxFile(AMX * const amx, string &file);
 	bool GetLastAmxFunction(AMX * const amx, string &file);
+
 private:
 	unordered_map<AMX_HEADER *, AMX_DBG *> m_AvailableDebugInfo;
 	unordered_map<AMX *, AMX_DBG *> m_AmxDebugMap;

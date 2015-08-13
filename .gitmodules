@@ -4,3 +4,6 @@
 [submodule "libs/cmake"]
 	path = libs/cmake
 	url = git@github.com:Zeex/cmake-modules.git
+[submodule "libs/tinydir"]
+	path = libs/tinydir
+	url = git@github.com:cxong/tinydir.git
