@@ -39,11 +39,10 @@ public:
 	bool LogLevel(const LOGLEVEL &log_level);
 
 	void Log(const char *msg, const LOGLEVEL& level, long line = 0, const char *file = "",
-		const char *function = "", g2::SignalType fatal_signal = SIGABRT);
+		const char *function = "");
 	
 private:
 	shared_ptr<g2::LogWorker> m_LogWorker;
-	std::unique_ptr<g2::SinkHandle<CLogSink>> m_SinkHandle;
 
 	std::atomic<LOGLEVEL> m_LogLevel;
 };
