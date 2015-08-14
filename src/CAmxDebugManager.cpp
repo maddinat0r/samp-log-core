@@ -1,11 +1,11 @@
-#include "CAmxManager.hpp"
+#include "CAmxDebugManager.hpp"
 #include "CSampConfigReader.hpp"
 
 #include <cassert>
 #include <tinydir.h>
 
 
-CAmxManager::CAmxManager()
+CAmxDebugManager::CAmxDebugManager()
 {
 	vector<string> gamemodes;
 	if (!CSampConfigReader::Get()->GetGamemodeList(gamemodes))
@@ -22,7 +22,7 @@ CAmxManager::CAmxManager()
 	InitDebugDataDir("filterscripts");
 }
 
-CAmxManager::~CAmxManager()
+CAmxDebugManager::~CAmxDebugManager()
 {
 	for (auto &a : m_AvailableDebugInfo)
 	{
@@ -31,7 +31,7 @@ CAmxManager::~CAmxManager()
 	}
 }
 
-void CAmxManager::InitDebugDataDir(string directory)
+void CAmxDebugManager::InitDebugDataDir(string directory)
 {
 	tinydir_dir dir;
 	tinydir_open(&dir, directory.c_str());
@@ -52,7 +52,7 @@ void CAmxManager::InitDebugDataDir(string directory)
 	tinydir_close(&dir);
 }
 
-bool CAmxManager::InitDebugData(string filepath)
+bool CAmxDebugManager::InitDebugData(string filepath)
 {
 	FILE* amx_file = fopen(filepath.c_str(), "rb");
 	if (amx_file == nullptr)
@@ -84,7 +84,7 @@ bool CAmxManager::InitDebugData(string filepath)
 	return (error == AMX_ERR_NONE);
 }
 
-void CAmxManager::RegisterAmx(AMX *amx)
+void CAmxDebugManager::RegisterAmx(AMX *amx)
 {
 	if (m_AmxDebugMap.find(amx) != m_AmxDebugMap.end()) //amx already registered
 		return;
@@ -99,13 +99,13 @@ void CAmxManager::RegisterAmx(AMX *amx)
 	}
 }
 
-void CAmxManager::EraseAmx(AMX *amx)
+void CAmxDebugManager::EraseAmx(AMX *amx)
 {
 	m_AmxDebugMap.erase(amx);
 }
 
 
-bool CAmxManager::GetLastAmxLine(AMX * const amx, long &line)
+bool CAmxDebugManager::GetLastAmxLine(AMX * const amx, long &line)
 {
 	auto it = m_AmxDebugMap.find(amx);
 	if (it != m_AmxDebugMap.end())
@@ -114,7 +114,7 @@ bool CAmxManager::GetLastAmxLine(AMX * const amx, long &line)
 	return false;
 }
 
-bool CAmxManager::GetLastAmxFile(AMX * const amx, string &file)
+bool CAmxDebugManager::GetLastAmxFile(AMX * const amx, string &file)
 {
 	auto it = m_AmxDebugMap.find(amx);
 	if (it != m_AmxDebugMap.end())
@@ -131,7 +131,7 @@ bool CAmxManager::GetLastAmxFile(AMX * const amx, string &file)
 	return false;
 }
 
-bool CAmxManager::GetLastAmxFunction(AMX * const amx, string &file)
+bool CAmxDebugManager::GetLastAmxFunction(AMX * const amx, string &file)
 {
 	auto it = m_AmxDebugMap.find(amx);
 	if (it != m_AmxDebugMap.end())

@@ -12,12 +12,12 @@ using std::string;
 using std::unordered_map;
 
 
-class CAmxManager : public CSingleton<CAmxManager>
+class CAmxDebugManager : public CSingleton<CAmxDebugManager>
 {
-	friend class CSingleton<CAmxManager>;
+	friend class CSingleton<CAmxDebugManager>;
 private:
-	CAmxManager();
-	~CAmxManager();
+	CAmxDebugManager();
+	~CAmxDebugManager();
 
 private:
 	bool InitDebugData(string filepath);
