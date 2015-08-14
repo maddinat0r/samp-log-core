@@ -1,7 +1,6 @@
 #include "CLogger.hpp"
 
 #include <g2logworker.hpp>
-#include <stacktrace_windows.hpp>
 #include <std2_make_unique.hpp>
 
 

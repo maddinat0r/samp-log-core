@@ -32,8 +32,7 @@ namespace g2 {
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__)) && !defined(__MINGW32__)
       std::ostringstream oss;
       oss.fill('0');
-      // BOGUS hack done for VS2012: C++11 non-conformant since it SHOULD take a "const struct tm*  "
-      oss << std::put_time(const_cast<struct tm*> (tmb), c_time_format);
+      oss << std::put_time(tmb, c_time_format);
       return oss.str();
 #else    // LINUX
       const size_t size = 1024;

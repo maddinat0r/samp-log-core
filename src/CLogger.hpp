@@ -3,7 +3,6 @@
 #include "g2sinkhandle.hpp"
 
 #include <atomic>
-#include <cassert>
 #include <memory>
 #include <string>
 #include <fstream>
@@ -30,7 +29,7 @@ class CLogger
 {
 public:
 	CLogger(std::string filename);
-	~CLogger() { }
+	~CLogger() = default;
 
 private:
 
