@@ -59,17 +59,17 @@ bool CAmxManager::InitDebugData(string filepath)
 		return false;
 
 	/*
-	The following two lines are stripped from AMX helper function "aux_LoadProgram".
-	There are some additional endianess checks and alignments, but these are only
-	important if the system is using big endian. We assume that this library always runs on
-	litte-endian machines, since the SA-MP server only runs on x86(-64) architecture.
+	  The following two lines are stripped from AMX helper function "aux_LoadProgram".
+	  There are some additional endianess checks and alignments, but these are only
+	  important if the system is using big endian. We assume that this library always runs on
+	  litte-endian machines, since the SA-MP server only runs on x86(-64) architecture.
 	*/
 	AMX_HEADER hdr;
 	fread(&hdr, sizeof hdr, 1, amx_file);
 
 	/*if (hdr.magic != AMX_MAGIC) {
-	fclose(fp);
-	return AMX_ERR_FORMAT;
+		fclose(fp);
+		return AMX_ERR_FORMAT;
 	}*/
 
 	AMX_DBG amxdbg;
