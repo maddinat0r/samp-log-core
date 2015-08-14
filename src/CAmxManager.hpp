@@ -21,7 +21,7 @@ private:
 
 private:
 	bool InitDebugData(string filepath);
-
+	void InitDebugDataDir(string directory);
 
 public:
 	void RegisterAmx(AMX *amx);

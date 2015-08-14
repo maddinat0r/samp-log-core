@@ -19,22 +19,7 @@ CAmxManager::CAmxManager()
 	
 
 	//load ALL filterscripts (there's no other way since filterscripts can be dynamically (un)loaded
-	tinydir_dir dir;
-	tinydir_open(&dir, "filterscripts");
-
-	while (dir.has_next)
-	{
-		tinydir_file file;
-		tinydir_readfile(&dir, &file);
-		
-		//TODO: if(file.is_dir) -> recurse
-		if (!strcmp(file.extension, "amx"))
-			InitDebugData(file.path);
-
-		tinydir_next(&dir);
-	}
-
-	tinydir_close(&dir);
+	InitDebugDataDir("filterscripts");
 }
 
 CAmxManager::~CAmxManager()
@@ -44,6 +29,27 @@ CAmxManager::~CAmxManager()
 		delete a.first;
 		delete a.second;
 	}
+}
+
+void CAmxManager::InitDebugDataDir(string directory)
+{
+	tinydir_dir dir;
+	tinydir_open(&dir, directory.c_str());
+
+	while (dir.has_next)
+	{
+		tinydir_file file;
+		tinydir_readfile(&dir, &file);
+		
+		if (file.is_dir && file.name[0] != '.')
+			InitDebugDataDir(file.path);
+		else if (!strcmp(file.extension, "amx"))
+			InitDebugData(file.path);
+
+		tinydir_next(&dir);
+	}
+
+	tinydir_close(&dir);
 }
 
 bool CAmxManager::InitDebugData(string filepath)
