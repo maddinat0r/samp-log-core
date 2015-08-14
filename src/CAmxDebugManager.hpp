@@ -31,6 +31,8 @@ public:
 	bool GetLastAmxFile(AMX * const amx, string &file);
 	bool GetLastAmxFunction(AMX * const amx, string &file);
 
+	const cell *GetNativeParamsPtr(AMX * const amx);
+
 private:
 	unordered_map<AMX_HEADER *, AMX_DBG *> m_AvailableDebugInfo;
 	unordered_map<AMX *, AMX_DBG *> m_AmxDebugMap;

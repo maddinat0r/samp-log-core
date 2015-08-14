@@ -147,3 +147,13 @@ bool CAmxDebugManager::GetLastAmxFunction(AMX * const amx, string &file)
 
 	return false;
 }
+
+const cell *GetNativeParamsPtr(AMX * const amx)
+{
+	unsigned char *amx_data = amx->data;
+	if (amx_data == NULL)
+		amx_data = amx->base + reinterpret_cast<AMX_HEADER *>(amx->base)->dat;
+
+	cell arg_offset = reinterpret_cast<cell>(amx_data)+amx->stk;
+	return reinterpret_cast<cell *>(arg_offset);
+}
