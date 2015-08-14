@@ -19,6 +19,7 @@ void CLogSink::OnReceive(g2::LogMessageMover m_msg)
 		"[" << msg.level() << "] " << 
 		msg.message() << " " <<
 		"(" << msg.file() << ":" << msg.line() << ")\n";
+	m_Logfile.flush();
 }
 
 
