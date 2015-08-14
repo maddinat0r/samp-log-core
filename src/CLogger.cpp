@@ -14,7 +14,11 @@ CLogSink::CLogSink(std::string filename)
 void CLogSink::OnReceive(g2::LogMessageMover m_msg)
 {
 	g2::LogMessage &msg = m_msg.get();
-	m_Logfile << "[<DATE>] [<LOGLEVEL>] " << msg.message() << "(" << msg.file() << ":" << msg.line() << ")\n";
+	m_Logfile << 
+		"[" << msg.timestamp() << "] " <<
+		"[" << msg.level() << "] " << 
+		msg.message() << " " <<
+		"(" << msg.file() << ":" << msg.line() << ")\n";
 }
 
 
