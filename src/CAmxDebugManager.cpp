@@ -148,7 +148,7 @@ bool CAmxDebugManager::GetLastAmxFunction(AMX * const amx, string &file)
 	return false;
 }
 
-const cell *GetNativeParamsPtr(AMX * const amx)
+const cell *CAmxDebugManager::GetNativeParamsPtr(AMX * const amx)
 {
 	unsigned char *amx_data = amx->data;
 	if (amx_data == NULL)

@@ -29,7 +29,7 @@ public:
 
 	bool GetLastAmxLine(AMX * const amx, long &line);
 	bool GetLastAmxFile(AMX * const amx, string &file);
-	bool GetLastAmxFunction(AMX * const amx, string &file);
+	bool GetLastAmxFunction(AMX * const amx, string &function);
 
 	const cell *GetNativeParamsPtr(AMX * const amx);
 

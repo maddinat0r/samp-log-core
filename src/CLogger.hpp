@@ -1,3 +1,5 @@
+#pragma once
+
 #include "g2log.hpp"
 #include "g2loglevels.hpp"
 #include "g2sinkhandle.hpp"
