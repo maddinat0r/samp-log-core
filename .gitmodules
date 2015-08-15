@@ -7,3 +7,6 @@
 [submodule "libs/tinydir"]
 	path = libs/tinydir
 	url = git@github.com:cxong/tinydir.git
+[submodule "libs/cppformat"]
+	path = libs/cppformat
+	url = git@github.com:cppformat/cppformat.git
