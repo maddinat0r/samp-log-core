@@ -84,3 +84,13 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 	LogEx(LOGLEVEL::DEBUG, fmt_msg.str(), line, file, func);
 	return true;
 }
+
+void CPluginLogger::Destroy()
+{
+	delete this;
+}
+
+IPluginLogger *CreatePluginLoggerPtr(const char *pluginname)
+{
+	return new CPluginLogger(pluginname);
+}
