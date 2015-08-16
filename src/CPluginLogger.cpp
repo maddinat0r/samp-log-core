@@ -39,7 +39,7 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 		return false;
 
 	fmt::MemoryWriter fmt_msg;
-	fmt_msg << "native " << name << '(';
+	fmt_msg << name << '(';
 
 	for (int i = 1; i <= num_args; ++i)
 	{
@@ -72,7 +72,7 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 			return false; //unrecognized format specifier
 		}
 	}
-	fmt_msg << ");";
+	fmt_msg << ')';
 
 	long line = 0;
 	string file, func;
