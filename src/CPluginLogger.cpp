@@ -65,7 +65,7 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 		case 's':
 			fmt_msg << '"' << amx_GetCppString(amx, params[i]) << '"';
 			break;
-		case 'a': //censored output
+		case '*': //censored output
 			fmt_msg << "\"*****\"";
 			break;
 		default:
