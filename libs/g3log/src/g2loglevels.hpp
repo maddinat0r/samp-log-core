@@ -16,7 +16,9 @@
 #include <string>
 #include <type_traits>
 
-#undef ERROR //holy shit microsoft
+#ifdef ERROR //holy shit Microsoft
+#undef ERROR
+#endif
 
 enum class LOGLEVEL : unsigned int
 {
