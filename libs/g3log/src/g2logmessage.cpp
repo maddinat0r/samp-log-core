@@ -126,8 +126,8 @@ std::string LogMessage::toString() const {
 
 
 
-std::string LogMessage::timestamp(const std::string &time_look) const {
-   return  localtime_formatted(_timestamp, time_look);
+std::string LogMessage::timestamp(/*const std::string &time_look*/) const {
+   return  localtime_formatted(_timestamp, _datetime_format);
 }
 
 
@@ -142,6 +142,7 @@ LogMessage::LogMessage(const std::string &file, const int line,
    , _line(line)
    , _function(function)
    , _level(level)
+   , _datetime_format(internal::datetime_formatted)
 {}
 
 
@@ -160,8 +161,8 @@ LogMessage::LogMessage(const LogMessage &other)
    , _level(other._level)
    , _expression(other._expression)
    , _message(other._message)
-{
-}
+   , _datetime_format(other._datetime_format)
+{ }
 
 
 LogMessage::LogMessage(LogMessage &&other)
@@ -173,8 +174,9 @@ LogMessage::LogMessage(LogMessage &&other)
    , _function(std::move(other._function))
    , _level(other._level)
    , _expression(std::move(other._expression))
-   , _message(std::move(other._message)) {
-}
+   , _message(std::move(other._message)) 
+   , _datetime_format(std::move(other._datetime_format))
+{ }
 
 
 std::string LogMessage::threadID() const {

@@ -3,6 +3,9 @@
 #include <g2logworker.hpp>
 #include <std2_make_unique.hpp>
 
+#include "CLogger.hpp"
+#include "CSampConfigReader.hpp"
+
 
 CLogSink::CLogSink(std::string filename)
 	: m_Logfile(filename)
@@ -51,6 +54,22 @@ void CLogger::Log(const char *msg, const LOGLEVEL& level, long line/* = 0*/, con
 	g2::LogMessagePtr message{ std2::make_unique<g2::LogMessage>(file, line, function, msgLevel) };
 	message.get()->write().append(msg);
 
+	static string datetime_format;
+	if (datetime_format.empty())
+	{
+		if (CSampConfigReader::Get()->GetVar("logtimeformat", datetime_format))
+		{
+			//delete brackets
+			size_t pos = 0;
+			while ((pos = datetime_format.find_first_of("[]")) != std::string::npos)
+				datetime_format.erase(pos, 1);
+		}
+		else
+		{
+			datetime_format = g2::internal::datetime_formatted;
+		}
+	}
+	message.get()->set_datetime_format(datetime_format);
 
 	if (g2::wasFatal(level)) {
 		g2::FatalMessagePtr fatal_message{ std2::make_unique<g2::FatalMessage>(*(message._move_only.get()), SIGABRT) };

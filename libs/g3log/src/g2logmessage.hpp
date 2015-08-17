@@ -42,7 +42,8 @@ namespace g2 {
 
       /// use a different format string to get a different look on the time.
       //  default look is Y/M/D H:M:S
-      std::string timestamp(const std::string& time_format = {internal::date_formatted + " " + internal::time_formatted}) const;
+	  void set_datetime_format(const std::string &format) { _datetime_format = format; }
+      std::string timestamp(/*const std::string& time_format = {internal::datetime_formatted}*/) const;
       std::string microseconds() const { return std::to_string(_microseconds); }
 
       std::string message() const  {  return _message; }
@@ -68,6 +69,7 @@ namespace g2 {
       // Complete access to the raw data in case the helper functions above
       // are not enough.
       //
+	  std::string _datetime_format;
       std::time_t _timestamp;
       std::thread::id _call_thread_id;
       int64_t _microseconds;

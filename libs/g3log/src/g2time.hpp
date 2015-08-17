@@ -26,8 +26,7 @@ namespace g2
 {
   namespace internal
   {
-    static const std::string date_formatted = "%Y/%m/%d";
-    static const std::string time_formatted = "%H:%M:%S";
+    static const std::string datetime_formatted = "%H:%M:%S";
   }
     
   typedef std::chrono::time_point<std::chrono::system_clock>  system_time_point;
