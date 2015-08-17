@@ -154,7 +154,7 @@ std::string exitReasonName(const LOGLEVEL& level, g2::SignalType fatal_id) {
       break;
    default:
       std::ostringstream oss;
-      oss << "UNKNOWN SIGNAL(" << signal_number << ")"";
+      oss << "UNKNOWN SIGNAL(" << signal_number << ")";
       return oss.str();
    }
 }
