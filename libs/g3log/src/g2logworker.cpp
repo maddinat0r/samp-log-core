@@ -11,6 +11,13 @@
  * PUBLIC DOMAIN and Not under copywrite protection. First published at KjellKod.cc
  * ********************************************* */
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#else
+#include <sys/stat.h>
+#endif
+
 #include "g2logworker.hpp"
 #include "g2logmessage.hpp"
 
@@ -24,6 +31,7 @@
 #include "std2_make_unique.hpp"
 #include <iostream> // remove
 #include <fstream>
+
 
 namespace g2 {
 	LogWorkerManager *LogWorkerManager::m_Instance = nullptr;
@@ -164,6 +172,12 @@ namespace g2 {
    }
    LogWorkerManager::LogWorkerManager()
    {
+	   //create basic "logs" folder
+#ifdef WIN32
+	   CreateDirectoryA("logs", NULL);
+#else
+	   mkdir("logs", ACCESSPERMS);
+#endif
 	   m_FatalLog->addSink(std2::make_unique<internal::CLogLevelSink>("fatal"), &internal::CLogLevelSink::OnReceive);
 	   m_ErrorLog->addSink(std2::make_unique<internal::CLogLevelSink>("error"), &internal::CLogLevelSink::OnReceive);
 	   m_WarningLog->addSink(std2::make_unique<internal::CLogLevelSink>("warning"), &internal::CLogLevelSink::OnReceive);

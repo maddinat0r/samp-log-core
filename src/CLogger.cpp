@@ -1,14 +1,34 @@
+#include <algorithm>
 #include <g2logworker.hpp>
 #include <std2_make_unique.hpp>
 
 #include "CLogger.hpp"
 #include "CSampConfigReader.hpp"
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#else
+#include <sys/stat.h>
+#endif
+
 
 CLogSink::CLogSink(std::string filename)
-	: m_Logfile(filename)
 {
+	//create possibly non-existing folders before opening log file
+	size_t pos = 0;
+	while ((pos = filename.find('/', pos)) != std::string::npos)
+	{
+		auto dir = filename.substr(0, pos++);
+#ifdef WIN32
+		std::replace(dir.begin(), dir.end(), '/', '\\');
+		CreateDirectoryA(dir.c_str(), NULL);
+#else
+		mkdir(dir.c_str(), ACCESSPERMS);
+#endif
+	}
 
+	m_Logfile.open(filename);
 }
 
 void CLogSink::OnReceive(g2::LogMessageMover m_msg)
