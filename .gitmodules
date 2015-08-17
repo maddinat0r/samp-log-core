@@ -1,6 +1,3 @@
-[submodule "libs/sdk"]
-	path = libs/sdk
-	url = git@github.com:maddinat0r/samp-plugin-sdk.git
 [submodule "libs/cmake"]
 	path = libs/cmake
 	url = git@github.com:Zeex/cmake-modules.git

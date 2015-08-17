@@ -1,7 +1,7 @@
 #include "CPluginLogger.hpp"
 #include "CAmxDebugManager.hpp"
 
-#include <amx/amx2.h>
+#include "amx/amx2.h"
 #include <cppformat/format.h>
 #include <stdarg.h>
 

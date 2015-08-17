@@ -2,7 +2,7 @@
 #include "CSampConfigReader.hpp"
 
 #include <cassert>
-#include <tinydir.h>
+#include <tinydir/tinydir.h>
 
 
 CAmxDebugManager::CAmxDebugManager()
