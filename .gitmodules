@@ -1,9 +1,9 @@
 [submodule "libs/cmake"]
 	path = libs/cmake
-	url = git@github.com:Zeex/cmake-modules.git
+	url = https://github.com/Zeex/cmake-modules.git
 [submodule "libs/tinydir"]
 	path = libs/tinydir
-	url = git@github.com:cxong/tinydir.git
+	url = https://github.com/cxong/tinydir.git
 [submodule "libs/cppformat"]
 	path = libs/cppformat
-	url = git@github.com:cppformat/cppformat.git
+	url = https://github.com/maddinat0r/cppformat.git
