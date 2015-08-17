@@ -1,6 +1,5 @@
 SET(LOG_SRC ${g3log_SOURCE_DIR}/src)
 include_directories(${LOG_SRC})
-SET(ACTIVE_CPP0xx_DIR "Release")
 
 #cmake -DCMAKE_CXX_COMPILER=clang++ ..
   # WARNING: If Clang for Linux does not work with full C++11 support it might be your
@@ -16,19 +15,19 @@ IF (${CMAKE_CXX_COMPILER_ID} MATCHES ".*Clang")
    ELSE()
        set(PLATFORM_LINK_LIBRIES rt  c++abi)
    ENDIF()
-  SET(CMAKE_CXX_FLAGS  "-Wall -std=c++11  -pthread -stdlib=libc++ -Wunused -D_GLIBCXX_USE_NANOSLEEP")
+  SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -std=c++11  -pthread -stdlib=libc++ -Wunused -D_GLIBCXX_USE_NANOSLEEP")
 
 
 
 ELSEIF(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
    MESSAGE("cmake for GCC ")
    IF (APPLE)
-       set(CMAKE_CXX_FLAGS "-Wall -Wunused -std=c++11  -pthread -D_GLIBCXX_USE_NANOSLEEP")
+       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-Wall -Wunused -std=c++11  -pthread -D_GLIBCXX_USE_NANOSLEEP")
    ELSEIF (MINGW)
-       set(CMAKE_CXX_FLAGS "-Wall -Wunused -std=c++11  -pthread -D_GLIBCXX_USE_NANOSLEEP -D_GLIBCXX_USE_SCHED_YIELD")
+       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-Wall -Wunused -std=c++11  -pthread -D_GLIBCXX_USE_NANOSLEEP -D_GLIBCXX_USE_SCHED_YIELD")
    ELSE()
        set(PLATFORM_LINK_LIBRIES rt)
-       set(CMAKE_CXX_FLAGS "-Wall -rdynamic -Wunused -std=c++11 -pthread -D_GLIBCXX_USE_NANOSLEEP -D_GLIBCXX_USE_SCHED_YIELD")
+       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-Wall -rdynamic -Wunused -std=c++11 -pthread -D_GLIBCXX_USE_NANOSLEEP -D_GLIBCXX_USE_SCHED_YIELD")
    ENDIF()
 ENDIF()
 
