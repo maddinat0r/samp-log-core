@@ -14,7 +14,7 @@ class CSampConfigReader : public CSingleton<CSampConfigReader>
 	friend class CSingleton<CSampConfigReader>;
 private:
 	CSampConfigReader();
-	virtual ~CSampConfigReader() = default;
+	~CSampConfigReader() = default;
 
 public:
 	bool GetVar(string varname, string &dest);
