@@ -42,7 +42,7 @@ void signalHandler(int signal_number, siginfo_t* info, void* unused_context) {
    {
       //const auto dump = stackdump();
       std::ostringstream fatal_stream;
-      const auto fatal_reason = exitReasonName(g2::internal::FATAL_SIGNAL, signal_number);
+      const auto fatal_reason = exitReasonName(LOGLEVEL::FATAL_SIGNAL, signal_number);
       fatal_stream << "Received fatal signal: " << fatal_reason;
       fatal_stream << "(" << signal_number << ")\tPID: " << getpid() << std::endl;
       fatal_stream << "\n***** SIGNAL " << fatal_reason << "(" << signal_number << ")" << std::endl;
@@ -138,7 +138,7 @@ std::string stackdump(const char* rawdump) {
 
 
 /// string representation of signal ID
-std::string exitReasonName(const LEVELS& level, g2::SignalType fatal_id) {
+std::string exitReasonName(const LOGLEVEL& level, g2::SignalType fatal_id) {
 
    int signal_number = static_cast<int>(fatal_id);
    switch (signal_number) {
@@ -154,7 +154,7 @@ std::string exitReasonName(const LEVELS& level, g2::SignalType fatal_id) {
       break;
    default:
       std::ostringstream oss;
-      oss << "UNKNOWN SIGNAL(" << signal_number << ") for " << level.text;
+      oss << "UNKNOWN SIGNAL(" << signal_number << ")"";
       return oss.str();
    }
 }
@@ -181,9 +181,9 @@ std::string exitReasonName(const LEVELS& level, g2::SignalType fatal_id) {
 // Triggered by g2log->g2LogWorker after receiving a FATAL trigger
 // which is LOG(FATAL), CHECK(false) or a fatal signal our signalhandler caught.
 // --- If LOG(FATAL) or CHECK(false) the signal_number will be SIGABRT
-void exitWithDefaultSignalHandler(const LEVELS& level, g2::SignalType fatal_signal_id) {
+void exitWithDefaultSignalHandler(const LOGLEVEL& level, g2::SignalType fatal_signal_id) {
    const int signal_number = static_cast<int>(fatal_signal_id);
-   std::cerr << "Exiting due to " << level.text << ", " << signal_number << "   " << std::flush;
+   std::cerr << "Exiting due to signal " << signal_number << "   " << std::flush;
 
    struct sigaction action;
    memset(&action, 0, sizeof (action)); //
