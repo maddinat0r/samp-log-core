@@ -10,4 +10,6 @@ before_install:
 
 before_script: cmake .
 
-script: make -j2
+script: 
+  - make -j2
+  - make test

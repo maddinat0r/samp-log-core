@@ -72,7 +72,7 @@ if(NOT COMPILER_SUPPORTS_CXX11)
 endif()
 
 set(LOGCORE_LIBS_DIR "${PROJECT_SOURCE_DIR}/libs")
-
+enable_testing()
 option(FMT_INSTALL OFF)
 add_subdirectory(libs/cppformat)
 add_subdirectory(libs/g3log)
