@@ -30,7 +30,7 @@ public:
 class CLogger
 {
 public:
-	CLogger(std::string filename);
+	CLogger(std::string module);
 	~CLogger() = default;
 
 private:
@@ -40,10 +40,12 @@ public:
 
 	bool LogLevel(const LOGLEVEL &log_level);
 
-	void Log(const char *msg, const LOGLEVEL& level, long line = 0, const char *file = "",
+	void Log(const char *msg, 
+		const LOGLEVEL& level, long line = 0, const char *file = "",
 		const char *function = "");
 	
 private:
+	std::string m_ModuleName;
 	shared_ptr<g2::LogWorker> m_LogWorker;
 
 	std::atomic<LOGLEVEL> m_LogLevel;

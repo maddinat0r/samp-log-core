@@ -14,20 +14,25 @@ CLogSink::CLogSink(std::string filename)
 void CLogSink::OnReceive(g2::LogMessageMover m_msg)
 {
 	g2::LogMessage &msg = m_msg.get();
-	m_Logfile << 
+	m_Logfile <<
 		"[" << msg.timestamp() << "] " <<
-		"[" << msg.level() << "] " << 
-		msg.message() << " " <<
-		"(" << msg.file() << ":" << msg.line() << ")\n";
+		"[" << msg.level() << "] " <<
+		msg.message();
+	if (msg._line != 0)
+	{
+		m_Logfile << " (" << msg.file() << ":" << msg.line() << ")";
+	}
+	m_Logfile << '\n';
 	m_Logfile.flush();
 }
 
 
-CLogger::CLogger(std::string filename)
+CLogger::CLogger(std::string module)
+	: m_ModuleName(module)
 {
 	g2::installCrashHandler();
 	m_LogWorker = g2::LogWorkerManager::Get()->CreateLogWorker();
-	m_LogWorker->addSink(std2::make_unique<CLogSink>("logs/" + filename + ".log"), &CLogSink::OnReceive);
+	/*m_SinkHandle = */m_LogWorker->addSink(std2::make_unique<CLogSink>("logs/" + module + ".log"), &CLogSink::OnReceive);
 }
 void CLogger::SetLogLevel(const LOGLEVEL &log_level, bool enabled)
 {
@@ -42,14 +47,16 @@ bool CLogger::LogLevel(const LOGLEVEL &log_level)
 	return g2::logLevel(current_loglevel, log_level);
 }
 
-void CLogger::Log(const char *msg, const LOGLEVEL& level, long line/* = 0*/, const char *file/* = ""*/,
+void CLogger::Log(const char *msg, 
+	const LOGLEVEL& level, long line/* = 0*/, const char *file/* = ""*/,
 	const char *function/* = ""*/)
 {
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 	g2::installSignalHandlerForThread();
 #endif
 	LOGLEVEL msgLevel{ level };
-	g2::LogMessagePtr message{ std2::make_unique<g2::LogMessage>(file, line, function, msgLevel) };
+	g2::LogMessagePtr message{ 
+		std2::make_unique<g2::LogMessage>(m_ModuleName.c_str(), file, line, function, msgLevel) };
 	message.get()->write().append(msg);
 
 	static string datetime_format;

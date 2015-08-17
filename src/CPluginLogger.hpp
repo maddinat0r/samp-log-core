@@ -22,7 +22,7 @@ public:
 class CPluginLogger : public IPluginLogger
 {
 public:
-	CPluginLogger(std::string name);
+	CPluginLogger(std::string pluginname);
 	~CPluginLogger() = default;
 
 

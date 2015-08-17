@@ -133,8 +133,10 @@ std::string LogMessage::timestamp(/*const std::string &time_look*/) const {
 
 
 
-LogMessage::LogMessage(const std::string &file, const int line,
-                       const std::string &function, const LOGLEVEL &level)
+LogMessage::LogMessage(
+	const std::string &module,
+	const std::string &file, const int line, const std::string& function,
+	const LOGLEVEL& level)
    : _timestamp(g2::systemtime_now())
    , _call_thread_id(std::this_thread::get_id())
    , _microseconds(microsecondsCounter())
@@ -142,12 +144,13 @@ LogMessage::LogMessage(const std::string &file, const int line,
    , _line(line)
    , _function(function)
    , _level(level)
+   , _module_name(module)
    , _datetime_format(internal::datetime_formatted)
 {}
 
 
 LogMessage::LogMessage(const std::string &fatalOsSignalCrashMessage)
-	: LogMessage({ "" }, 0, { "" }, LOGLEVEL::FATAL_SIGNAL) {
+	: LogMessage({ "" }, { "" }, 0, { "" }, LOGLEVEL::FATAL_SIGNAL) {
    _message.append(fatalOsSignalCrashMessage);
 }
 
@@ -161,6 +164,7 @@ LogMessage::LogMessage(const LogMessage &other)
    , _level(other._level)
    , _expression(other._expression)
    , _message(other._message)
+   , _module_name(other._module_name)
    , _datetime_format(other._datetime_format)
 { }
 
@@ -175,6 +179,7 @@ LogMessage::LogMessage(LogMessage &&other)
    , _level(other._level)
    , _expression(std::move(other._expression))
    , _message(std::move(other._message)) 
+   , _module_name(std::move(other._module_name))
    , _datetime_format(std::move(other._datetime_format))
 { }
 

@@ -146,7 +146,15 @@ namespace g2 {
 		   void OnReceive(LogMessageMover m_msg)
 		   {
 			   LogMessage &msg = m_msg.get();
-			   m_Logfile << "[" << msg.timestamp() << "] " << msg.message() << " (" << msg.file() << ":" << msg.line() << ")\n";
+			   m_Logfile <<
+				   "[" << msg.timestamp() << "] " <<
+				   "[" << msg.module() << "] " <<
+				   msg.message(); 
+			   if (msg._line != 0)
+			   {
+				   m_Logfile << " (" << msg.file() << ":" << msg.line() << ")";
+			   }
+			   m_Logfile << '\n';
 			   m_Logfile.flush();
 		   }
 	   private:

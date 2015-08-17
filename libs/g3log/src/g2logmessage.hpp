@@ -35,6 +35,7 @@ namespace g2 {
    * desired way.
    */
    struct LogMessage {
+	  std::string module() const { return _module_name; }
       std::string file() const { return _file; }
       std::string line() const { return std::to_string(_line); }
       std::string function() const { return _function; }
@@ -58,7 +59,9 @@ namespace g2 {
       //void setExpression(const std::string expression) { _expression = expression; }
 
 
-      LogMessage(const std::string &file, const int line, const std::string& function, const LOGLEVEL& level);
+      LogMessage(const std::string &module,
+		  const std::string &file, const int line, const std::string& function, 
+		  const LOGLEVEL& level);
       explicit LogMessage(const std::string& fatalOsSignalCrashMessage);
 
       LogMessage(const LogMessage&);
@@ -69,6 +72,7 @@ namespace g2 {
       // Complete access to the raw data in case the helper functions above
       // are not enough.
       //
+	  std::string _module_name;
 	  std::string _datetime_format;
       std::time_t _timestamp;
       std::thread::id _call_thread_id;

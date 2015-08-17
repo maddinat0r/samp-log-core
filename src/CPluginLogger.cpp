@@ -6,8 +6,8 @@
 #include <stdarg.h>
 
 
-CPluginLogger::CPluginLogger(std::string name) 
-	: m_Logger("plugins/" + name)
+CPluginLogger::CPluginLogger(std::string pluginname)
+	: m_Logger("plugins/" + pluginname)
 {
 
 }
