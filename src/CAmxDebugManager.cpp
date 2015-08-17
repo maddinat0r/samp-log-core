@@ -157,3 +157,35 @@ const cell *CAmxDebugManager::GetNativeParamsPtr(AMX * const amx)
 	cell arg_offset = reinterpret_cast<cell>(amx_data)+amx->stk;
 	return reinterpret_cast<cell *>(arg_offset);
 }
+
+
+void samplog::RegisterAmx(AMX *amx)
+{
+	CAmxDebugManager::Get()->RegisterAmx(amx);
+}
+
+void samplog::EraseAmx(AMX *amx)
+{
+	CAmxDebugManager::Get()->EraseAmx(amx);
+}
+
+bool samplog::GetLastAmxLine(AMX * const amx, long &line)
+{
+	return CAmxDebugManager::Get()->GetLastAmxLine(amx, line);
+}
+
+bool samplog::GetLastAmxFile(AMX * const amx, char *file)
+{
+	string dest;
+	bool result = CAmxDebugManager::Get()->GetLastAmxFile(amx, dest);
+	strcpy(file, dest.c_str());
+	return result;
+}
+
+bool samplog::GetLastAmxFunction(AMX * const amx, char *function)
+{
+	string dest;
+	bool result = CAmxDebugManager::Get()->GetLastAmxFunction(amx, dest);
+	strcpy(function, dest.c_str());
+	return result;
+}

@@ -7,6 +7,7 @@
 #include <amx/amx.h>
 #include "amxdbg.h"
 #include "CSingleton.hpp"
+#include "export.h"
 
 using std::string;
 using std::unordered_map;
@@ -37,3 +38,13 @@ private:
 	unordered_map<AMX_HEADER *, AMX_DBG *> m_AvailableDebugInfo;
 	unordered_map<AMX *, AMX_DBG *> m_AmxDebugMap;
 };
+
+namespace samplog
+{
+	extern "C" DLL_PUBLIC void RegisterAmx(AMX *amx);
+	extern "C" DLL_PUBLIC void EraseAmx(AMX *amx);
+	
+	extern "C" DLL_PUBLIC bool GetLastAmxLine(AMX * const amx, long &line);
+	extern "C" DLL_PUBLIC bool GetLastAmxFile(AMX * const amx, char *file);
+	extern "C" DLL_PUBLIC bool GetLastAmxFunction(AMX * const amx, char *function);
+}
