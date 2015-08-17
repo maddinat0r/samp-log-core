@@ -53,7 +53,7 @@ namespace samplog
 
 	extern "C" DLL_PUBLIC IPluginLogger *CreatePluginLoggerPtr(const char *pluginname);
 
-	PluginLogger_t CreatePluginLogger(const char *pluginname)
+	inline PluginLogger_t CreatePluginLogger(const char *pluginname)
 	{
 		return std::shared_ptr<IPluginLogger>(CreatePluginLoggerPtr(pluginname), std::mem_fn(&IPluginLogger::Destroy));
 	}
