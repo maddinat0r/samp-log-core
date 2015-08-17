@@ -26,7 +26,6 @@
 //#include "g2filesink.hpp"
 #include "g2logmessage.hpp"
 #include "std2_make_unique.hpp"
-#include "CSingleton.hpp"
 
 
 namespace g2 {
@@ -80,12 +79,30 @@ namespace g2 {
       }
    };
 
-   class LogWorkerManager : public CSingleton<LogWorkerManager>
+   class LogWorkerManager
    {
-	   friend class CSingleton<LogWorkerManager>;
    private:
 	   LogWorkerManager();
 	   ~LogWorkerManager() = default;
+   private:
+	   static LogWorkerManager *m_Instance;
+   public:
+	   inline static LogWorkerManager *Get()
+	   {
+		   if (m_Instance == nullptr)
+			   m_Instance = new LogWorkerManager;
+		   return m_Instance;
+	   }
+
+	   inline static void Destroy()
+	   {
+		   if (m_Instance != nullptr)
+		   {
+			   delete m_Instance;
+			   m_Instance = nullptr;
+		   }
+	   }
+
    public:
 	   inline std::shared_ptr<LogWorker> CreateLogWorker()
 	   {

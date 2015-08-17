@@ -26,6 +26,7 @@
 #include <fstream>
 
 namespace g2 {
+	LogWorkerManager *LogWorkerManager::m_Instance = nullptr;
 
    LogWorkerImpl::LogWorkerImpl() : _bg(kjellkod::Active::createActive()) { }
 
