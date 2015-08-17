@@ -29,7 +29,8 @@ namespace g2
 			return "ERROR";
 		case LOGLEVEL::FATAL:
 			return "FATAL";
+		default:
+			return std::string();
 		}
-		return std::string();
 	}
 }
