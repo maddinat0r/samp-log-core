@@ -26,6 +26,7 @@
 #include <iostream>
 #include <thread>
 #include <atomic>
+#include <assert.h>
 
 #include "std2_make_unique.hpp"
 #include "g2logworker.hpp"
