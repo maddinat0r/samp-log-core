@@ -14,3 +14,8 @@ Here is a small example on how you could use this library in your plugin:
 ```pawn
 TODO
 ```
+----
+###Thanks to:
+- [Zeex' crashdetect](https://github.com/Zeex/samp-plugin-crashdetect) (many useful things about AMX structure and debug info there!)
+- [KjellKod's g3log](https://github.com/KjellKod/g3log)
+- [vitaut's cppformat](https://github.com/cppformat/cppformat)
