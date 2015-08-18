@@ -33,37 +33,35 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 	const std::string &name, const std::string &params_format)
 {
 	const cell *params = CAmxDebugManager::Get()->GetNativeParamsPtr(amx);
-	cell num_args = params[0] / sizeof(cell);
-
-	if (params_format.length() != num_args)
-		return false;
+	size_t format_len = params_format.length();
 
 	fmt::MemoryWriter fmt_msg;
 	fmt_msg << name << '(';
 
-	for (int i = 1; i <= num_args; ++i)
+	for (int i = 0; i != format_len; ++i)
 	{
-		if (i != 1)
+		if (i != 0)
 			fmt_msg << ", ";
 
-		switch (params_format.at(i - 1))
+		cell current_param = params[i + 1];
+		switch (params_format.at(i))
 		{
 		case 'd':
 		case 'i':
-			fmt_msg << static_cast<int>(params[i]);
+			fmt_msg << static_cast<int>(current_param);
 			break;
 		case 'f':
-			fmt_msg << amx_ctof(params[i]);
+			fmt_msg << amx_ctof(current_param);
 			break;
 		case 'h':
 		case 'x':
-			fmt_msg << fmt::hex(params[i]);
+			fmt_msg << fmt::hex(current_param);
 			break;
 		case 'b':
-			fmt_msg << fmt::bin(params[i]);
+			fmt_msg << fmt::bin(current_param);
 			break;
 		case 's':
-			fmt_msg << '"' << amx_GetCppString(amx, params[i]) << '"';
+			fmt_msg << '"' << amx_GetCppString(amx, current_param) << '"';
 			break;
 		case '*': //censored output
 			fmt_msg << "\"*****\"";
