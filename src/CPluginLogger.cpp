@@ -85,6 +85,11 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 	return true;
 }
 
+void CPluginLogger::SetLogLevel(const LOGLEVEL &level, bool enabled)
+{
+	m_Logger.SetLogLevel(level, enabled);
+}
+
 void CPluginLogger::Destroy()
 {
 	delete this;

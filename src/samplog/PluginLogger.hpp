@@ -44,6 +44,7 @@ namespace samplog
 		virtual void Log(const LOGLEVEL &level, const std::string &msg, ...) = 0;
 		virtual void LogEx(const LOGLEVEL &level, const std::string &msg, long line, const std::string &file, const std::string &function) = 0;
 		virtual bool LogNativeCall(AMX * const amx, const std::string &name, const std::string &params_format) = 0;
+		virtual void SetLogLevel(const LOGLEVEL &level, bool enabled) = 0;
 
 		virtual void Destroy() = 0;
 	};
