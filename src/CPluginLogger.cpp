@@ -23,6 +23,24 @@ void CPluginLogger::Log(const LOGLEVEL &level, const std::string &fmt, ...)
 	m_Logger.Log(dest, level);
 }
 
+void CPluginLogger::Log(AMX * const amx, const LOGLEVEL &level, const std::string &fmt, ...)
+{
+	char dest[2048];
+	va_list args;
+	va_start(args, fmt);
+	vsprintf(dest, fmt.c_str(), args);
+	va_end(args);
+
+	long line = 0;
+	string file, func;
+
+	CAmxDebugManager::Get()->GetLastAmxLine(amx, line);
+	CAmxDebugManager::Get()->GetLastAmxFile(amx, file);
+	CAmxDebugManager::Get()->GetLastAmxFunction(amx, func);
+
+	m_Logger.Log(dest, level, line, file.c_str(), func.c_str());
+}
+
 void CPluginLogger::LogEx(const LOGLEVEL &level, const std::string &msg, 
 	long line, const std::string &file, const std::string &function)
 {
@@ -46,33 +64,33 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 		cell current_param = params[i + 1];
 		switch (params_format.at(i))
 		{
-		case 'd':
-		case 'i':
+		case 'd': //decimal
+		case 'i': //integer
 			fmt_msg << static_cast<int>(current_param);
 			break;
-		case 'f':
+		case 'f': //float
 			fmt_msg << amx_ctof(current_param);
 			break;
-		case 'h':
-		case 'x':
+		case 'h': //hexadecimal
+		case 'x': //
 			fmt_msg << fmt::hex(current_param);
 			break;
-		case 'b':
+		case 'b': //binary
 			fmt_msg << fmt::bin(current_param);
 			break;
-		case 's':
+		case 's': //string
 			fmt_msg << '"' << amx_GetCppString(amx, current_param) << '"';
 			break;
 		case '*': //censored output
 			fmt_msg << "\"*****\"";
 			break;
-		case 'r':
+		case 'r': //reference
 		{
 			cell *addr_dest = nullptr;
 			amx_GetAddr(amx, current_param, &addr_dest);
 			fmt_msg << "0x" << fmt::pad(fmt::hexu(reinterpret_cast<unsigned int>(addr_dest)), 8, '0');
 		}	break;
-		case 'p':
+		case 'p': //pointer-value
 			fmt_msg << "0x" << fmt::pad(fmt::hexu(current_param), 8, '0');
 			break;
 		default:
