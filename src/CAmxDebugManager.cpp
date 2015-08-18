@@ -109,7 +109,7 @@ bool CAmxDebugManager::GetLastAmxLine(AMX * const amx, long &line)
 {
 	auto it = m_AmxDebugMap.find(amx);
 	if (it != m_AmxDebugMap.end())
-		return dbg_LookupLine(it->second, amx->cip, &line) == AMX_ERR_NONE;
+		return dbg_LookupLine(it->second, amx->cip, &line) == AMX_ERR_NONE && line++;
 
 	return false;
 }
