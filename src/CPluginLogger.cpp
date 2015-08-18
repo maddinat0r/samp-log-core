@@ -66,6 +66,15 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 		case '*': //censored output
 			fmt_msg << "\"*****\"";
 			break;
+		case 'r':
+		{
+			cell *addr_dest = nullptr;
+			amx_GetAddr(amx, current_param, &addr_dest);
+			fmt_msg << "0x" << fmt::pad(fmt::hexu(reinterpret_cast<unsigned int>(addr_dest)), 8, '0');
+		}	break;
+		case 'p':
+			fmt_msg << "0x" << fmt::pad(fmt::hexu(current_param), 8, '0');
+			break;
 		default:
 			return false; //unrecognized format specifier
 		}
