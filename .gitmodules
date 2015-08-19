@@ -6,4 +6,4 @@
 	url = https://github.com/cxong/tinydir.git
 [submodule "libs/cppformat"]
 	path = libs/cppformat
-	url = https://github.com/maddinat0r/cppformat.git
+	url = https://github.com/cppformat/cppformat.git
