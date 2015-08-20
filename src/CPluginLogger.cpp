@@ -12,25 +12,13 @@ CPluginLogger::CPluginLogger(std::string pluginname)
 
 }
 
-void CPluginLogger::Log(const LOGLEVEL &level, const std::string &fmt, ...)
+void CPluginLogger::Log(const LOGLEVEL &level, const std::string &msg)
 {
-	char dest[2048];
-	va_list args;
-	va_start(args, fmt);
-	vsprintf(dest, fmt.c_str(), args);
-	va_end(args);
-
-	m_Logger.Log(dest, level);
+	m_Logger.Log(msg.c_str(), level);
 }
 
-void CPluginLogger::Log(AMX * const amx, const LOGLEVEL &level, const std::string &fmt, ...)
+void CPluginLogger::Log(AMX * const amx, const LOGLEVEL &level, const std::string &msg)
 {
-	char dest[2048];
-	va_list args;
-	va_start(args, fmt);
-	vsprintf(dest, fmt.c_str(), args);
-	va_end(args);
-
 	long line = 0;
 	string file, func;
 
@@ -38,7 +26,7 @@ void CPluginLogger::Log(AMX * const amx, const LOGLEVEL &level, const std::strin
 	CAmxDebugManager::Get()->GetLastAmxFile(amx, file);
 	CAmxDebugManager::Get()->GetLastAmxFunction(amx, func);
 
-	m_Logger.Log(dest, level, line, file.c_str(), func.c_str());
+	m_Logger.Log(msg.c_str(), level, line, file.c_str(), func.c_str());
 }
 
 void CPluginLogger::LogEx(const LOGLEVEL &level, const std::string &msg, 
