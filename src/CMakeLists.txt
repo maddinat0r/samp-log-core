@@ -1,7 +1,5 @@
 include(AMXConfig)
 
-#set(SAMP_SDK_ROOT "${LOGCORE_LIBS_DIR}/sdk")
-#find_package(SAMPSDK REQUIRED)
 option(LOGCORE_INSTALL "Generate install target." ON)
 
 add_subdirectory(amx)
@@ -23,9 +21,6 @@ add_library(log-core SHARED
 	CPluginLogger.cpp
 	CPluginLogger.hpp
 	export.h
-	#amxdbg.c
-	#amxdbg.h
-	#osdefs.h
 )
 
 if(MSVC)
@@ -45,7 +40,6 @@ if(LOGCORE_INSTALL)
 endif()
 
 set(CPACK_PACKAGE_VERSION ${LOGCORE_VERSION})
-set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_BINARY_DIR};samp-log-core;ALL;src/")
 if(WIN32)
 	set(CPACK_GENERATOR ZIP)
 else()
@@ -53,4 +47,3 @@ else()
 endif()
 
 include(CPack)
-
