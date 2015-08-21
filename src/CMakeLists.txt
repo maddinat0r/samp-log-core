@@ -5,7 +5,6 @@ option(LOGCORE_INSTALL "Generate install target." ON)
 add_subdirectory(amx)
 
 include_directories(
-	${SAMPSDK_INCLUDE_DIR}
 	${LOGCORE_LIBS_DIR}
 	${LOGCORE_LIBS_DIR}/g3log/src
 )
