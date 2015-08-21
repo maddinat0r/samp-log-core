@@ -40,7 +40,7 @@ target_link_libraries(log-core amx cppformat g3logger)
 
 
 install(TARGETS log-core DESTINATION "lib/")
-install(DIRECTORY "samplog/" DESTINATION "include/samplog/")
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/" DESTINATION "include")
 
 set(CPACK_PACKAGE_VERSION ${LOGCORE_VERSION})
 set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_BINARY_DIR};samp-log-core;ALL;src/")
