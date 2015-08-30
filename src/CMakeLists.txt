@@ -4,11 +4,6 @@ option(LOGCORE_INSTALL "Generate install target." ON)
 
 add_subdirectory(amx)
 
-include_directories(
-	${LOGCORE_LIBS_DIR}
-	${LOGCORE_LIBS_DIR}/g3log/src
-)
-
 add_library(log-core SHARED
 	CAmxDebugManager.cpp
 	CAmxDebugManager.hpp
@@ -20,6 +15,11 @@ add_library(log-core SHARED
 	CPluginLogger.cpp
 	CPluginLogger.hpp
 	export.h
+)
+
+target_include_directories(log-core PUBLIC
+	${LOGCORE_LIBS_DIR}
+	${LOGCORE_LIBS_DIR}/g3log/src
 )
 
 if(MSVC)
