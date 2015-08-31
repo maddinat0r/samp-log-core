@@ -36,6 +36,10 @@ add_library(amx STATIC
   amxplugin2.cpp
 )
 
+if(UNIX)
+	target_compile_options(amx "-Wno-unused-result")
+endif()
+
 if(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
