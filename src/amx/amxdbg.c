@@ -271,14 +271,14 @@ int AMXAPI dbg_LookupFunction(AMX_DBG *amxdbg, ucell address, const char **funcn
   assert(amxdbg != NULL);
   assert(funcname != NULL);
   *funcname = NULL;
-  for (index = 0; index < amxdbg->hdr->symbols; index++) {
+  for (index = amxdbg->hdr->symbols - 1; index >= 0; index--) {
     if (amxdbg->symboltbl[index]->ident == iFUNCTN
         && amxdbg->symboltbl[index]->codestart <= address
         && amxdbg->symboltbl[index]->codeend > address) {
       break;
     }
   } /* for */
-  if (index >= amxdbg->hdr->symbols)
+  if (index < 0)
     return AMX_ERR_NOTFOUND;
 
   *funcname = amxdbg->symboltbl[index]->name;
