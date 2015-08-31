@@ -8,7 +8,7 @@ before_install:
   - wget http://www.cmake.org/files/v2.8/cmake-2.8.12.2-Linux-i386.sh
   - sudo sh cmake-2.8.12.2-Linux-i386.sh --exclude-subdir --prefix=/usr
 
-before_script: cmake -DFMT_TESTS=ON -DFMT_PEDANTIC=ON .
+before_script: cmake -DFMT_TEST=ON -DFMT_PEDANTIC=ON .
 
 script: 
   - make -j2
