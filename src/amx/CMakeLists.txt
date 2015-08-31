@@ -37,7 +37,7 @@ add_library(amx STATIC
 )
 
 if(UNIX)
-	target_compile_options(amx "-Wno-unused-result")
+	target_compile_options(amx PUBLIC "-Wno-unused-result")
 endif()
 
 if(MSVC)
