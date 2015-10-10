@@ -1,6 +1,7 @@
 include(AMXConfig)
 
-option(LOGCORE_INSTALL "Generate install target." ON)
+option(LOGCORE_INSTALL_DEV 
+	"Generate install target specifically for development." ON)
 
 add_subdirectory(amx)
 
@@ -35,9 +36,11 @@ endif()
 add_dependencies(log-core amx cppformat g3logger)
 target_link_libraries(log-core amx cppformat g3logger)
 
-if(LOGCORE_INSTALL)
+if(LOGCORE_INSTALL_DEV)
 	install(TARGETS log-core DESTINATION "lib/")
 	install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/" DESTINATION "include")
+else()
+	install(TARGETS log-core DESTINATION "")
 endif()
 
 set(CPACK_PACKAGE_VERSION ${LOGCORE_VERSION})
