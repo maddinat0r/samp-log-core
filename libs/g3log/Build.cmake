@@ -8,8 +8,6 @@ include_directories(${LOG_SRC})
   #  1) http://kjellkod.wordpress.com/2013/09/23/experimental-g2log-with-clang/
   #  2) https://github.com/maidsafe/MaidSafe/wiki/Hacking-with-Clang-llvm-abi-and-llvm-libc
 IF (${CMAKE_CXX_COMPILER_ID} MATCHES ".*Clang")
-   MESSAGE("")
-   MESSAGE("cmake for Clang ")
    IF (APPLE)
        set(PLATFORM_LINK_LIBRIES c++abi)
    ELSE()
@@ -20,7 +18,6 @@ IF (${CMAKE_CXX_COMPILER_ID} MATCHES ".*Clang")
 
 
 ELSEIF(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-   MESSAGE("cmake for GCC ")
    IF (APPLE)
        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++11  -pthread -D_GLIBCXX_USE_NANOSLEEP")
    ELSEIF (MINGW)
@@ -47,7 +44,6 @@ ENDIF()
 # GENERIC STEPS
 file(GLOB SRC_FILES ${LOG_SRC}/*.h ${LOG_SRC}/*.hpp ${LOG_SRC}/*.cpp ${LOG_SRC}/*.ipp)
 file(GLOB HEADER_FILES ${LOG_SRC}/*.h ${LOG_SRC}/*.hpp)
-#MESSAGE(" HEADER FILES ARE: ${HEADER_FILES}")
 
 IF (MSVC OR MINGW) 
 	 list(REMOVE_ITEM SRC_FILES  ${LOG_SRC}/crashhandler_unix.cpp)
@@ -59,7 +55,6 @@ set(SRC_FILES ${SRC_FILES} ${SRC_PLATFORM_SPECIFIC})
 
 # Create the g3log library
 include_directories(${LOG_SRC})
-#MESSAGE("  g3logger files: [${SRC_FILES}]")
 add_library(g3logger ${SRC_FILES})
 set_target_properties(g3logger PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(g3logger ${PLATFORM_LINK_LIBRIES})
