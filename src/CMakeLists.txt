@@ -40,7 +40,9 @@ if(LOGCORE_INSTALL_DEV)
 	install(TARGETS log-core DESTINATION "lib/")
 	install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/" DESTINATION "include")
 else()
-	install(TARGETS log-core DESTINATION "")
+	install(TARGETS log-core 
+		RUNTIME DESTINATION "./"
+		LIBRARY DESTINATION "./")
 endif()
 
 set(CPACK_PACKAGE_VERSION ${LOGCORE_VERSION})
