@@ -27,7 +27,7 @@ if(MSVC)
 endif()
 
 if(UNIX AND NOT APPLE)
-	target_link_libraries(rt)
+	target_link_libraries(log-core rt)
 endif()
 
 add_dependencies(log-core amx cppformat g3logger)
