@@ -17,6 +17,8 @@ add_library(log-core SHARED
 	export.h
 )
 
+set_target_properties(log-core PROPERTIES PREFIX "")
+
 target_include_directories(log-core PUBLIC
 	${LOGCORE_LIBS_DIR}
 	${LOGCORE_LIBS_DIR}/g3log/src
