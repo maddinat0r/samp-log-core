@@ -78,6 +78,5 @@ option(FMT_TEST OFF)
 option(FMT_DOC OFF)
 mark_as_advanced(FMT_TEST FMT_INSTALL FMT_PEDANTIC FMT_DOC WINSDK_SETENV)
 add_subdirectory(libs/cppformat)
-add_subdirectory(libs/g3log)
 add_subdirectory(src)
 

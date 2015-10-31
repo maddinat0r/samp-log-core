@@ -5,6 +5,12 @@ option(LOGCORE_INSTALL_DEV
 
 add_subdirectory(amx)
 
+if(MSVC)
+	set(CRASHHANDLER_CPP crashhandler_windows.cpp)
+else()
+	set(CRASHHANDLER_CPP crashhandler_unix.cpp)
+endif()
+
 add_library(log-core SHARED
 	CAmxDebugManager.cpp
 	CAmxDebugManager.hpp
@@ -16,6 +22,8 @@ add_library(log-core SHARED
 	CPluginLogger.cpp
 	CPluginLogger.hpp
 	export.h
+	crashhandler.hpp
+	${CRASHHANDLER_CPP}
 )
 
 set_target_properties(log-core PROPERTIES PREFIX "")
@@ -33,8 +41,8 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(log-core rt)
 endif()
 
-add_dependencies(log-core amx cppformat g3logger)
-target_link_libraries(log-core amx cppformat g3logger)
+add_dependencies(log-core amx cppformat)
+target_link_libraries(log-core amx cppformat)
 
 if(LOGCORE_INSTALL_DEV)
 	install(TARGETS log-core DESTINATION "lib/")
