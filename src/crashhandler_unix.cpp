@@ -6,10 +6,7 @@
  * For more information see g3log/LICENSE or refer refer to http://unlicense.org
  * ============================================================================*/
 
-#include "g3log/crashhandler.hpp"
-#include "g3log/logmessage.hpp"
-#include "g3log/logcapture.hpp"
-#include "g3log/loglevels.hpp"
+#include "crashhandler.hpp"
 
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__) && !defined(__GNUC__))
 #error "crashhandler_unix.cpp used but it's a windows system"
@@ -206,7 +203,7 @@ namespace g3 {
 
 
       /// string representation of signal ID
-      std::string exitReasonName(const LEVELS& level, g3::SignalType fatal_id) {
+      std::string exitReasonName(g3::SignalType fatal_id) {
 
          int signal_number = static_cast<int>(fatal_id);
          switch (signal_number) {
@@ -222,7 +219,7 @@ namespace g3 {
                break;
             default:
                std::ostringstream oss;
-               oss << "UNKNOWN SIGNAL(" << signal_number << ") for " << level.text;
+               oss << "UNKNOWN SIGNAL(" << signal_number << ")";
                return oss.str();
          }
       }
@@ -232,10 +229,10 @@ namespace g3 {
       // Triggered by g3log->g3LogWorker after receiving a FATAL trigger
       // which is LOG(FATAL), CHECK(false) or a fatal signal our signalhandler caught.
       // --- If LOG(FATAL) or CHECK(false) the signal_number will be SIGABRT
-      void exitWithDefaultSignalHandler(const LEVELS& level, g3::SignalType fatal_signal_id) {
+      void exitWithDefaultSignalHandler(bool fatal_exception, g3::SignalType fatal_signal_id) {
          const int signal_number = static_cast<int>(fatal_signal_id);
          restoreSignalHandler(signal_number);
-         std::cerr << "\n\n" << __FUNCTION__ << ":" << __LINE__ << ". Exiting due to " << level.text << ", " << signal_number << "   \n\n" << std::flush;
+         std::cerr << "\n\n" << __FUNCTION__ << ":" << __LINE__ << ". Signal ID: " << signal_number << "   \n\n" << std::flush;
 
 
          kill(getpid(), signal_number);

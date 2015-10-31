@@ -62,14 +62,13 @@ namespace g3 {
 
       /** \return signal_name Ref: signum.hpp and \ref installSignalHandler
       *  or for Windows exception name */
-      std::string exitReasonName(const LEVELS& level, g3::SignalType signal_number);
+      std::string exitReasonName(g3::SignalType signal_number);
 
       /** return calling thread's stackdump*/
-      std::string stackdump(const char* dump = nullptr);
 
       /** Re-"throw" a fatal signal, previously caught. This will exit the application
        * This is an internal only function. Do not use it elsewhere. It is triggered
        * from g3log, g3LogWorker after flushing messages to file */
-      void exitWithDefaultSignalHandler(const LEVELS& level, g3::SignalType signal_number);
+      void exitWithDefaultSignalHandler(bool fatal_exception, g3::SignalType signal_number);
    } // end g3::internal
 } // g3
