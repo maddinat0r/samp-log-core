@@ -25,6 +25,7 @@ add_library(log-core SHARED
 	export.h
 	crashhandler.hpp
 	${CRASHHANDLER_CPP}
+	loglevel.hpp
 )
 
 set_target_properties(log-core PROPERTIES PREFIX "")
