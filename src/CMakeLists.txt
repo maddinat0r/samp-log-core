@@ -16,6 +16,7 @@ add_library(log-core SHARED
 	CAmxDebugManager.hpp
 	CSampConfigReader.cpp
 	CSampConfigReader.hpp
+	CMessage.hpp
 	CSingleton.hpp
 	CLogger.cpp
 	CLogger.hpp
