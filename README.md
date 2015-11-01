@@ -17,5 +17,5 @@ TODO
 ----
 ###Thanks to:
 - [Zeex' crashdetect](https://github.com/Zeex/samp-plugin-crashdetect) (many useful things about AMX structure and debug info there!)
-- [KjellKod's g3log](https://github.com/KjellKod/g3log)
+- [KjellKod's crash-handler code (taken from g3log)](https://github.com/KjellKod/g3log)
 - [vitaut's cppformat](https://github.com/cppformat/cppformat)
