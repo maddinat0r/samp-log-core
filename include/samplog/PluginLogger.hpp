@@ -34,7 +34,6 @@ namespace samplog
 		INFO = 2,
 		WARNING = 4,
 		ERROR = 8,
-		FATAL = 16
 	};
 
 

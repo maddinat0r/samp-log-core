@@ -8,7 +8,6 @@ enum class LogLevel : unsigned int
 	INFO = 2,
 	WARNING = 4,
 	ERROR = 8,
-	FATAL = 16
 };
 
 using LogLevel_ut = std::underlying_type<LogLevel>::type;
