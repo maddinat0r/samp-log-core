@@ -1,5 +1,8 @@
 #pragma once
 
+#ifdef ERROR //great job M$
+#  undef ERROR
+#endif
 
 enum class LogLevel : unsigned int
 {

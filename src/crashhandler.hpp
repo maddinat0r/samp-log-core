@@ -11,6 +11,9 @@
 #include <csignal>
 #include <map>
 
+#include "CLogger.hpp"
+
+
 namespace g3 {
 
    // PUBLIC API:
@@ -65,6 +68,7 @@ namespace g3 {
       std::string exitReasonName(g3::SignalType signal_number);
 
       /** return calling thread's stackdump*/
+      //std::string stackdump(const char* dump = nullptr);
 
       /** Re-"throw" a fatal signal, previously caught. This will exit the application
        * This is an internal only function. Do not use it elsewhere. It is triggered

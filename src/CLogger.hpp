@@ -1,52 +1,74 @@
 #pragma once
 
-#include "g2log.hpp"
-#include "g2loglevels.hpp"
-#include "g2sinkhandle.hpp"
-
 #include <atomic>
 #include <memory>
 #include <string>
+#include <thread>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <functional>
 #include <fstream>
 
-using std::shared_ptr;
+#include "CSingleton.hpp"
+#include "loglevel.hpp"
+#include "CMessage.hpp"
 
-namespace g2 { class LogWorker; }
-
-
-class CLogSink
-{
-public:
-	CLogSink(std::string filename);
-	~CLogSink() = default;
-
-private:
-	std::ofstream m_Logfile;
-
-public:
-	void OnReceive(g2::LogMessageMover m_msg);
-};
 
 class CLogger
 {
 public:
 	CLogger(std::string module);
 	~CLogger() = default;
+	CLogger(const CLogger &rhs) = delete;
 
 private:
 
 public:
-	void SetLogLevel(const LOGLEVEL &log_level, bool enabled);
-
-	bool LogLevel(const LOGLEVEL &log_level);
+	void SetLogLevel(const LogLevel log_level, bool enabled);
+	bool IsLogLevel(const LogLevel log_level);
 
 	void Log(const char *msg, 
-		const LOGLEVEL& level, long line = 0, const char *file = "",
+		const LogLevel level, long line = 0, const char *file = "",
 		const char *function = "");
 	
 private:
-	std::string m_ModuleName;
-	shared_ptr<g2::LogWorker> m_LogWorker;
+	const std::string
+		m_ModuleName,
+		m_FileName;
 
-	std::atomic<LOGLEVEL> m_LogLevel;
+	std::atomic<LogLevel> m_LogLevel;
+};
+
+using Logger_t = std::unique_ptr<CLogger>; 
+
+
+class CLogManager : public CSingleton<CLogManager>
+{
+	friend class CSingleton<CLogManager>;
+private:
+	CLogManager();
+	~CLogManager();
+	CLogManager(const CLogManager &rhs) = delete;
+	CLogManager(const CLogManager &&rhs) = delete;
+
+public:
+	void QueueLogMessage(Message_t &&msg);
+
+private:
+	void Process();
+
+private:
+	std::ofstream
+		m_WarningLog,
+		m_ErrorLog;
+
+	std::thread m_Thread;
+	std::atomic<bool> m_ThreadRunning;
+
+	std::queue<Message_t> m_LogMsgQueue;
+	std::mutex m_QueueMtx;
+	std::condition_variable m_QueueNotifier;
+
+	std::string m_DateTimeFormat;
 };

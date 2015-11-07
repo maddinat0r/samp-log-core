@@ -76,7 +76,10 @@ namespace {
          }
       }
 
-      using namespace g3::internal;
+	  //TODO: log fatal signal; available info: `signal_number`, `getpid()`
+	  CLogManager::Get()->Destroy();
+
+      /*using namespace g3::internal;
       {
          const auto dump = stackdump();
          std::ostringstream fatal_stream;
@@ -86,7 +89,7 @@ namespace {
          fatal_stream << "\n***** SIGNAL " << fatal_reason << "(" << signal_number << ")" << std::endl;
          LogCapture trigger(FATAL_SIGNAL, static_cast<g3::SignalType>(signal_number), dump.c_str());
          trigger.stream() << fatal_stream.str();
-      } // message sent to g3LogWorker
+      } */
       // wait to die
    }
 
@@ -146,7 +149,7 @@ namespace g3 {
 
       /// Generate stackdump. Or in case a stackdump was pre-generated and non-empty just use that one
       /// i.e. the latter case is only for Windows and test purposes
-      std::string stackdump(const char* rawdump) {
+      /*std::string stackdump(const char* rawdump) {
          if (nullptr != rawdump && !std::string(rawdump).empty()) {
             return {rawdump};
          }
@@ -198,7 +201,7 @@ namespace g3 {
          } // END: for(size_t idx = 1; idx < size && messages != nullptr; ++idx)
          free(messages);
          return oss.str();
-      }
+      }*/
 
 
 

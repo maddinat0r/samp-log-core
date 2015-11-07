@@ -1,25 +1,32 @@
 #include <algorithm>
-#include <g2logworker.hpp>
-#include <std2_make_unique.hpp>
+#include <fstream>
+#include <ctime>
+
+#ifdef WIN32
+#  define WIN32_LEAN_AND_MEAN
+#  include <Windows.h>
+#else
+#  include <sys/stat.h>
+#endif
 
 #include "CLogger.hpp"
 #include "CSampConfigReader.hpp"
-
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#else
-#include <sys/stat.h>
-#endif
+#include "CMessage.hpp"
+#include "crashhandler.hpp"
 
 
-CLogSink::CLogSink(std::string filename)
+
+CLogger::CLogger(std::string module) : 
+	m_ModuleName(module),
+	m_FileName("logs/" + module + ".log")
 {
+	g3::installCrashHandler();
+
 	//create possibly non-existing folders before opening log file
 	size_t pos = 0;
-	while ((pos = filename.find('/', pos)) != std::string::npos)
+	while ((pos = m_FileName.find('/', pos)) != std::string::npos)
 	{
-		auto dir = filename.substr(0, pos++);
+		auto dir = m_FileName.substr(0, pos++);
 #ifdef WIN32
 		std::replace(dir.begin(), dir.end(), '/', '\\');
 		CreateDirectoryA(dir.c_str(), NULL);
@@ -27,80 +34,178 @@ CLogSink::CLogSink(std::string filename)
 		mkdir(dir.c_str(), ACCESSPERMS);
 #endif
 	}
-
-	m_Logfile.open(filename);
 }
 
-void CLogSink::OnReceive(g2::LogMessageMover m_msg)
+void CLogger::SetLogLevel(const LogLevel level, bool enabled)
 {
-	g2::LogMessage &msg = m_msg.get();
-	m_Logfile <<
-		"[" << msg.timestamp() << "] " <<
-		"[" << msg.level() << "] " <<
-		msg.message();
-	if (msg._line != 0)
-	{
-		m_Logfile << " (" << msg.file() << ":" << msg.line() << ")";
-	}
-	m_Logfile << '\n';
-	m_Logfile.flush();
-}
-
-
-CLogger::CLogger(std::string module)
-	: m_ModuleName(module)
-{
-	g2::installCrashHandler();
-	m_LogWorker = g2::LogWorkerManager::Get()->CreateLogWorker();
-	/*m_SinkHandle = */m_LogWorker->addSink(std2::make_unique<CLogSink>("logs/" + module + ".log"), &CLogSink::OnReceive);
-}
-void CLogger::SetLogLevel(const LOGLEVEL &log_level, bool enabled)
-{
-	LOGLEVEL current_loglevel = m_LogLevel.load(std::memory_order_acquire);
-	g2::setLogLevel(current_loglevel, log_level);
+	LogLevel current_loglevel = m_LogLevel.load(std::memory_order_acquire);
+	current_loglevel |= level;
 	m_LogLevel.store(current_loglevel, std::memory_order_release);
 }
 
-bool CLogger::LogLevel(const LOGLEVEL &log_level)
+bool CLogger::IsLogLevel(const LogLevel level)
 {
-	LOGLEVEL current_loglevel = m_LogLevel.load(std::memory_order_acquire);
-	return g2::logLevel(current_loglevel, log_level);
+	LogLevel current_loglevel = m_LogLevel.load(std::memory_order_acquire);
+	return current_loglevel & level;
 }
 
 void CLogger::Log(const char *msg, 
-	const LOGLEVEL& level, long line/* = 0*/, const char *file/* = ""*/,
+	const LogLevel level, long line/* = 0*/, const char *file/* = ""*/,
 	const char *function/* = ""*/)
 {
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
-	g2::installSignalHandlerForThread();
+	g3::installSignalHandlerForThread();
 #endif
-	LOGLEVEL msgLevel{ level };
-	g2::LogMessagePtr message{ 
-		std2::make_unique<g2::LogMessage>(m_ModuleName.c_str(), file, line, function, msgLevel) };
-	message.get()->write().append(msg);
 
-	static string datetime_format;
-	if (datetime_format.empty())
+	if (IsLogLevel(level) == false)
+		return;
+
+	Message_t message(new CMessage(
+		m_FileName, m_ModuleName, level, msg, line, file, function));
+	CLogManager::Get()->QueueLogMessage(std::move(message));
+
+	/*CLogManager::Get()->QueueLogCall([message, this](const std::string &td_format)
 	{
-		if (CSampConfigReader::Get()->GetVar("logtimeformat", datetime_format))
-		{
-			//delete brackets
-			size_t pos = 0;
-			while ((pos = datetime_format.find_first_of("[]")) != std::string::npos)
-				datetime_format.erase(pos, 1);
-		}
-		else
-		{
-			datetime_format = g2::internal::datetime_formatted;
-		}
-	}
-	message.get()->set_datetime_format(datetime_format);
+		char buf[64];
+		std::time_t now_c = std::chrono::steady_clock::to_time_t(message->GetTime());
+		std::strftime(buf, 64, td_format.c_str(), std::localtime(&now_c));
+		std::string timestamp(buf);
 
-	if (g2::wasFatal(level)) {
-		g2::FatalMessagePtr fatal_message{ std2::make_unique<g2::FatalMessage>(*(message._move_only.get()), SIGABRT) };
-		g2::internal::fatalCall(m_LogWorker.get(), fatal_message);
+		std::string loglevel_str;
+		switch (message->GetLevel())
+		{
+		case LogLevel::DEBUG:
+			loglevel_str = "DEBUG";
+			break;
+		case LogLevel::INFO:
+			loglevel_str = "INFO";
+			break;
+		case LogLevel::WARNING:
+			loglevel_str = "WARNING";
+			break;
+		case LogLevel::ERROR:
+			loglevel_str = "ERROR";
+			break;
+		default:
+			loglevel_str = "<unknown>";
+		}
+
+		std::ofstream logfile(m_FileName);
+		logfile <<
+			"[" << timestamp << "] " <<
+			"[" << loglevel_str << "] " <<
+			message->GetText();
+		if (message->GetLine() != 0)
+		{
+			logfile << " (" << message->GetFileName() << ":" << message->GetLine() << ")";
+		}
+		logfile << '\n' << std::flush;
+	});*/
+}
+
+
+CLogManager::CLogManager() :
+	m_ThreadRunning(true),
+	m_Thread(std::bind(&CLogManager::Process, this)),
+	m_WarningLog("logs/warnings.log"),
+	m_ErrorLog("logs/errors.log")
+{
+	if (CSampConfigReader::Get()->GetVar("logtimeformat", m_DateTimeFormat))
+	{
+		//delete brackets
+		size_t pos = 0;
+		while ((pos = m_DateTimeFormat.find_first_of("[]")) != std::string::npos)
+			m_DateTimeFormat.erase(pos, 1);
 	}
-	else {
-		m_LogWorker->save(message);
+	else
+	{
+		m_DateTimeFormat = "%d.%m.%y %X";
 	}
+}
+
+CLogManager::~CLogManager()
+{
+	m_ThreadRunning = false;
+	m_Thread.join();
+}
+
+void CLogManager::QueueLogMessage(Message_t &&msg)
+{
+	{
+		std::lock_guard<std::mutex> lg(m_QueueMtx);
+		m_LogMsgQueue.push(std::move(msg));
+	}
+	m_QueueNotifier.notify_one();
+}
+
+void CLogManager::Process()
+{
+	std::unique_lock<std::mutex> lk(m_QueueMtx);
+	std::function<bool()> condition = [this]() { return !m_LogMsgQueue.empty(); };
+
+	do
+	{
+		m_QueueNotifier.wait(lk, condition);
+		Message_t &msg = m_LogMsgQueue.front();
+
+		char buf[64];
+		std::time_t now_c = std::chrono::steady_clock::to_time_t(msg->timestamp);
+		std::strftime(buf, 64, m_DateTimeFormat.c_str(), std::localtime(&now_c));
+		std::string timestamp(buf);
+
+		std::string loglevel_str;
+		switch (msg->loglevel)
+		{
+		case LogLevel::DEBUG:
+			loglevel_str = "DEBUG";
+			break;
+		case LogLevel::INFO:
+			loglevel_str = "INFO";
+			break;
+		case LogLevel::WARNING:
+			loglevel_str = "WARNING";
+			break;
+		case LogLevel::ERROR:
+			loglevel_str = "ERROR";
+			break;
+		default:
+			loglevel_str = "<unknown>";
+		}
+
+
+		//default logging
+		std::ofstream logfile(msg->log_filename);
+		logfile <<
+			"[" << timestamp << "] " <<
+			"[" << loglevel_str << "] " <<
+			msg->text;
+		if (msg->line != 0)
+		{
+			logfile << " (" << msg->file << ":" << msg->line << ")";
+		}
+		logfile << '\n' << std::flush;
+
+
+		//log-level logging
+		std::ofstream *loglevel_file = nullptr;
+		if (msg->loglevel & LogLevel::WARNING)
+			loglevel_file = &m_WarningLog;
+		else if (msg->loglevel & LogLevel::ERROR)
+			loglevel_file = &m_ErrorLog;
+
+		if(loglevel_file != nullptr)
+		{
+			(*loglevel_file) <<
+				"[" << timestamp << "] " <<
+				"[" << msg->log_module << "] " <<
+				msg->text;
+			if (msg->line != 0)
+			{
+				(*loglevel_file) << " (" << msg->file << ":" << msg->line << ")";
+			}
+			(*loglevel_file) << '\n' << std::flush;
+		}
+
+		m_LogMsgQueue.pop();
+	} while (m_ThreadRunning && condition());
 }

@@ -2,9 +2,9 @@
 
 #include <string>
 #include <memory>
+#include <chrono>
 
 using std::string;
-using std::unique_ptr;
 
 #include "loglevel.hpp"
 
@@ -12,13 +12,18 @@ using std::unique_ptr;
 class CMessage
 {
 public:
-	CMessage(string msg, LogLevel level, 
+	CMessage(string filename, string module,
+		LogLevel level, string msg,
 		long line, string file, string func) :
-		m_Text(std::move(msg)),
-		m_Loglevel(level),
-		m_Line(line),
-		m_File(std::move(file)),
-		m_Function(std::move(func))
+
+		timestamp(std::chrono::steady_clock::now()),
+		log_filename(std::move(filename)),
+		log_module(std::move(module)),
+		loglevel(level),
+		text(std::move(msg)),
+		line(line),
+		file(std::move(file)),
+		function(std::move(func))
 	{ }
 	~CMessage() = default;
 
@@ -29,6 +34,21 @@ public:
 	CMessage operator=(const CMessage &&rhs) = delete;
 
 public:
+	const string
+		text,
+		file,
+		function;
+
+	const long line;
+
+	const std::chrono::steady_clock::time_point timestamp;
+
+	const LogLevel loglevel;
+
+	const string
+		log_module,
+		log_filename;
+/*public:
 	inline const string &GetText() const
 	{
 		return m_Text;
@@ -45,9 +65,15 @@ public:
 	{
 		return m_Function;
 	}
-
-
-
+	inline const std::chrono::steady_clock::time_point &GetTime() const
+	{
+		return m_Timestamp;
+	}
+	inline const LogLevel GetLevel() const
+	{
+		return m_Loglevel;
+	}
+	
 private:
 	string
 		m_Text,
@@ -56,8 +82,14 @@ private:
 
 	long m_Line;
 
+	std::chrono::steady_clock::time_point m_Timestamp;
+
 	LogLevel m_Loglevel;
 
+	string
+		m_ModuleName,
+		m_FileName;
+	*/
 };
 
-using Message_t = unique_ptr<CMessage>;
+using Message_t = std::unique_ptr<CMessage>;

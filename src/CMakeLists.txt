@@ -5,7 +5,7 @@ option(LOGCORE_INSTALL_DEV
 
 add_subdirectory(amx)
 
-if(MSVC)
+if(WIN32)
 	set(CRASHHANDLER_CPP crashhandler_windows.cpp)
 else()
 	set(CRASHHANDLER_CPP crashhandler_unix.cpp)

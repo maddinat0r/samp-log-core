@@ -12,12 +12,12 @@ CPluginLogger::CPluginLogger(std::string pluginname)
 
 }
 
-void CPluginLogger::Log(const LOGLEVEL &level, const std::string &msg)
+void CPluginLogger::Log(const LogLevel level, const std::string &msg)
 {
 	m_Logger.Log(msg.c_str(), level);
 }
 
-void CPluginLogger::Log(AMX * const amx, const LOGLEVEL &level, const std::string &msg)
+void CPluginLogger::Log(AMX * const amx, const LogLevel level, const std::string &msg)
 {
 	long line = 0;
 	string file, func;
@@ -29,7 +29,7 @@ void CPluginLogger::Log(AMX * const amx, const LOGLEVEL &level, const std::strin
 	m_Logger.Log(msg.c_str(), level, line, file.c_str(), func.c_str());
 }
 
-void CPluginLogger::LogEx(const LOGLEVEL &level, const std::string &msg, 
+void CPluginLogger::LogEx(const LogLevel level, const std::string &msg,
 	long line, const std::string &file, const std::string &function)
 {
 	m_Logger.Log(msg.c_str(), level, line, file.c_str(), function.c_str());
@@ -94,11 +94,11 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 	CAmxDebugManager::Get()->GetLastAmxFile(amx, file);
 	CAmxDebugManager::Get()->GetLastAmxFunction(amx, func);
 
-	LogEx(LOGLEVEL::DEBUG, fmt_msg.str(), line, file, func);
+	LogEx(LogLevel::DEBUG, fmt_msg.str(), line, file, func);
 	return true;
 }
 
-void CPluginLogger::SetLogLevel(const LOGLEVEL &level, bool enabled)
+void CPluginLogger::SetLogLevel(const LogLevel level, bool enabled)
 {
 	m_Logger.SetLogLevel(level, enabled);
 }
