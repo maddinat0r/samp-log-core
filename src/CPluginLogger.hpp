@@ -17,6 +17,7 @@ public:
 	virtual void LogEx(const LogLevel level, const std::string &msg, long line, const std::string &file, const std::string &function) = 0;
 	virtual bool LogNativeCall(AMX * const amx, const std::string &name, const std::string &params_format) = 0;
 	virtual void SetLogLevel(const LogLevel level, bool enabled) = 0;
+	virtual bool IsLogLevel(const LogLevel log_level) = 0;
 
 	virtual void Destroy() = 0;
 };
@@ -33,6 +34,7 @@ public:
 	void LogEx(const LogLevel level, const std::string &msg, long line, const std::string &file, const std::string &function);
 	bool LogNativeCall(AMX * const amx, const std::string &name, const std::string &params_format);
 	void SetLogLevel(const LogLevel level, bool enabled);
+	bool IsLogLevel(const LogLevel log_level);
 
 	void Destroy();
 

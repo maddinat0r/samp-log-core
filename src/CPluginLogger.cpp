@@ -103,6 +103,11 @@ void CPluginLogger::SetLogLevel(const LogLevel level, bool enabled)
 	m_Logger.SetLogLevel(level, enabled);
 }
 
+bool CPluginLogger::IsLogLevel(const LogLevel log_level)
+{
+	return m_Logger.IsLogLevel(log_level);
+}
+
 void CPluginLogger::Destroy()
 {
 	delete this;
