@@ -178,7 +178,8 @@ bool samplog::GetLastAmxFile(AMX * const amx, char *file)
 {
 	string dest;
 	bool result = CAmxDebugManager::Get()->GetLastAmxFile(amx, dest);
-	strcpy(file, dest.c_str());
+	if(result)
+		strcpy(file, dest.c_str());
 	return result;
 }
 
@@ -186,6 +187,7 @@ bool samplog::GetLastAmxFunction(AMX * const amx, char *function)
 {
 	string dest;
 	bool result = CAmxDebugManager::Get()->GetLastAmxFunction(amx, dest);
-	strcpy(function, dest.c_str());
+	if(result)
+		strcpy(function, dest.c_str());
 	return result;
 }
