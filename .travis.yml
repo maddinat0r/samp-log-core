@@ -5,7 +5,7 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get -qq install -y g++-4.8-multilib > /dev/null
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 99 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
-  - wget https://cmake.org/files/v2.8/cmake-2.8.12.2-Linux-i386.sh
+  - wget --no-check-certificate https://cmake.org/files/v2.8/cmake-2.8.12.2-Linux-i386.sh
   - sudo sh cmake-2.8.12.2-Linux-i386.sh --exclude-subdir --prefix=/usr
 
 before_script: cmake -DFMT_TEST=ON -DFMT_PEDANTIC=ON .
