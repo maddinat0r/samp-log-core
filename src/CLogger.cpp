@@ -39,7 +39,16 @@ CLogger::CLogger(std::string module) :
 void CLogger::SetLogLevel(const LogLevel level, bool enabled)
 {
 	LogLevel current_loglevel = m_LogLevel.load(std::memory_order_acquire);
-	current_loglevel |= level;
+	if (enabled)
+	{
+		current_loglevel = static_cast<LogLevel>(
+			static_cast<LogLevel_ut>(current_loglevel) | static_cast<LogLevel_ut>(level));
+	}
+	else
+	{
+		current_loglevel = static_cast<LogLevel>(
+			static_cast<LogLevel_ut>(current_loglevel) & ~static_cast<LogLevel_ut>(level));
+	}
 	m_LogLevel.store(current_loglevel, std::memory_order_release);
 }
 
@@ -68,7 +77,6 @@ void CLogger::Log(const char *msg,
 
 CLogManager::CLogManager() :
 	m_ThreadRunning(true),
-	m_Thread(std::bind(&CLogManager::Process, this)),
 	m_WarningLog("logs/warnings.log"),
 	m_ErrorLog("logs/errors.log")
 {
@@ -83,12 +91,16 @@ CLogManager::CLogManager() :
 	{
 		m_DateTimeFormat = "%d.%m.%y %X";
 	}
+
+
+	m_Thread = new std::thread(std::bind(&CLogManager::Process, this));
 }
 
 CLogManager::~CLogManager()
 {
 	m_ThreadRunning = false;
-	m_Thread.join();
+	m_Thread->join();
+	delete m_Thread;
 }
 
 void CLogManager::QueueLogMessage(Message_t &&msg)
@@ -136,7 +148,7 @@ void CLogManager::Process()
 
 
 		//default logging
-		std::ofstream logfile(msg->log_filename);
+		std::ofstream logfile(msg->log_filename, std::ofstream::out | std::ofstream::app);
 		logfile <<
 			"[" << timestamp << "] " <<
 			"[" << loglevel_str << "] " <<
@@ -169,5 +181,5 @@ void CLogManager::Process()
 		}
 
 		m_LogMsgQueue.pop();
-	} while (m_ThreadRunning && condition());
+	} while (m_ThreadRunning || (m_ThreadRunning == false && condition()) );
 }

@@ -20,9 +20,3 @@ inline bool operator&(const LogLevel lhs, const LogLevel rhs)
 	return (static_cast<LogLevel_ut>(lhs) & static_cast<LogLevel_ut>(rhs))
 		== static_cast<LogLevel_ut>(rhs);
 }
-
-inline LogLevel operator|=(const LogLevel lhs, const LogLevel rhs)
-{
-	return static_cast<LogLevel>(
-		static_cast<LogLevel_ut>(lhs) | static_cast<LogLevel_ut>(rhs));
-}

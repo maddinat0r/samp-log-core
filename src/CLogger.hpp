@@ -63,7 +63,7 @@ private:
 		m_WarningLog,
 		m_ErrorLog;
 
-	std::thread m_Thread;
+	std::thread *m_Thread = nullptr;
 	std::atomic<bool> m_ThreadRunning;
 
 	std::queue<Message_t> m_LogMsgQueue;
