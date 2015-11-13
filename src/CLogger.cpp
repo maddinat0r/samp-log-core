@@ -149,7 +149,7 @@ void CLogManager::Process()
 		Message_t &msg = m_LogMsgQueue.front();
 
 		char buf[64];
-		std::time_t now_c = std::chrono::steady_clock::to_time_t(msg->timestamp);
+		std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
 		std::strftime(buf, 64, m_DateTimeFormat.c_str(), std::localtime(&now_c));
 		std::string timestamp(buf);
 

@@ -16,7 +16,7 @@ public:
 		LogLevel level, string msg,
 		long line, string file, string func) :
 
-		timestamp(std::chrono::steady_clock::now()),
+		timestamp(std::chrono::system_clock::now()),
 		log_filename(std::move(filename)),
 		log_module(std::move(module)),
 		loglevel(level),
@@ -41,7 +41,7 @@ public:
 
 	const long line;
 
-	const std::chrono::steady_clock::time_point timestamp;
+	const std::chrono::system_clock::time_point timestamp;
 
 	const LogLevel loglevel;
 
