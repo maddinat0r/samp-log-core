@@ -48,48 +48,7 @@ public:
 	const string
 		log_module,
 		log_filename;
-/*public:
-	inline const string &GetText() const
-	{
-		return m_Text;
-	}
-	inline long GetLine() const
-	{
-		return m_Line;
-	}
-	inline const string &GetFileName() const
-	{
-		return m_File;
-	}
-	inline const string &GetFunctionName() const
-	{
-		return m_Function;
-	}
-	inline const std::chrono::steady_clock::time_point &GetTime() const
-	{
-		return m_Timestamp;
-	}
-	inline const LogLevel GetLevel() const
-	{
-		return m_Loglevel;
-	}
-	
-private:
-	string
-		m_Text,
-		m_File,
-		m_Function;
 
-	long m_Line;
-
-	std::chrono::steady_clock::time_point m_Timestamp;
-
-	LogLevel m_Loglevel;
-
-	string
-		m_ModuleName,
-		m_FileName;
-	*/
 };
 
 using Message_t = std::unique_ptr<CMessage>;

@@ -63,44 +63,6 @@ void CLogger::Log(const char *msg,
 	Message_t message(new CMessage(
 		m_FileName, m_ModuleName, level, msg, line, file, function));
 	CLogManager::Get()->QueueLogMessage(std::move(message));
-
-	/*CLogManager::Get()->QueueLogCall([message, this](const std::string &td_format)
-	{
-		char buf[64];
-		std::time_t now_c = std::chrono::steady_clock::to_time_t(message->GetTime());
-		std::strftime(buf, 64, td_format.c_str(), std::localtime(&now_c));
-		std::string timestamp(buf);
-
-		std::string loglevel_str;
-		switch (message->GetLevel())
-		{
-		case LogLevel::DEBUG:
-			loglevel_str = "DEBUG";
-			break;
-		case LogLevel::INFO:
-			loglevel_str = "INFO";
-			break;
-		case LogLevel::WARNING:
-			loglevel_str = "WARNING";
-			break;
-		case LogLevel::ERROR:
-			loglevel_str = "ERROR";
-			break;
-		default:
-			loglevel_str = "<unknown>";
-		}
-
-		std::ofstream logfile(m_FileName);
-		logfile <<
-			"[" << timestamp << "] " <<
-			"[" << loglevel_str << "] " <<
-			message->GetText();
-		if (message->GetLine() != 0)
-		{
-			logfile << " (" << message->GetFileName() << ":" << message->GetLine() << ")";
-		}
-		logfile << '\n' << std::flush;
-	});*/
 }
 
 
