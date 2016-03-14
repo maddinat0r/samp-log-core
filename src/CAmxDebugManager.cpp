@@ -114,38 +114,22 @@ bool CAmxDebugManager::GetLastAmxLine(AMX * const amx, long &line)
 	return false;
 }
 
-bool CAmxDebugManager::GetLastAmxFile(AMX * const amx, string &file)
+bool CAmxDebugManager::GetLastAmxFile(AMX * const amx, const char * &file)
 {
 	auto it = m_AmxDebugMap.find(amx);
-	if (it != m_AmxDebugMap.end())
-	{
-		const char *file_buf = nullptr;
-		int error = dbg_LookupFile(it->second, amx->cip, &file_buf);
-		if (error == AMX_ERR_NONE)
-		{
-			file.assign(file_buf);
-			return true;
-		}
-	}
+	if (it == m_AmxDebugMap.end())
+		return false;
 
-	return false;
+	return dbg_LookupFile(it->second, amx->cip, &file) == AMX_ERR_NONE;
 }
 
-bool CAmxDebugManager::GetLastAmxFunction(AMX * const amx, string &file)
+bool CAmxDebugManager::GetLastAmxFunction(AMX * const amx, const char * &function)
 {
 	auto it = m_AmxDebugMap.find(amx);
-	if (it != m_AmxDebugMap.end())
-	{
-		const char *file_buf = nullptr;
-		int error = dbg_LookupFunction(it->second, amx->cip, &file_buf);
-		if (error == AMX_ERR_NONE)
-		{
-			file.assign(file_buf);
-			return true;
-		}
-	}
+	if (it == m_AmxDebugMap.end())
+		return false;
 
-	return false;
+	return dbg_LookupFunction(it->second, amx->cip, &function) == AMX_ERR_NONE;
 }
 
 const cell *CAmxDebugManager::GetNativeParamsPtr(AMX * const amx)
@@ -176,18 +160,18 @@ bool samplog::GetLastAmxLine(AMX * const amx, long &line)
 
 bool samplog::GetLastAmxFile(AMX * const amx, char *file)
 {
-	string dest;
+	const char *dest;
 	bool result = CAmxDebugManager::Get()->GetLastAmxFile(amx, dest);
-	if(result)
-		strcpy(file, dest.c_str());
+	if (result)
+		strcpy(file, dest);
 	return result;
 }
 
 bool samplog::GetLastAmxFunction(AMX * const amx, char *function)
 {
-	string dest;
+	const char *dest;
 	bool result = CAmxDebugManager::Get()->GetLastAmxFunction(amx, dest);
-	if(result)
-		strcpy(function, dest.c_str());
+	if (result)
+		strcpy(function, dest);
 	return result;
 }

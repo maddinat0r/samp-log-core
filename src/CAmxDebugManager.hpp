@@ -29,8 +29,8 @@ public:
 	void EraseAmx(AMX *amx);
 
 	bool GetLastAmxLine(AMX * const amx, long &line);
-	bool GetLastAmxFile(AMX * const amx, string &file);
-	bool GetLastAmxFunction(AMX * const amx, string &function);
+	bool GetLastAmxFile(AMX * const amx, const char * &file);
+	bool GetLastAmxFunction(AMX * const amx, const char * &function);
 
 	const cell *GetNativeParamsPtr(AMX * const amx);
 

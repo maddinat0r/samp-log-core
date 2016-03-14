@@ -4,6 +4,7 @@
 #include "amx/amx2.h"
 #include <cppformat/format.h>
 #include <stdarg.h>
+#include <cstring>
 
 
 CPluginLogger::CPluginLogger(std::string pluginname)
@@ -12,34 +13,36 @@ CPluginLogger::CPluginLogger(std::string pluginname)
 
 }
 
-void CPluginLogger::Log(const LogLevel level, const std::string &msg)
+void CPluginLogger::Log(const LogLevel level, const char *msg)
 {
-	m_Logger.Log(msg.c_str(), level);
+	m_Logger.Log(msg, level);
 }
 
-void CPluginLogger::Log(AMX * const amx, const LogLevel level, const std::string &msg)
+void CPluginLogger::Log(AMX * const amx, const LogLevel level, const char *msg)
 {
 	long line = 0;
-	string file, func;
+	const char
+		*file = "",
+		*func = "";
 
 	CAmxDebugManager::Get()->GetLastAmxLine(amx, line);
 	CAmxDebugManager::Get()->GetLastAmxFile(amx, file);
 	CAmxDebugManager::Get()->GetLastAmxFunction(amx, func);
 
-	m_Logger.Log(msg.c_str(), level, line, file.c_str(), func.c_str());
+	m_Logger.Log(msg, level, line, file, func);
 }
 
-void CPluginLogger::LogEx(const LogLevel level, const std::string &msg,
-	long line, const std::string &file, const std::string &function)
+void CPluginLogger::LogEx(const LogLevel level, const char *msg,
+	long line, const char *file, const char *function)
 {
-	m_Logger.Log(msg.c_str(), level, line, file.c_str(), function.c_str());
+	m_Logger.Log(msg, level, line, file, function);
 }
 
 bool CPluginLogger::LogNativeCall(AMX * const amx, 
-	const std::string &name, const std::string &params_format)
+	const char *name, const char *params_format)
 {
 	const cell *params = CAmxDebugManager::Get()->GetNativeParamsPtr(amx);
-	size_t format_len = params_format.length();
+	size_t format_len = strlen(params_format);
 
 	fmt::MemoryWriter fmt_msg;
 	fmt_msg << name << '(';
@@ -50,7 +53,7 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 			fmt_msg << ", ";
 
 		cell current_param = params[i + 1];
-		switch (params_format.at(i))
+		switch (params_format[i])
 		{
 		case 'd': //decimal
 		case 'i': //integer
@@ -88,13 +91,15 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 	fmt_msg << ')';
 
 	long line = 0;
-	string file, func;
+	const char 
+		*file = "",
+		*func = "";
 
 	CAmxDebugManager::Get()->GetLastAmxLine(amx, line);
 	CAmxDebugManager::Get()->GetLastAmxFile(amx, file);
 	CAmxDebugManager::Get()->GetLastAmxFunction(amx, func);
 
-	LogEx(LogLevel::DEBUG, fmt_msg.str(), line, file, func);
+	LogEx(LogLevel::DEBUG, fmt_msg.c_str(), line, file, func);
 	return true;
 }
 
