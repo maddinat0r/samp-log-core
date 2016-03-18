@@ -59,7 +59,7 @@ bool CLogger::IsLogLevel(const LogLevel level)
 }
 
 void CLogger::Log(const char *msg, 
-	const LogLevel level, long line/* = 0*/, const char *file/* = ""*/,
+	const LogLevel level, int line/* = 0*/, const char *file/* = ""*/,
 	const char *function/* = ""*/)
 {
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))

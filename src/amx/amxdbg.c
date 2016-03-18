@@ -242,7 +242,7 @@ int AMXAPI dbg_LookupFile(AMX_DBG *amxdbg, ucell address, const char **filename)
   return AMX_ERR_NONE;
 }
 
-int AMXAPI dbg_LookupLine(AMX_DBG *amxdbg, ucell address, long *line)
+int AMXAPI dbg_LookupLine(AMX_DBG *amxdbg, ucell address, int *line)
 {
   int index;
 
@@ -256,7 +256,7 @@ int AMXAPI dbg_LookupLine(AMX_DBG *amxdbg, ucell address, long *line)
   if (--index < 0)
     return AMX_ERR_NOTFOUND;
 
-  *line = (long)amxdbg->linetbl[index].line;
+  *line = amxdbg->linetbl[index].line;
   return AMX_ERR_NONE;
 }
 

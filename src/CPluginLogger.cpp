@@ -20,7 +20,7 @@ void CPluginLogger::Log(const LogLevel level, const char *msg)
 
 void CPluginLogger::Log(AMX * const amx, const LogLevel level, const char *msg)
 {
-	long line = 0;
+	int line = 0;
 	const char
 		*file = "",
 		*func = "";
@@ -33,7 +33,7 @@ void CPluginLogger::Log(AMX * const amx, const LogLevel level, const char *msg)
 }
 
 void CPluginLogger::LogEx(const LogLevel level, const char *msg,
-	long line, const char *file, const char *function)
+	int line, const char *file, const char *function)
 {
 	m_Logger.Log(msg, level, line, file, function);
 }
@@ -90,7 +90,7 @@ bool CPluginLogger::LogNativeCall(AMX * const amx,
 	}
 	fmt_msg << ')';
 
-	long line = 0;
+	int line = 0;
 	const char 
 		*file = "",
 		*func = "";

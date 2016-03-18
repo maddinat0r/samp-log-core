@@ -29,7 +29,7 @@ public:
 	bool IsLogLevel(const LogLevel log_level);
 
 	void Log(const char *msg, 
-		const LogLevel level, long line = 0, const char *file = "",
+		const LogLevel level, int line = 0, const char *file = "",
 		const char *function = "");
 	
 private:

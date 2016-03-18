@@ -22,7 +22,7 @@ namespace samplog
 	extern "C" DLL_PUBLIC void RegisterAmx(AMX *amx);
 	extern "C" DLL_PUBLIC void EraseAmx(AMX *amx);
 
-	extern "C" DLL_PUBLIC bool GetLastAmxLine(AMX * const amx, long &line);
+	extern "C" DLL_PUBLIC bool GetLastAmxLine(AMX * const amx, int &line);
 	extern "C" DLL_PUBLIC bool GetLastAmxFile(AMX * const amx, const char * &file);
 	extern "C" DLL_PUBLIC bool GetLastAmxFunction(AMX * const amx, const char * &function);
 }

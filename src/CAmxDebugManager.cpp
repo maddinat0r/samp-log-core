@@ -105,7 +105,7 @@ void CAmxDebugManager::EraseAmx(AMX *amx)
 }
 
 
-bool CAmxDebugManager::GetLastAmxLine(AMX * const amx, long &line)
+bool CAmxDebugManager::GetLastAmxLine(AMX * const amx, int &line)
 {
 	auto it = m_AmxDebugMap.find(amx);
 	if (it != m_AmxDebugMap.end())
@@ -153,7 +153,7 @@ void samplog::EraseAmx(AMX *amx)
 	CAmxDebugManager::Get()->EraseAmx(amx);
 }
 
-bool samplog::GetLastAmxLine(AMX * const amx, long &line)
+bool samplog::GetLastAmxLine(AMX * const amx, int &line)
 {
 	return CAmxDebugManager::Get()->GetLastAmxLine(amx, line);
 }

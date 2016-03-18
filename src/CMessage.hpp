@@ -14,7 +14,7 @@ class CMessage
 public:
 	CMessage(string filename, string module,
 		LogLevel level, string msg,
-		long line, string file, string func) :
+		int line, string file, string func) :
 
 		timestamp(std::chrono::system_clock::now()),
 		log_filename(std::move(filename)),
@@ -39,7 +39,7 @@ public:
 		file,
 		function;
 
-	const long line;
+	const int line;
 
 	const std::chrono::system_clock::time_point timestamp;
 
