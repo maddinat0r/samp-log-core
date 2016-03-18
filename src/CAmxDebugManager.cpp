@@ -158,20 +158,12 @@ bool samplog::GetLastAmxLine(AMX * const amx, long &line)
 	return CAmxDebugManager::Get()->GetLastAmxLine(amx, line);
 }
 
-bool samplog::GetLastAmxFile(AMX * const amx, char *file)
+bool samplog::GetLastAmxFile(AMX * const amx, const char * &file)
 {
-	const char *dest;
-	bool result = CAmxDebugManager::Get()->GetLastAmxFile(amx, dest);
-	if (result)
-		strcpy(file, dest);
-	return result;
+	return CAmxDebugManager::Get()->GetLastAmxFile(amx, file);
 }
 
-bool samplog::GetLastAmxFunction(AMX * const amx, char *function)
+bool samplog::GetLastAmxFunction(AMX * const amx, const char * &function)
 {
-	const char *dest;
-	bool result = CAmxDebugManager::Get()->GetLastAmxFunction(amx, dest);
-	if (result)
-		strcpy(function, dest);
-	return result;
+	return CAmxDebugManager::Get()->GetLastAmxFunction(amx, function);
 }
