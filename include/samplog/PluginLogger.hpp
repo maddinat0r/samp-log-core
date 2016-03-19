@@ -51,14 +51,25 @@ namespace samplog
 		virtual void Destroy() = 0;
 	};
 
+	namespace __internal
+	{
+		struct PluginLoggerDeleter
+		{
+			void operator()(IPluginLogger *ptr)
+			{
+				ptr->Destroy();
+			}
+		};
+	}
 
-	typedef std::shared_ptr<IPluginLogger> PluginLogger_t;
+
+	typedef std::unique_ptr<IPluginLogger, __internal::PluginLoggerDeleter> PluginLogger_t;
 
 	extern "C" DLL_PUBLIC IPluginLogger *CreatePluginLoggerPtr(const char *pluginname);
 
 	inline PluginLogger_t CreatePluginLogger(const char *pluginname)
 	{
-		return std::shared_ptr<IPluginLogger>(CreatePluginLoggerPtr(pluginname), std::mem_fn(&IPluginLogger::Destroy));
+		return PluginLogger_t(CreatePluginLoggerPtr(pluginname));
 	}
 }
 
