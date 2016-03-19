@@ -4,6 +4,8 @@
 #include <memory>
 #include <functional>
 
+#include "LogLevel.hpp"
+
 //NOTE: Passing "-fvisibility=hidden" as a compiler option to GCC is advised!
 #if defined _WIN32 || defined __CYGWIN__
 # ifdef __GNUC__
@@ -21,23 +23,9 @@
 
 typedef struct tagAMX AMX;
 
-#ifdef ERROR //because Microsoft
-#undef ERROR
-#endif
 
 namespace samplog
 {
-	enum class LogLevel : unsigned int
-	{
-		NONE = 0,
-		DEBUG = 1,
-		INFO = 2,
-		WARNING = 4,
-		ERROR = 8,
-	};
-
-
-
 	class IPluginLogger
 	{
 	public:
