@@ -74,6 +74,16 @@ void CLogger::Log(const char *msg,
 	CLogManager::Get()->QueueLogMessage(std::move(message));
 }
 
+void CLogger::Destroy()
+{
+	delete this;
+}
+
+ILogger *CreateLoggerPtr(const char *modulename)
+{
+	return new CLogger(modulename);
+}
+
 
 CLogManager::CLogManager() :
 	m_ThreadRunning(true),

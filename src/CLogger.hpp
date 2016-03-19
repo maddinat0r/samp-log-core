@@ -13,16 +13,29 @@
 #include "CSingleton.hpp"
 #include "loglevel.hpp"
 #include "CMessage.hpp"
+#include "export.h"
 
 
-class CLogger
+class ILogger
+{
+public:
+	virtual void SetLogLevel(const LogLevel log_level, bool enabled) = 0;
+	virtual bool IsLogLevel(const LogLevel log_level) = 0;
+
+	virtual void Log(const char *msg,
+		const LogLevel level, int line = 0, const char *file = "",
+		const char *function = "") = 0;
+
+	virtual void Destroy() = 0;
+
+};
+
+class CLogger : public ILogger
 {
 public:
 	CLogger(std::string module);
 	~CLogger() = default;
 	CLogger(const CLogger &rhs) = delete;
-
-private:
 
 public:
 	void SetLogLevel(const LogLevel log_level, bool enabled);
@@ -32,6 +45,8 @@ public:
 		const LogLevel level, int line = 0, const char *file = "",
 		const char *function = "");
 	
+	void Destroy();
+
 private:
 	const std::string
 		m_ModuleName,
@@ -41,6 +56,7 @@ private:
 };
 
 using Logger_t = std::unique_ptr<CLogger>; 
+extern "C" DLL_PUBLIC ILogger *CreateLoggerPtr(const char *modulename);
 
 
 class CLogManager : public CSingleton<CLogManager>
