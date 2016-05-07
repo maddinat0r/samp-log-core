@@ -94,12 +94,12 @@ CLogManager::CLogManager() :
 	{
 		//delete brackets
 		size_t pos = 0;
-		while ((pos = m_DateTimeFormat.find_first_of("[]")) != std::string::npos)
+		while ((pos = m_DateTimeFormat.find_first_of("[]()")) != std::string::npos)
 			m_DateTimeFormat.erase(pos, 1);
 	}
 	else
 	{
-		m_DateTimeFormat = "%d.%m.%y %X";
+		m_DateTimeFormat = "%x %X";
 	}
 
 
@@ -132,12 +132,12 @@ void CLogManager::Process()
 		m_QueueNotifier.wait(lk, condition);
 		Message_t &msg = m_LogMsgQueue.front();
 
-		char buf[64];
+		char timestamp[64];
 		std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
-		std::strftime(buf, 64, m_DateTimeFormat.c_str(), std::localtime(&now_c));
-		std::string timestamp(buf);
-
-		std::string loglevel_str;
+		std::strftime(timestamp, sizeof(timestamp)/sizeof(char), 
+			m_DateTimeFormat.c_str(), std::localtime(&now_c));
+		
+		const char *loglevel_str = "<unknown>";
 		switch (msg->loglevel)
 		{
 		case LogLevel::DEBUG:
@@ -152,8 +152,6 @@ void CLogManager::Process()
 		case LogLevel::ERROR:
 			loglevel_str = "ERROR";
 			break;
-		default:
-			loglevel_str = "<unknown>";
 		}
 
 
