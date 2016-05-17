@@ -73,10 +73,7 @@ endif()
 
 set(LOGCORE_LIBS_DIR "${PROJECT_SOURCE_DIR}/libs")
 enable_testing()
-option(FMT_INSTALL OFF)
-option(FMT_TEST OFF)
-option(FMT_DOC OFF)
-mark_as_advanced(FMT_TEST FMT_INSTALL FMT_PEDANTIC FMT_DOC WINSDK_SETENV)
+mark_as_advanced(FMT_TEST FMT_INSTALL FMT_PEDANTIC FMT_DOC FMT_CPPFORMAT FMT_USE_CPP11 WINSDK_SETENV)
 add_subdirectory(libs/cppformat)
 add_subdirectory(src)
 

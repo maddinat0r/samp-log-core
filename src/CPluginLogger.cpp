@@ -2,7 +2,7 @@
 #include "CAmxDebugManager.hpp"
 
 #include "amx/amx2.h"
-#include <cppformat/format.h>
+#include <fmt/format.h>
 #include <stdarg.h>
 #include <cstring>
 

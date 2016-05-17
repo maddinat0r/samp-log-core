@@ -30,10 +30,7 @@ add_library(log-core SHARED
 
 set_target_properties(log-core PROPERTIES PREFIX "")
 
-target_include_directories(log-core PUBLIC
-	${LOGCORE_LIBS_DIR}
-	${LOGCORE_LIBS_DIR}/g3log/src
-)
+target_include_directories(log-core PUBLIC ${LOGCORE_LIBS_DIR})
 
 if(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX)
@@ -43,8 +40,8 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(log-core rt)
 endif()
 
-add_dependencies(log-core amx cppformat)
-target_link_libraries(log-core amx cppformat)
+add_dependencies(log-core amx fmt)
+target_link_libraries(log-core amx fmt)
 
 if(LOGCORE_INSTALL_DEV)
 	install(TARGETS log-core DESTINATION "lib/")
