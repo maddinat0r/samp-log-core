@@ -70,7 +70,8 @@ void CLogger::Log(const char *msg,
 		return;
 
 	Message_t message(new CMessage(
-		m_FileName, m_ModuleName, level, msg, line, file, function));
+		m_FileName, m_ModuleName, level, msg ? msg : "", 
+		line, file ? file : "", function? function : ""));
 	CLogManager::Get()->QueueLogMessage(std::move(message));
 }
 
