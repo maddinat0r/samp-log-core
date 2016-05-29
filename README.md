@@ -15,6 +15,10 @@ Here is a small example on how you could use this library in your plugin:
 TODO
 ```
 ----
+###used server configuration variables
+- `logtimeformat` (using the same variable as the SA-MP server): uses the specified formatting for the date/time string of a log message  
+- `logplugin_debuginfo`: when set to `0`, disables all additional debug info functionality, even if a AMX file is compiled with debug informations (basically renders all functions in header `DebugInfo.hpp` useless, they always return `false`)  
+
 ###Thanks to:
 - [Zeex' crashdetect](https://github.com/Zeex/samp-plugin-crashdetect) (many useful things about AMX structure and debug info there!)
 - [KjellKod's crash-handler code (taken from g3log)](https://github.com/KjellKod/g3log)
