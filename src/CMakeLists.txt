@@ -45,13 +45,18 @@ target_link_libraries(log-core amx fmt)
 
 if(LOGCORE_INSTALL_DEV)
 	install(TARGETS log-core DESTINATION "lib/")
-	install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/" DESTINATION "include")
+	install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/" DESTINATION "include/")
 else()
 	install(TARGETS log-core 
 		RUNTIME DESTINATION "./"
 		LIBRARY DESTINATION "./")
 endif()
 
+if(LOGCORE_INSTALL_DEV)
+	set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
+else()
+	set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}-runtime")
+endif()
 set(CPACK_PACKAGE_VERSION ${LOGCORE_VERSION})
 if(WIN32)
 	set(CPACK_GENERATOR ZIP)
