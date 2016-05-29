@@ -10,14 +10,11 @@
 #error "crashhandler_windows.cpp used but not on a windows system"
 #endif
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <intrin.h>
-#include <csignal>
-#include <cstring>
-#include <cstdlib>
-#include <sstream>
 #include <atomic>
 #include <process.h> // getpid
+#include <fmt/format.h>
 #include "crashhandler.hpp"
 
 #define getpid _getpid
@@ -155,7 +152,7 @@ namespace g3 {
          case SIGILL: return "SIGILL"; break;
          case SIGTERM: return "SIGTERM"; break;
          default:
-            std::ostringstream oss;
+            fmt::MemoryWriter oss;
             oss << "UNKNOWN SIGNAL(" << fatal_id << ")";
             return oss.str();
          }
