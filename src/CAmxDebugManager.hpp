@@ -35,6 +35,7 @@ public:
 	const cell *GetNativeParamsPtr(AMX * const amx);
 
 private:
+	bool m_DisableDebugInfo = false;
 	unordered_map<AMX_HEADER *, AMX_DBG *> m_AvailableDebugInfo;
 	unordered_map<AMX *, AMX_DBG *> m_AmxDebugMap;
 };
