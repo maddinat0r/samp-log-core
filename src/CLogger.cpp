@@ -34,6 +34,11 @@ CLogger::CLogger(std::string module) :
 		mkdir(dir.c_str(), ACCESSPERMS);
 #endif
 	}
+
+	//set default log level
+	m_LogLevel.store(LogLevel::NONE, std::memory_order_release);
+	SetLogLevel(LogLevel::ERROR, true);
+	SetLogLevel(LogLevel::WARNING, true);
 }
 
 void CLogger::SetLogLevel(const LogLevel level, bool enabled)
