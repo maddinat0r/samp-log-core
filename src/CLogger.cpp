@@ -43,18 +43,25 @@ CLogger::CLogger(std::string module) :
 
 void CLogger::SetLogLevel(const LogLevel level, bool enabled)
 {
-	LogLevel current_loglevel = m_LogLevel.load(std::memory_order_acquire);
-	if (enabled)
+	if (level == LogLevel::NONE)
 	{
-		current_loglevel = static_cast<LogLevel>(
-			static_cast<LogLevel_ut>(current_loglevel) | static_cast<LogLevel_ut>(level));
+		m_LogLevel.store(LogLevel::NONE, std::memory_order_release);
 	}
 	else
 	{
-		current_loglevel = static_cast<LogLevel>(
-			static_cast<LogLevel_ut>(current_loglevel) & ~static_cast<LogLevel_ut>(level));
+		LogLevel current_loglevel = m_LogLevel.load(std::memory_order_acquire);
+		if (enabled)
+		{
+			current_loglevel = static_cast<LogLevel>(
+				static_cast<LogLevel_ut>(current_loglevel) | static_cast<LogLevel_ut>(level));
+		}
+		else
+		{
+			current_loglevel = static_cast<LogLevel>(
+				static_cast<LogLevel_ut>(current_loglevel) & ~static_cast<LogLevel_ut>(level));
+		}
+		m_LogLevel.store(current_loglevel, std::memory_order_release);
 	}
-	m_LogLevel.store(current_loglevel, std::memory_order_release);
 }
 
 bool CLogger::IsLogLevel(const LogLevel level)
