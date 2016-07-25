@@ -74,9 +74,9 @@ void CLogger::Log(const char *msg,
 	const LogLevel level, int line/* = 0*/, const char *file/* = ""*/,
 	const char *function/* = ""*/)
 {
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+/*#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 	g3::installSignalHandlerForThread();
-#endif
+#endif*/
 
 	if (IsLogLevel(level) == false)
 		return;
