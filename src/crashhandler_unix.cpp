@@ -1,15 +1,7 @@
-/** ==========================================================================
- * 2011 by KjellKod.cc. This is PUBLIC DOMAIN to use at your own risk and comes
- * with no warranties. This code is yours to share, use and modify with no
- * strings attached and no restrictions or obligations.
- *
- * For more information see g3log/LICENSE or refer refer to http://unlicense.org
- * ============================================================================*/
-
 #include "crashhandler.hpp"
 
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__) && !defined(__GNUC__))
-#error "crashhandler_unix.cpp used but it's a windows system"
+#error "crashhandler_unix.cpp is used on a non-UNIX platform"
 #endif
 
 
@@ -39,7 +31,7 @@
 
 namespace 
 {
-	static const std::map<g3::SignalType, std::string> gSignals = {
+	static const std::map<crashhandler::Signal, std::string> gSignals = {
 	   {SIGABRT, "SIGABRT"},
 	   {SIGFPE, "SIGFPE"},
 	   {SIGILL, "SIGILL"},
