@@ -64,6 +64,16 @@ namespace {
 		sigaction(signal_number, &action, NULL);
 	}
 
+	void exitWithDefaultSignalHandler(g3::SignalType fatal_signal_id, pid_t process_id)
+	{
+		const int signal_number = static_cast<int>(fatal_signal_id);
+		restoreSignalHandler(signal_number);
+		std::cerr << "\n\n" << __FUNCTION__ << ":" << __LINE__ << ". Signal ID: " << signal_number << "   \n\n" << std::flush;
+
+
+		kill(process_id, signal_number);
+		exit(signal_number);
+	}
 
 	// Dump of stack,. then exit through g3log background worker
 	// ALL thanks to this thread at StackOverflow. Pretty much borrowed from:
@@ -112,7 +122,7 @@ namespace g3 {
 	// memset +  sigemptyset: Maybe unnecessary to do both but there seems to be some confusion here
 	//          ,plenty of examples when both or either are used
 	//          http://stackoverflow.com/questions/6878546/why-doesnt-parent-process-return-to-the-exact-location-after-handling-signal_number
-	namespace internal {
+	//namespace internal {
 
 		//bool shouldBlockForFatalHandling() {
 		//   return true;  // For windows we will after fatal processing change it to false
@@ -149,17 +159,7 @@ namespace g3 {
 		// Triggered by g3log->g3LogWorker after receiving a FATAL trigger
 		// which is LOG(FATAL), CHECK(false) or a fatal signal our signalhandler caught.
 		// --- If LOG(FATAL) or CHECK(false) the signal_number will be SIGABRT
-		void exitWithDefaultSignalHandler(g3::SignalType fatal_signal_id, pid_t process_id) 
-		{
-			const int signal_number = static_cast<int>(fatal_signal_id);
-			restoreSignalHandler(signal_number);
-			std::cerr << "\n\n" << __FUNCTION__ << ":" << __LINE__ << ". Signal ID: " << signal_number << "   \n\n" << std::flush;
-
-
-			kill(process_id, signal_number);
-			exit(signal_number);
-		}
-	} // end g3::internal
+	//} // end g3::internal
 
 
 	// This will override the default signal handler setup and instead
@@ -194,8 +194,10 @@ namespace g3 {
 		action.sa_flags = SA_SIGINFO;
 
 		// do it verbose style - install all signal actions
-		for (const auto &sig_pair : chSignals) {
-			if (sigaction(sig_pair.first, &action, nullptr) < 0) {
+		for (const auto &sig_pair : chSignals) 
+		{
+			if (sigaction(sig_pair.first, &action, nullptr) < 0) 
+			{
 				const std::string error = "sigaction - " + sig_pair.second;
 				perror(error.c_str());
 			}
