@@ -1,10 +1,7 @@
 #pragma once
 
 #include <string>
-//#include <csignal>
 #include <map>
-
-//#include "CLogger.hpp"
 
 
 namespace crashhandler 
