@@ -20,7 +20,7 @@ CLogger::CLogger(std::string module) :
 	m_ModuleName(module),
 	m_FileName("logs/" + module + ".log")
 {
-	g3::installCrashHandler();
+	crashhandler::Install();
 
 	//create possibly non-existing folders before opening log file
 	size_t pos = 0;
