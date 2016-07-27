@@ -25,6 +25,7 @@
 #include <atomic>
 #include <map>
 #include <mutex>
+#include <fmt/format.h>
 
  // Linux/Clang, OSX/Clang, OSX/gcc
 #if (defined(__clang__) || defined(__APPLE__))
