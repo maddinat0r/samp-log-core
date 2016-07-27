@@ -6,25 +6,20 @@
 #include <windows.h>
 #include <fmt/format.h>
 #include <map>
+#include <csignal>
 #include "crashhandler.hpp"
+#include "CLogger.hpp"
 
- // thread_local only exists since VS2015
- //__declspec(thread) does not support non-POD types
- // it's not really a problem though since we only use it on a bool variable
-//#if !(defined(thread_local)) && (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
-//#  define thread_local __declspec(thread)
-//#endif
 
-namespace {
+namespace 
+{
 	LPTOP_LEVEL_EXCEPTION_FILTER g_previous_unexpected_exception_handler = nullptr;
-
-	//thread_local bool g_installed_thread_signal_handler = false;
 
 	void *g_vector_exception_handler = nullptr;
 
 #define __CH_WIN32_STATUS_PAIR(stat) {STATUS_##stat, #stat}
 
-	static const std::map<g3::SignalType, std::string> KnownExceptionsMap{
+	static const std::map<crashhandler::Signal, std::string> KnownExceptionsMap{
 		__CH_WIN32_STATUS_PAIR(ACCESS_VIOLATION),
 		__CH_WIN32_STATUS_PAIR(DATATYPE_MISALIGNMENT),
 		__CH_WIN32_STATUS_PAIR(BREAKPOINT),
@@ -46,7 +41,6 @@ namespace {
 		__CH_WIN32_STATUS_PAIR(STACK_OVERFLOW),
 		__CH_WIN32_STATUS_PAIR(INVALID_DISPOSITION)
 	};
-
 
 
 	// Restore back to default fatal event handling
@@ -86,14 +80,13 @@ namespace {
 	}*/
 
 
-
+	
 	// general exception handler
-	LONG WINAPI exceptionHandling(LPEXCEPTION_POINTERS info, const char *handler)
+	LONG WINAPI GeneralExceptionHandler(LPEXCEPTION_POINTERS info, const char *handler)
 	{
-		//TODO: log fatal signal; available info: `handler`, `info->ExceptionRecord->ExceptionCode;`
-		const g3::SignalType fatal_signal = info->ExceptionRecord->ExceptionCode;
+		const crashhandler::Signal fatal_signal = info->ExceptionRecord->ExceptionCode;
 		const std::string err_msg = fmt::format(
-			"exception {:X} ({:s}) from {:s} catched; shutting log-core down", 
+			"exception {:#X} ({:s}) from {:s} catched; shutting log-core down", 
 			fatal_signal, KnownExceptionsMap.at(fatal_signal), handler ? handler : "invalid");
 
 		CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
@@ -112,31 +105,26 @@ namespace {
 	}
 
 
-	// Unhandled exception catching
-	LONG WINAPI unexpectedExceptionHandling(LPEXCEPTION_POINTERS info)
+	LONG WINAPI UnhandledExceptionHandler(LPEXCEPTION_POINTERS info)
 	{
 		ReverseToOriginalFatalHandling();
-		return exceptionHandling(info, "Unhandled Exception Handler");
+		return GeneralExceptionHandler(info, "Unhandled Exception Handler");
 	}
 
-
-	/// Setup through (Windows API) AddVectoredExceptionHandler
-	/// Ref: http://blogs.msdn.com/b/zhanli/archive/2010/06/25/c-tips-addvectoredexceptionhandler-addvectoredcontinuehandler-and-setunhandledexceptionfilter.aspx
-	LONG WINAPI vectorExceptionHandling(PEXCEPTION_POINTERS p)
+	LONG WINAPI VectoredExceptionHandler(PEXCEPTION_POINTERS p)
 	{
-		const g3::SignalType exc_code = p->ExceptionRecord->ExceptionCode;
+		const crashhandler::Signal exc_code = p->ExceptionRecord->ExceptionCode;
 		if (KnownExceptionsMap.find(exc_code) == KnownExceptionsMap.end())
 			return EXCEPTION_CONTINUE_SEARCH; //not an exception we care for
 
 		ReverseToOriginalFatalHandling();
-		return exceptionHandling(p, "Vectored Exception Handler");
+		return GeneralExceptionHandler(p, "Vectored Exception Handler");
 	}
+}
 
 
-} // end anonymous namespace
-
-
-namespace g3 {
+namespace crashhandler
+{
 	namespace internal {
 
 
@@ -159,7 +147,7 @@ namespace g3 {
 		// Triggered by g3log::LogWorker after receiving a FATAL trigger
 		// which is LOG(FATAL), CHECK(false) or a fatal signal our signalhandler caught.
 		// --- If LOG(FATAL) or CHECK(false) the signal_number will be SIGABRT
-		void exitWithDefaultSignalHandler(bool fatal_exception, g3::SignalType fatal_signal_id)
+		/*void exitWithDefaultSignalHandler(bool fatal_exception, g3::SignalType fatal_signal_id)
 		{
 			ReverseToOriginalFatalHandling();
 			// For windows exceptions we want to continue the possibility of
@@ -175,7 +163,7 @@ namespace g3 {
 			// for a signal however, we exit through that fatal signal
 			const int signal_number = static_cast<int>(fatal_signal_id);
 			raise(signal_number);
-		}
+		}*/
 
 
 
@@ -206,15 +194,9 @@ namespace g3 {
 		}
 	}*/
 
-	void installCrashHandler()
+	void Install()
 	{
-		//g3::installSignalHandlerForThread();
-		g_previous_unexpected_exception_handler = SetUnhandledExceptionFilter(unexpectedExceptionHandling);
-
-		// const size_t kFirstExceptionHandler = 1;
-		// kFirstExeptionsHandler is kept here for documentational purposes.
-		// The last exception seems more what we want
-		const size_t kLastExceptionHandler = 0;
-		g_vector_exception_handler = AddVectoredExceptionHandler(kLastExceptionHandler, vectorExceptionHandling);
+		g_previous_unexpected_exception_handler = SetUnhandledExceptionFilter(UnhandledExceptionHandler);
+		g_vector_exception_handler = AddVectoredExceptionHandler(0, VectoredExceptionHandler);
 	}
-} // end namespace g3
+}
