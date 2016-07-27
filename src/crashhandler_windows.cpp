@@ -92,10 +92,14 @@ namespace {
 	{
 		//TODO: log fatal signal; available info: `handler`, `info->ExceptionRecord->ExceptionCode;`
 		const g3::SignalType fatal_signal = info->ExceptionRecord->ExceptionCode;
-		CLogManager::Get()->QueueLogMessage(std::make_unique<CMessage>(
+		const std::string err_msg = fmt::format(
+			"exception {:X} ({:s}) from {:s} catched; shutting log-core down", 
+			fatal_signal, KnownExceptionsMap.at(fatal_signal), handler ? handler : "invalid");
+
+		CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
 			"logs/log-core.log", "log-core", LogLevel::ERROR, 
-			fmt::format("exception {:X} ({:s}) from {:s} catched; shutting log-core down", fatal_signal, KnownExceptionsMap.at(fatal_signal), handler ? handler : "invalid"),
-			0, "", ""));
+			err_msg,
+			0, "", "")));
 		CLogManager::Get()->Destroy();
 
 		// FATAL Exception: It doesn't necessarily stop here we pass on continue search

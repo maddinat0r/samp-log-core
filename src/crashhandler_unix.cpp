@@ -83,9 +83,9 @@ namespace {
 			"signal {:d} ({:s}) catched; shutting log-core down (errno: {}, signal code: {}, exit status: {})",
 			signal_number, chSignals.at(signal_number), info->si_errno, info->si_code, info->si_status);
 
-		CLogManager::Get()->QueueLogMessage(std::make_unique<CMessage>(
+		CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
 			"logs/log-core.log", "log-core", LogLevel::ERROR,
-			err_msg, 0, "", ""));
+			err_msg, 0, "", "")));
 		CLogManager::Get()->Destroy();
 
 		exitWithDefaultSignalHandler(signal_number, info->si_pid);
