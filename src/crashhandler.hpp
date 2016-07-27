@@ -34,7 +34,7 @@ namespace g3 {
 	/// Probably only needed for unit testing. Resets the signal handling back to default
 	/// which might be needed in case it was previously overridden
 	/// The default signals are: SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM
-	void restoreSignalHandlerToDefault();
+	//void restoreSignalHandlerToDefault();
 
 	/// Overrides the existing signal handling for custom signals
 	/// For example: usage of zcmq relies on its own signal handler for SIGTERM
@@ -44,7 +44,7 @@ namespace g3 {
 	/// call example:
 	///  g3::overrideSetupSignals({ {SIGABRT, "SIGABRT"}, {SIGFPE, "SIGFPE"},{SIGILL, "SIGILL"},
 	//                          {SIGSEGV, "SIGSEGV"},});
-	void overrideSetupSignals(const std::map<int, std::string> overrideSignals);
+	//void overrideSetupSignals(const std::map<int, std::string> overrideSignals);
 #endif
 
 
@@ -58,11 +58,11 @@ namespace g3 {
 
 		 /** \return signal_name Ref: signum.hpp and \ref installSignalHandler
 		 *  or for Windows exception name */
-		std::string exitReasonName(g3::SignalType signal_number);
+		//std::string exitReasonName(g3::SignalType signal_number);
 
 		/** Re-"throw" a fatal signal, previously caught. This will exit the application
 		 * This is an internal only function. Do not use it elsewhere. It is triggered
 		 * from g3log, g3LogWorker after flushing messages to file */
-		void exitWithDefaultSignalHandler(bool fatal_exception, g3::SignalType signal_number);
+		//void exitWithDefaultSignalHandler(bool fatal_exception, g3::SignalType signal_number);
 	} // end g3::internal
 } // g3
