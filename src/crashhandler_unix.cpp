@@ -35,7 +35,7 @@
 #endif
 
 
-namespace {
+//namespace {
 
 	static const std::map<g3::SignalType, std::string> chSignals = {
 	   {SIGABRT, "SIGABRT"},
@@ -101,7 +101,7 @@ namespace {
 		exitWithDefaultSignalHandler(signal_number, info->si_pid);
 	}
 
-} // end anonymous namespace
+//} // end anonymous namespace
 
 
 
