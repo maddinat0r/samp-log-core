@@ -20,8 +20,6 @@ CLogger::CLogger(std::string module) :
 	m_ModuleName(module),
 	m_FileName("logs/" + module + ".log")
 {
-	crashhandler::Install();
-
 	//create possibly non-existing folders before opening log file
 	size_t pos = 0;
 	while ((pos = m_FileName.find('/', pos)) != std::string::npos)
@@ -103,6 +101,8 @@ CLogManager::CLogManager() :
 	m_WarningLog("logs/warnings.log"),
 	m_ErrorLog("logs/errors.log")
 {
+	crashhandler::Install();
+
 	if (CSampConfigReader::Get()->GetVar("logtimeformat", m_DateTimeFormat))
 	{
 		//delete brackets
