@@ -122,6 +122,7 @@ CLogManager::CLogManager() :
 CLogManager::~CLogManager()
 {
 	m_ThreadRunning = false;
+	m_QueueNotifier.notify_one();
 	m_Thread->join();
 	delete m_Thread;
 }
@@ -138,69 +139,80 @@ void CLogManager::QueueLogMessage(Message_t &&msg)
 void CLogManager::Process()
 {
 	std::unique_lock<std::mutex> lk(m_QueueMtx);
-	std::function<bool()> condition = [this]() { return !m_LogMsgQueue.empty(); };
 
 	do
 	{
-		m_QueueNotifier.wait(lk, condition);
-		Message_t &msg = m_LogMsgQueue.front();
-
-		char timestamp[64];
-		std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
-		std::strftime(timestamp, sizeof(timestamp)/sizeof(char), 
-			m_DateTimeFormat.c_str(), std::localtime(&now_c));
-		
-		const char *loglevel_str = "<unknown>";
-		switch (msg->loglevel)
+		m_QueueNotifier.wait(lk);
+		while (!m_LogMsgQueue.empty())
 		{
-		case LogLevel::DEBUG:
-			loglevel_str = "DEBUG";
-			break;
-		case LogLevel::INFO:
-			loglevel_str = "INFO";
-			break;
-		case LogLevel::WARNING:
-			loglevel_str = "WARNING";
-			break;
-		case LogLevel::ERROR:
-			loglevel_str = "ERROR";
-			break;
-		}
+			Message_t msg = std::move(m_LogMsgQueue.front());
+			m_LogMsgQueue.pop();
+
+			//manually unlock mutex
+			//the whole write-to-file code below has no need to be locked with the
+			//message queue mutex; while writing to the log file, new messages can
+			//now be queued
+			lk.unlock();
+
+			char timestamp[64];
+			std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
+			std::strftime(timestamp, sizeof(timestamp) / sizeof(char),
+				m_DateTimeFormat.c_str(), std::localtime(&now_c));
+
+			const char *loglevel_str = "<unknown>";
+			switch (msg->loglevel)
+			{
+			case LogLevel::DEBUG:
+				loglevel_str = "DEBUG";
+				break;
+			case LogLevel::INFO:
+				loglevel_str = "INFO";
+				break;
+			case LogLevel::WARNING:
+				loglevel_str = "WARNING";
+				break;
+			case LogLevel::ERROR:
+				loglevel_str = "ERROR";
+				break;
+			}
 
 
-		//default logging
-		std::ofstream logfile(msg->log_filename, std::ofstream::out | std::ofstream::app);
-		logfile <<
-			"[" << timestamp << "] " <<
-			"[" << loglevel_str << "] " <<
-			msg->text;
-		if (msg->line != 0)
-		{
-			logfile << " (" << msg->file << ":" << msg->line << ")";
-		}
-		logfile << '\n' << std::flush;
-
-
-		//log-level logging
-		std::ofstream *loglevel_file = nullptr;
-		if (msg->loglevel & LogLevel::WARNING)
-			loglevel_file = &m_WarningLog;
-		else if (msg->loglevel & LogLevel::ERROR)
-			loglevel_file = &m_ErrorLog;
-
-		if(loglevel_file != nullptr)
-		{
-			(*loglevel_file) <<
+			//default logging
+			std::ofstream logfile(msg->log_filename, std::ofstream::out | std::ofstream::app);
+			logfile <<
 				"[" << timestamp << "] " <<
-				"[" << msg->log_module << "] " <<
+				"[" << loglevel_str << "] " <<
 				msg->text;
 			if (msg->line != 0)
 			{
-				(*loglevel_file) << " (" << msg->file << ":" << msg->line << ")";
+				logfile << " (" << msg->file << ":" << msg->line << ")";
 			}
-			(*loglevel_file) << '\n' << std::flush;
-		}
+			logfile << '\n' << std::flush;
 
-		m_LogMsgQueue.pop();
-	} while (m_ThreadRunning || (m_ThreadRunning == false && condition()) );
+
+			//per-log-level logging
+			std::ofstream *loglevel_file = nullptr;
+			if (msg->loglevel & LogLevel::WARNING)
+				loglevel_file = &m_WarningLog;
+			else if (msg->loglevel & LogLevel::ERROR)
+				loglevel_file = &m_ErrorLog;
+
+			if (loglevel_file != nullptr)
+			{
+				(*loglevel_file) <<
+					"[" << timestamp << "] " <<
+					"[" << msg->log_module << "] " <<
+					msg->text;
+				if (msg->line != 0)
+				{
+					(*loglevel_file) << " (" << msg->file << ":" << msg->line << ")";
+				}
+				(*loglevel_file) << '\n' << std::flush;
+			}
+
+			//lock the log message queue again (because while-condition and cv.wait)
+			lk.lock();
+		}
+	} while (m_ThreadRunning);
+	lk.unlock();
 }
