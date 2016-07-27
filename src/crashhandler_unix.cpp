@@ -31,7 +31,7 @@
 
 namespace 
 {
-	static const std::map<crashhandler::Signal, std::string> gSignals = {
+	const std::map<crashhandler::Signal, std::string> Signals = {
 	   {SIGABRT, "SIGABRT"},
 	   {SIGFPE, "SIGFPE"},
 	   {SIGILL, "SIGILL"},
@@ -39,21 +39,32 @@ namespace
 	   {SIGTERM, "SIGTERM"},
 	};
 
+	std::map<crashhandler::Signal, struct sigaction> OldSignalActions;
 
+	
 	bool IsFirstSignal() 
 	{
-		static std::atomic<int> firstExit{ 0 };
-		auto const count = firstExit.fetch_add(1, std::memory_order_relaxed);
+		static std::atomic<int> first_exit{ 0 };
+		int const count = first_exit.fetch_add(1, std::memory_order_relaxed);
 		return (count == 0);
 	}
 
 	void RestoreSignalHandler(int signal_number) 
 	{
-		struct sigaction action;
-		memset(&action, 0, sizeof(action)); //
-		sigemptyset(&action.sa_mask);
-		action.sa_handler = SIG_DFL; // take default action for the signal
-		sigaction(signal_number, &action, NULL);
+		//try restoring old action
+		auto it = OldSignalActions.find(signal_number);
+		if (it != OldSignalActions.end())
+		{
+			sigaction(signal_number, &(it->second), nullptr);
+		}
+		else //fallback to default action
+		{
+			struct sigaction action;
+			memset(&action, 0, sizeof(action));
+			sigemptyset(&action.sa_mask);
+			action.sa_handler = SIG_DFL;
+			sigaction(signal_number, &action, nullptr);
+		}
 	}
 
 	void ExitWithDefaultSignalHandler(crashhandler::Signal fatal_signal_id, pid_t process_id)
@@ -69,7 +80,7 @@ namespace
 
 	void SignalHandler(int signal_number, siginfo_t* info, void* unused_context) 
 	{
-		// Only one signal will be allowed past this point
+		//only one signal will be allowed past this point
 		if (!IsFirstSignal())
 		{
 			while (true)
@@ -78,7 +89,7 @@ namespace
 
 		const std::string err_msg = fmt::format(
 			"signal {:d} ({:s}) catched; shutting log-core down (errno: {}, signal code: {}, exit status: {})",
-			signal_number, gSignals.at(signal_number), info->si_errno, info->si_code, info->si_status);
+			signal_number, Signals.at(signal_number), info->si_errno, info->si_code, info->si_status);
 
 		CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
 			"logs/log-core.log", "log-core", LogLevel::ERROR,
@@ -94,18 +105,24 @@ namespace crashhandler
 {
 	void Install() 
 	{
-		struct sigaction action;
+		struct sigaction action, old_action;
 		memset(&action, 0, sizeof(action));
+		memset(&old_action, 0, sizeof(old_action));
 		sigemptyset(&action.sa_mask);
 		action.sa_sigaction = &SignalHandler;
 		action.sa_flags = SA_SIGINFO;
 
-		for (const auto &sig_pair : gSignals) 
+		for (const auto &signal : Signals) 
 		{
-			if (sigaction(sig_pair.first, &action, nullptr) < 0) 
+			if (sigaction(signal.first, &action, &old_action) < 0)
 			{
-				const std::string error = "sigaction - " + sig_pair.second;
+				const std::string error = "sigaction - " + signal.second;
 				perror(error.c_str());
+			}
+			else
+			{
+				if (old_action.sa_handler != nullptr || old_action.sa_sigaction != nullptr)
+					OldSignalActions.emplace(signal.first, old_action);
 			}
 		}
 	}

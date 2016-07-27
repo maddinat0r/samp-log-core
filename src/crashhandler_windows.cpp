@@ -13,13 +13,12 @@
 
 namespace
 {
-	LPTOP_LEVEL_EXCEPTION_FILTER g_previous_unexpected_exception_handler = nullptr;
-
-	void *g_vector_exception_handler = nullptr;
+	LPTOP_LEVEL_EXCEPTION_FILTER PreviousUnhandledExceptionHandler = nullptr;
+	void *VectorExceptionHandler = nullptr;
 
 #define __CH_WIN32_STATUS_PAIR(stat) {STATUS_##stat, #stat}
 
-	static const std::map<crashhandler::Signal, std::string> KnownExceptionsMap{
+	const std::map<crashhandler::Signal, std::string> KnownExceptionsMap{
 		__CH_WIN32_STATUS_PAIR(ACCESS_VIOLATION),
 		__CH_WIN32_STATUS_PAIR(DATATYPE_MISALIGNMENT),
 		__CH_WIN32_STATUS_PAIR(BREAKPOINT),
@@ -45,21 +44,21 @@ namespace
 
 	void ReverseToOriginalFatalHandling()
 	{
-		SetUnhandledExceptionFilter(g_previous_unexpected_exception_handler);
-		RemoveVectoredExceptionHandler(g_vector_exception_handler);
+		SetUnhandledExceptionFilter(PreviousUnhandledExceptionHandler);
+		RemoveVectoredExceptionHandler(VectorExceptionHandler);
 	}
 
 	LONG WINAPI GeneralExceptionHandler(LPEXCEPTION_POINTERS info, const char *handler)
 	{
 		const crashhandler::Signal fatal_signal = info->ExceptionRecord->ExceptionCode;
+		auto it = KnownExceptionsMap.find(fatal_signal);
+		const std::string signal_str = (it != KnownExceptionsMap.end()) ? it->second : "<unknown>";
 		const std::string err_msg = fmt::format(
 			"exception {:#X} ({:s}) from {:s} catched; shutting log-core down",
-			fatal_signal, KnownExceptionsMap.at(fatal_signal), handler ? handler : "invalid");
+			fatal_signal, signal_str, handler ? handler : "invalid");
 
 		CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-			"logs/log-core.log", "log-core", LogLevel::ERROR,
-			err_msg,
-			0, "", "")));
+			"logs/log-core.log", "log-core", LogLevel::ERROR, err_msg, 0, "", "")));
 		CLogManager::Get()->Destroy();
 
 		// FATAL Exception: It doesn't necessarily stop here we pass on continue search
@@ -93,7 +92,7 @@ namespace crashhandler
 {
 	void Install()
 	{
-		g_previous_unexpected_exception_handler = SetUnhandledExceptionFilter(UnhandledExceptionHandler);
-		g_vector_exception_handler = AddVectoredExceptionHandler(0, VectoredExceptionHandler);
+		PreviousUnhandledExceptionHandler = SetUnhandledExceptionFilter(UnhandledExceptionHandler);
+		VectorExceptionHandler = AddVectoredExceptionHandler(0, VectoredExceptionHandler);
 	}
 }
