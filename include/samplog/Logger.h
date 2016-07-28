@@ -2,7 +2,7 @@
 #ifndef INC_SAMPLOG_LOGGER_H
 #define INC_SAMPLOG_LOGGER_H
 
-#include "LogLevel.hpp"
+#include "LogLevel.h"
 
 //NOTE: Passing "-fvisibility=hidden" as a compiler option to GCC is advised!
 #if defined _WIN32 || defined __CYGWIN__
@@ -21,7 +21,7 @@
 
 
 extern "C" DLL_PUBLIC bool samplog_LogMessage(
-	const char *module, LogLevel level, const char *msg,
+	const char *module, samplog_LogLevel level, const char *msg,
 	int line = 0, const char *file = "", const char *func = "");
 
 
@@ -41,9 +41,9 @@ namespace samplog
 	class CLogger
 	{
 	public:
-		CLogger(const char *modulename) :
-			m_Module(modulename),
-			m_LogLevel(LogLevel::WARNING | LogLevel::ERROR)
+		CLogger(std::string modulename) :
+			m_Module(std::move(modulename)),
+			m_LogLevel(static_cast<LogLevel>(LogLevel::ERROR | LogLevel::WARNING))
 		{ }
 		~CLogger() = default;
 		CLogger(CLogger const &rhs) = delete;
@@ -53,19 +53,9 @@ namespace samplog
 		CLogger& operator=(CLogger &&other) = delete;
 
 	public:
-		inline void SetLogLevel(LogLevel log_level, bool enabled)
+		inline void SetLogLevel(LogLevel log_level)
 		{
-			if (log_level == LogLevel::NONE)
-			{
-				m_LogLevel = LogLevel::NONE;
-			}
-			else
-			{
-				if (enabled)
-					m_LogLevel |= log_level;
-				else
-					m_LogLevel &= ~log_level;
-			}
+			m_LogLevel = log_level;
 		}
 		inline bool IsLogLevel(LogLevel log_level) const
 		{
@@ -73,7 +63,7 @@ namespace samplog
 		}
 
 		inline bool Log(LogLevel level, const char *msg,
-			int line = 0, const char *file = "", const char *function = "")
+			int line, const char *file, const char *function)
 		{
 			if (!IsLogLevel(level))
 				return false;
@@ -81,8 +71,10 @@ namespace samplog
 			return samplog::LogMessage(m_Module.c_str(), level, msg, line, file, function);
 		}
 
-	private:
+	protected:
 		std::string m_Module;
+
+	private:
 		LogLevel m_LogLevel;
 
 	};

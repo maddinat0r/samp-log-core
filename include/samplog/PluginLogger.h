@@ -3,8 +3,8 @@
 #define INC_SAMPLOG_PLUGINLOGGER_H
 
 
-#include "Logger.hpp"
-#include "DebugInfo.hpp"
+#include "Logger.h"
+#include "DebugInfo.h"
 
 
 //NOTE: Passing "-fvisibility=hidden" as a compiler option to GCC is advised!
@@ -46,7 +46,7 @@ namespace samplog
 	class CPluginLogger : public CLogger
 	{
 	public:
-		CPluginLogger(const char *pluginname) :
+		CPluginLogger(std::string pluginname) :
 			CLogger("plugins/" + pluginname)
 		{ }
 		~CPluginLogger() = default;
@@ -59,7 +59,7 @@ namespace samplog
 	public:
 		inline bool Log(LogLevel level, const char *msg)
 		{
-			return CLogger::Log(level, msg);
+			return CLogger::Log(level, msg, 0, "", "");
 		}
 		bool Log(AMX * const amx, const LogLevel level, const char *msg)
 		{

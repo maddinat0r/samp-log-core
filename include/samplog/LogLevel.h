@@ -19,7 +19,7 @@ enum samplog_LogLevel
 #ifdef __cplusplus
 namespace samplog
 {
-	typedef samplog_LogLevel LogLevel
+	typedef samplog_LogLevel LogLevel;
 }
 #endif /* __cplusplus */
 
