@@ -105,12 +105,12 @@ void CLogManager::Process()
 			const string &modulename = msg->log_module;
 			size_t module_hash = StringHash(modulename);
 			if (HashedModules.find(module_hash) == HashedModules.end())
-			{//  test/test2/log -> test -> test/test2
+			{
 				//create possibly non-existing folders before opening log file
 				size_t pos = 0;
 				while ((pos = modulename.find('/', pos)) != std::string::npos)
 				{
-					CreateFolder(modulename.substr(0, pos++));
+					CreateFolder("logs/" + modulename.substr(0, pos++));
 				}
 
 				HashedModules.insert(module_hash);
