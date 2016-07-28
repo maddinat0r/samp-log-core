@@ -20,8 +20,6 @@ add_library(log-core SHARED
 	CSingleton.hpp
 	CLogger.cpp
 	CLogger.hpp
-	CPluginLogger.cpp
-	CPluginLogger.hpp
 	export.h
 	crashhandler.hpp
 	${CRASHHANDLER_CPP}
