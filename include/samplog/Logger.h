@@ -55,10 +55,17 @@ namespace samplog
 	public:
 		inline void SetLogLevel(LogLevel log_level, bool enabled)
 		{
-			if (enabled)
-				m_LogLevel |= log_level;
+			if (log_level == LogLevel::NONE)
+			{
+				m_LogLevel = LogLevel::NONE;
+			}
 			else
-				m_LogLevel &= ~log_level;
+			{
+				if (enabled)
+					m_LogLevel |= log_level;
+				else
+					m_LogLevel &= ~log_level;
+			}
 		}
 		inline bool IsLogLevel(LogLevel log_level) const
 		{
