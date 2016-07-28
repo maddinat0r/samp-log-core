@@ -42,7 +42,8 @@ namespace samplog
 	{
 	public:
 		CLogger(const char *modulename) :
-			m_Module(modulename)
+			m_Module(modulename),
+			m_LogLevel(LogLevel::WARNING | LogLevel::ERROR)
 		{ }
 		~CLogger() = default;
 		CLogger(CLogger const &rhs) = delete;
