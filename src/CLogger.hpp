@@ -6,6 +6,7 @@
 #include <thread>
 #include <queue>
 #include <mutex>
+#include <map>
 #include <condition_variable>
 #include <functional>
 #include <fstream>
@@ -13,50 +14,8 @@
 #include "CSingleton.hpp"
 #include "loglevel.hpp"
 #include "CMessage.hpp"
+#include "CAmxDebugManager.hpp"
 #include "export.h"
-
-
-class ILogger
-{
-public:
-	virtual void SetLogLevel(const LogLevel log_level, bool enabled) = 0;
-	virtual bool IsLogLevel(const LogLevel log_level) = 0;
-
-	virtual void Log(const char *msg,
-		const LogLevel level, int line = 0, const char *file = "",
-		const char *function = "") = 0;
-
-	virtual void Destroy() = 0;
-
-};
-
-class CLogger : public ILogger
-{
-public:
-	CLogger(std::string module);
-	~CLogger() = default;
-	CLogger(const CLogger &rhs) = delete;
-
-public:
-	void SetLogLevel(const LogLevel log_level, bool enabled);
-	bool IsLogLevel(const LogLevel log_level);
-
-	void Log(const char *msg, 
-		const LogLevel level, int line = 0, const char *file = "",
-		const char *function = "");
-	
-	void Destroy();
-
-private:
-	const std::string
-		m_ModuleName,
-		m_FileName;
-
-	std::atomic<LogLevel> m_LogLevel;
-};
-
-using Logger_t = std::unique_ptr<CLogger>; 
-extern "C" DLL_PUBLIC ILogger *CreateLoggerPtr(const char *modulename);
 
 
 class CLogManager : public CSingleton<CLogManager>
@@ -73,6 +32,7 @@ public:
 
 private:
 	void Process();
+	void CreateFolder(std::string foldername);
 
 private:
 	std::ofstream
@@ -88,3 +48,11 @@ private:
 
 	std::string m_DateTimeFormat;
 };
+
+
+extern "C" DLL_PUBLIC bool samplog_LogMessage(
+	const char *module, LogLevel level, const char *msg,
+	int line = 0, const char *file = "", const char *func = "");
+extern "C" DLL_PUBLIC bool samplog_LogNativeCall(
+	const char *module, AMX * const amx,
+	const char *name, const char *params_format);

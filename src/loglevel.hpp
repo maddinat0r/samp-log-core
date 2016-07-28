@@ -4,7 +4,8 @@
 #  undef ERROR
 #endif
 
-enum class LogLevel : unsigned int
+
+enum LogLevel
 {
 	NONE = 0,
 	DEBUG = 1,
@@ -12,11 +13,3 @@ enum class LogLevel : unsigned int
 	WARNING = 4,
 	ERROR = 8,
 };
-
-using LogLevel_ut = std::underlying_type<LogLevel>::type;
-
-inline bool operator&(const LogLevel lhs, const LogLevel rhs)
-{
-	return (static_cast<LogLevel_ut>(lhs) & static_cast<LogLevel_ut>(rhs))
-		== static_cast<LogLevel_ut>(rhs);
-}

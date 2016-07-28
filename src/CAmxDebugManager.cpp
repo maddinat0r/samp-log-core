@@ -133,7 +133,7 @@ bool CAmxDebugManager::GetLastAmxLine(AMX * const amx, int &line)
 	return false;
 }
 
-bool CAmxDebugManager::GetLastAmxFile(AMX * const amx, const char * &file)
+bool CAmxDebugManager::GetLastAmxFile(AMX * const amx, const char **file)
 {
 	if (m_DisableDebugInfo)
 		return false;
@@ -142,10 +142,10 @@ bool CAmxDebugManager::GetLastAmxFile(AMX * const amx, const char * &file)
 	if (it == m_AmxDebugMap.end())
 		return false;
 
-	return dbg_LookupFile(it->second, amx->cip, &file) == AMX_ERR_NONE;
+	return dbg_LookupFile(it->second, amx->cip, file) == AMX_ERR_NONE;
 }
 
-bool CAmxDebugManager::GetLastAmxFunction(AMX * const amx, const char * &function)
+bool CAmxDebugManager::GetLastAmxFunction(AMX * const amx, const char **function)
 {
 	if (m_DisableDebugInfo)
 		return false;
@@ -154,7 +154,7 @@ bool CAmxDebugManager::GetLastAmxFunction(AMX * const amx, const char * &functio
 	if (it == m_AmxDebugMap.end())
 		return false;
 
-	return dbg_LookupFunction(it->second, amx->cip, &function) == AMX_ERR_NONE;
+	return dbg_LookupFunction(it->second, amx->cip, function) == AMX_ERR_NONE;
 }
 
 const cell *CAmxDebugManager::GetNativeParamsPtr(AMX * const amx)
@@ -168,27 +168,27 @@ const cell *CAmxDebugManager::GetNativeParamsPtr(AMX * const amx)
 }
 
 
-void samplog::RegisterAmx(AMX *amx)
+void samplog_RegisterAmx(AMX *amx)
 {
 	CAmxDebugManager::Get()->RegisterAmx(amx);
 }
 
-void samplog::EraseAmx(AMX *amx)
+void samplog_EraseAmx(AMX *amx)
 {
 	CAmxDebugManager::Get()->EraseAmx(amx);
 }
 
-bool samplog::GetLastAmxLine(AMX * const amx, int &line)
+bool samplog_GetLastAmxLine(AMX * const amx, int *line)
 {
-	return CAmxDebugManager::Get()->GetLastAmxLine(amx, line);
+	return CAmxDebugManager::Get()->GetLastAmxLine(amx, *line);
 }
 
-bool samplog::GetLastAmxFile(AMX * const amx, const char * &file)
+bool samplog_GetLastAmxFile(AMX * const amx, const char **file)
 {
 	return CAmxDebugManager::Get()->GetLastAmxFile(amx, file);
 }
 
-bool samplog::GetLastAmxFunction(AMX * const amx, const char * &function)
+bool samplog_GetLastAmxFunction(AMX * const amx, const char **function)
 {
 	return CAmxDebugManager::Get()->GetLastAmxFunction(amx, function);
 }

@@ -58,7 +58,7 @@ namespace
 			fatal_signal, signal_str, handler ? handler : "invalid");
 
 		CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-			"logs/log-core.log", "log-core", LogLevel::ERROR, err_msg, 0, "", "")));
+			"log-core", LogLevel::ERROR, err_msg, 0, "", "")));
 		CLogManager::Get()->Destroy();
 
 		// FATAL Exception: It doesn't necessarily stop here we pass on continue search

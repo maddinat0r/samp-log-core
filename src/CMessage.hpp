@@ -12,12 +12,11 @@ using std::string;
 class CMessage
 {
 public:
-	CMessage(string filename, string module,
+	CMessage(string module,
 		LogLevel level, string msg,
 		int line, string file, string func) :
 
 		timestamp(std::chrono::system_clock::now()),
-		log_filename(std::move(filename)),
 		log_module(std::move(module)),
 		loglevel(level),
 		text(std::move(msg)),
@@ -39,15 +38,13 @@ public:
 		file,
 		function;
 
-	const int line;
+	int const line;
 
 	const std::chrono::system_clock::time_point timestamp;
 
-	const LogLevel loglevel;
+	LogLevel const loglevel;
 
-	const string
-		log_module,
-		log_filename;
+	const string log_module;
 
 };
 
