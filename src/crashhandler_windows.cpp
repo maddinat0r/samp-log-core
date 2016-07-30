@@ -85,6 +85,17 @@ namespace
 		ReverseToOriginalFatalHandling();
 		return GeneralExceptionHandler(p, "Vectored Exception Handler");
 	}
+
+	BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)
+	{
+		if (dwCtrlType == CTRL_CLOSE_EVENT)
+		{
+			CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
+				"log-core", LogLevel::INFO, "received Windows console close event; shutting log-core down", 0, "", "")));
+			CLogManager::Get()->Destroy();
+		}
+		return FALSE; //let other handlers have a chance to clean stuff up
+	}
 }
 
 
@@ -94,5 +105,6 @@ namespace crashhandler
 	{
 		PreviousUnhandledExceptionHandler = SetUnhandledExceptionFilter(UnhandledExceptionHandler);
 		VectorExceptionHandler = AddVectoredExceptionHandler(0, VectoredExceptionHandler);
+		SetConsoleCtrlHandler(HandlerRoutine, TRUE);
 	}
 }
