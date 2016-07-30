@@ -156,7 +156,6 @@ void CLogManager::Process()
 			lk.lock();
 		}
 	} while (m_ThreadRunning);
-	lk.unlock();
 }
 
 void CLogManager::CreateFolder(std::string foldername)
