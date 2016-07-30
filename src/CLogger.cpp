@@ -170,6 +170,16 @@ void CLogManager::CreateFolder(std::string foldername)
 }
 
 
+void samplog_Init()
+{
+	CLogManager::Get()->IncreasePluginCounter();
+}
+
+void samplog_Exit()
+{
+	CLogManager::Get()->DecreasePluginCounter();
+}
+
 bool samplog_LogMessage(const char *module, LogLevel level, const char *msg,
 	int line /*= 0*/, const char *file /*= ""*/, const char *func /*= ""*/)
 {

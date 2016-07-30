@@ -28,6 +28,15 @@ private:
 	CLogManager(const CLogManager &&rhs) = delete;
 
 public:
+	inline void IncreasePluginCounter()
+	{
+		++m_PluginCounter;
+	}
+	inline void DecreasePluginCounter()
+	{
+		if (--m_PluginCounter == 0) //last plugin
+			CSingleton::Destroy();
+	}
 	void QueueLogMessage(Message_t &&msg);
 
 private:
@@ -47,9 +56,13 @@ private:
 	std::condition_variable m_QueueNotifier;
 
 	std::string m_DateTimeFormat;
+
+	std::atomic<int> m_PluginCounter{ 0 };
 };
 
 
+extern "C" DLL_PUBLIC void samplog_Init();
+extern "C" DLL_PUBLIC void samplog_Exit();
 extern "C" DLL_PUBLIC bool samplog_LogMessage(
 	const char *module, LogLevel level, const char *msg,
 	int line = 0, const char *file = "", const char *func = "");

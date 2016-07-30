@@ -20,6 +20,8 @@
 #endif
 
 
+extern "C" DLL_PUBLIC void samplog_Init();
+extern "C" DLL_PUBLIC void samplog_Exit();
 extern "C" DLL_PUBLIC bool samplog_LogMessage(
 	const char *module, samplog_LogLevel level, const char *msg,
 	int line = 0, const char *file = "", const char *func = "");
@@ -31,6 +33,14 @@ extern "C" DLL_PUBLIC bool samplog_LogMessage(
 
 namespace samplog
 {
+	inline void Init()
+	{
+		samplog_Init();
+	}
+	inline void Exit()
+	{
+		samplog_Exit();
+	}
 	inline bool LogMessage(
 		const char *module, LogLevel level, const char *msg,
 		int line = 0, const char *file = "", const char *func = "")
