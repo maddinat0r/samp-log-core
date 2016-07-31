@@ -54,28 +54,17 @@ namespace
 		//try restoring old action
 		auto it = OldSignalActions.find(signal_number);
 		if (it != OldSignalActions.end())
-		{
 			sigaction(signal_number, &(it->second), nullptr);
-		}
-		else //fallback to default action
-		{
-			struct sigaction action;
-			memset(&action, 0, sizeof(action));
-			sigemptyset(&action.sa_mask);
-			action.sa_handler = SIG_DFL;
-			sigaction(signal_number, &action, nullptr);
-		}
 	}
 
-	void ExitWithDefaultSignalHandler(crashhandler::Signal fatal_signal_id, pid_t process_id)
+	void ExitWithDefaultSignalHandler(crashhandler::Signal fatal_signal_id)
 	{
 		const int signal_number = static_cast<int>(fatal_signal_id);
 		RestoreSignalHandler(signal_number);
-		std::cerr << "\n\n" << __FUNCTION__ << ":" << __LINE__ << ". Signal ID: " << signal_number << "   \n\n" << std::flush;
+		std::cerr << "\n\n" << "[log-core] fatal signal '" << signal_number
+			<< "' (" << Signals.at(fatal_signal_id) << ") catched   \n\n" << std::flush;
 
-
-		kill(process_id, signal_number);
-		exit(signal_number);
+		raise(signal_number);
 	}
 
 	void SignalHandler(int signal_number, siginfo_t* info, void* unused_context) 
@@ -92,11 +81,10 @@ namespace
 			signal_number, Signals.at(signal_number), info->si_errno, info->si_code, info->si_status);
 
 		CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-			"log-core", LogLevel::ERROR,
-			err_msg, 0, "", "")));
+			"log-core", LogLevel::ERROR, err_msg, 0, "", "")));
 		CLogManager::Get()->Destroy();
 
-		ExitWithDefaultSignalHandler(signal_number, info->si_pid);
+		ExitWithDefaultSignalHandler(signal_number);
 	}
 }
 
@@ -121,8 +109,7 @@ namespace crashhandler
 			}
 			else
 			{
-				if (old_action.sa_handler != nullptr || old_action.sa_sigaction != nullptr)
-					OldSignalActions.emplace(signal.first, old_action);
+				OldSignalActions.emplace(signal.first, old_action);
 			}
 		}
 	}
