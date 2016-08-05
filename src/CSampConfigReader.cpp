@@ -61,14 +61,7 @@ bool CSampConfigReader::GetGamemodeList(vector<string> &dest)
 		value;
 	unsigned int counter = 0;
 
-	if (GetVar(varname, value)) //only "gamemode name number"
-	{
-		dest.push_back(value.substr(0, value.find(' ')));
-		return true;
-	}
-
-	//possibly multiple lines of "gamemode0 name number" "gamemode1 name number" etc.
-	while (GetVar(varname + std::to_string(counter), value)) 
+	while (GetVar(varname + std::to_string(counter), value))
 	{
 		dest.push_back(value.substr(0, value.find(' ')));
 		++counter;
