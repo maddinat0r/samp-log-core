@@ -84,7 +84,6 @@ void CLogManager::Process()
 			std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
 			std::strftime(timestamp, sizeof(timestamp) / sizeof(char),
 				m_DateTimeFormat.c_str(), std::localtime(&now_c));
-			timestamp[strlen(timestamp) - 1] = '\0';
 
 			const char *loglevel_str = "<unknown>";
 			switch (msg->loglevel)

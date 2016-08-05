@@ -11,6 +11,7 @@ CSampConfigReader::CSampConfigReader()
 	{
 		string line_buffer;
 		std::getline(config_file, line_buffer);
+		line_buffer[line_buffer.length() - 1] = '\0';
 		m_FileContent.push_back(std::move(line_buffer));
 	}
 }
