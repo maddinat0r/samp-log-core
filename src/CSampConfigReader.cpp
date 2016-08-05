@@ -11,8 +11,8 @@ CSampConfigReader::CSampConfigReader()
 	{
 		string line_buffer;
 		std::getline(config_file, line_buffer);
-		if (line_buffer[line_buffer.size() - 1] == '\r')
-			line_buffer.resize(line_buffer.size() - 1);
+		if (line_buffer.back() == '\r')
+			line_buffer.pop_back();
 		m_FileContent.push_back(std::move(line_buffer));
 	}
 }
