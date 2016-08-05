@@ -17,7 +17,7 @@ CSampConfigReader::CSampConfigReader()
 
 bool CSampConfigReader::GetVar(string varname, string &dest)
 {
-	assert(dest.empty());
+	dest.clear();
 
 	varname += ' ';
 	for (auto &i : m_FileContent)
@@ -33,7 +33,7 @@ bool CSampConfigReader::GetVar(string varname, string &dest)
 
 bool CSampConfigReader::GetVarList(string varname, vector<string> &dest)
 {
-	assert(dest.empty());
+	dest.clear();
 
 	string data;
 	if (GetVar(std::move(varname), data) == false)
@@ -71,7 +71,6 @@ bool CSampConfigReader::GetGamemodeList(vector<string> &dest)
 	while (GetVar(varname + std::to_string(counter), value)) 
 	{
 		dest.push_back(value.substr(0, value.find(' ')));
-		value.clear();
 		++counter;
 	}
 	return counter != 0;
