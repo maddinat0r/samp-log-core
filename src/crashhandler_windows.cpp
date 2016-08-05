@@ -61,13 +61,7 @@ namespace
 			"log-core", LogLevel::ERROR, err_msg, 0, "", "")));
 		CLogManager::Get()->Destroy();
 
-		// FATAL Exception: It doesn't necessarily stop here we pass on continue search
-		// if no one else will catch that then it's goodbye anyhow.
-		// The RISK here is if someone is cathing this and returning "EXCEPTION_EXECUTE_HANDLER"
-		// but does not shutdown then the software will be running with g3log shutdown.
-		// .... However... this must be seen as a bug from standard handling of fatal exceptions
-		// https://msdn.microsoft.com/en-us/library/6wxdsc38.aspx
-		return EXCEPTION_CONTINUE_SEARCH;
+		return EXCEPTION_CONTINUE_EXECUTION;
 	}
 
 	LONG WINAPI UnhandledExceptionHandler(LPEXCEPTION_POINTERS info)
