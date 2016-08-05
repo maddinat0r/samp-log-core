@@ -45,7 +45,10 @@ CLogManager::CLogManager() :
 
 CLogManager::~CLogManager()
 {
-	m_ThreadRunning = false;
+	{
+		std::lock_guard<std::mutex> lg(m_QueueMtx);
+		m_ThreadRunning = false;
+	}
 	m_QueueNotifier.notify_one();
 	m_Thread->join();
 	delete m_Thread;

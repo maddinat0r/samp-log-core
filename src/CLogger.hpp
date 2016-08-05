@@ -48,12 +48,12 @@ private:
 		m_WarningLog,
 		m_ErrorLog;
 
-	std::thread *m_Thread = nullptr;
 	std::atomic<bool> m_ThreadRunning;
+	std::thread *m_Thread = nullptr;
 
-	std::queue<Message_t> m_LogMsgQueue;
 	std::mutex m_QueueMtx;
 	std::condition_variable m_QueueNotifier;
+	std::queue<Message_t> m_LogMsgQueue;
 
 	std::string m_DateTimeFormat;
 
