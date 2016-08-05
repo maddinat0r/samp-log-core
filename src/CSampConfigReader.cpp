@@ -17,8 +17,6 @@ CSampConfigReader::CSampConfigReader()
 
 bool CSampConfigReader::GetVar(string varname, string &dest)
 {
-	dest.clear();
-
 	varname += ' ';
 	for (auto &i : m_FileContent)
 	{
