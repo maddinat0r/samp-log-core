@@ -1,7 +1,7 @@
 #include "CSampConfigReader.hpp"
 
 #include <fstream>
-#include <cassert>
+#include <algorithm>
 
 
 CSampConfigReader::CSampConfigReader()
@@ -11,8 +11,7 @@ CSampConfigReader::CSampConfigReader()
 	{
 		string line_buffer;
 		std::getline(config_file, line_buffer);
-		if (line_buffer.back() == '\r')
-			line_buffer.pop_back();
+		std::remove(line_buffer.begin(), line_buffer.end(), '\r');
 		m_FileContent.push_back(std::move(line_buffer));
 	}
 }
