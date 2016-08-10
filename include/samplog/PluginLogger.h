@@ -46,7 +46,7 @@ namespace samplog
 	class CPluginLogger : public CLogger
 	{
 	public:
-		CPluginLogger(std::string pluginname) :
+		explicit CPluginLogger(std::string pluginname) :
 			CLogger("plugins/" + pluginname)
 		{ }
 		~CPluginLogger() = default;

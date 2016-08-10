@@ -51,7 +51,7 @@ namespace samplog
 	class CLogger
 	{
 	public:
-		CLogger(std::string modulename) :
+		explicit CLogger(std::string modulename) :
 			m_Module(std::move(modulename)),
 			m_LogLevel(static_cast<LogLevel>(LogLevel::ERROR | LogLevel::WARNING))
 		{ }
