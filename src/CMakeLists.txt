@@ -26,6 +26,8 @@ add_library(log-core SHARED
 	loglevel.hpp
 )
 
+set_property(TARGET log-core PROPERTY CXX_STANDARD_REQUIRED ON)
+
 set_target_properties(log-core PROPERTIES PREFIX "")
 
 target_include_directories(log-core PUBLIC ${LOGCORE_LIBS_DIR})
