@@ -26,7 +26,27 @@ add_library(log-core SHARED
 	loglevel.hpp
 )
 
-set_property(TARGET log-core PROPERTY CXX_STANDARD_REQUIRED ON)
+target_compile_features(log-core PUBLIC 
+	cxx_auto_type 
+	cxx_decltype 
+	cxx_defaulted_functions 
+	cxx_default_function_template_args
+	cxx_delegating_constructors
+	cxx_deleted_functions
+	cxx_enum_forward_declarations
+	cxx_explicit_conversions
+	cxx_extended_friend_declarations
+	cxx_inheriting_constructors
+	cxx_noexcept
+	cxx_nonstatic_member_init
+	cxx_nullptr
+	cxx_range_for
+	cxx_reference_qualified_functions
+	cxx_right_angle_brackets
+	cxx_rvalue_references
+	cxx_strong_enums
+	cxx_variadic_templates
+)
 
 set_target_properties(log-core PROPERTIES PREFIX "")
 

@@ -4,7 +4,7 @@ project(samp-log-core)
 set(LOGCORE_VERSION "0.2.1")
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/libs/cmake")
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11) #required for fmt library
 
 if(UNIX)
 	#force 32bit compilation
