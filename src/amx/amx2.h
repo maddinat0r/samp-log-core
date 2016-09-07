@@ -38,11 +38,11 @@
 int AMXAPI amx_PushAddress(AMX *amx, cell *address);
 void AMXAPI amx_Redirect(AMX *amx, char *from, ucell to, AMX_NATIVE *store);
 int AMXAPI amx_GetCString(AMX *amx, cell param, char *&dest);
-void AMXAPI amx_SetCString(AMX *amx, cell param, const char *str, int len);
+int AMXAPI amx_SetCString(AMX *amx, cell param, const char *str, int len);
 
 #if defined __cplusplus
 std::string AMXAPI amx_GetCppString(AMX *amx, cell param);
-void AMXAPI amx_SetCppString(AMX *amx, cell param, const std::string &str, size_t maxlen);
+int AMXAPI amx_SetCppString(AMX *amx, cell param, const std::string &str, size_t maxlen);
 #endif
 
 //----------------------------------------------------------
