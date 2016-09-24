@@ -11,7 +11,11 @@ CSampConfigReader::CSampConfigReader()
 	{
 		string line_buffer;
 		std::getline(config_file, line_buffer);
-		std::remove(line_buffer.begin(), line_buffer.end(), '\r');
+
+		size_t cr_pos = line_buffer.find_first_of("\r\n");
+		if (cr_pos != string::npos)
+			line_buffer.erase(cr_pos);
+
 		m_FileContent.push_back(std::move(line_buffer));
 	}
 }
