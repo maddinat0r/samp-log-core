@@ -33,9 +33,14 @@ extern "C" DLL_PUBLIC void samplog_EraseAmx(AMX *amx);
 
 extern "C" DLL_PUBLIC bool samplog_GetLastAmxFunctionCall(
 	AMX * const amx, samplog_AmxFuncCallInfo *destination);
+extern "C" DLL_PUBLIC unsigned int samplog_GetAmxFunctionCallTrace(
+		AMX * const amx, samplog_AmxFuncCallInfo **destination, unsigned int max_size);
+
 
 
 #ifdef __cplusplus
+#include <vector>
+
 namespace samplog
 {
 	typedef samplog_AmxFuncCallInfo AmxFuncCallInfo;
@@ -52,6 +57,14 @@ namespace samplog
 	inline bool GetLastAmxFunctionCall(AMX * const amx, AmxFuncCallInfo &dest)
 	{
 		return samplog_GetLastAmxFunctionCall(amx, &dest);
+	}
+	inline bool GetAmxFunctionCallTrace(AMX * const amx, std::vector<AmxFuncCallInfo> &dest)
+	{
+		dest.resize(32);
+		size_t size = samplog_GetAmxFunctionCallTrace(
+			amx, reinterpret_cast<AmxFuncCallInfo **>(dest.data()), dest.size());
+		dest.resize(size);
+		return size != 0;
 	}
 }
 #endif /* __cplusplus */

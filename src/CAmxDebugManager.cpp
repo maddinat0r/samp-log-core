@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <tinydir/tinydir.h>
+#include <algorithm>
 
 
 CAmxDebugManager::CAmxDebugManager()
@@ -143,10 +144,56 @@ bool CAmxDebugManager::GetFunctionCall(AMX * const amx, ucell address, AmxFuncCa
 	return true;
 }
 
+bool CAmxDebugManager::GetFunctionCallTrace(AMX * const amx, std::vector<AmxFuncCallInfo> &dest)
+{
+	if (m_DisableDebugInfo)
+		return false;
+
+	auto it = m_AmxDebugMap.find(amx);
+	if (it == m_AmxDebugMap.end())
+		return false;
+
+	AMX_DBG *amx_dbg = it->second;
+	AmxFuncCallInfo call_info;
+
+	if (!GetFunctionCall(amx, amx->cip, call_info))
+		return false;
+
+	dest.push_back(call_info);
+
+	AMX_HEADER *base = reinterpret_cast<AMX_HEADER *>(amx->base);
+	cell dat = reinterpret_cast<cell>(amx->base + base->dat);
+	cell cod = reinterpret_cast<cell>(amx->base + base->cod);
+
+	cell frm_addr = amx->frm;
+
+	while (true)
+	{
+		cell ret_addr = *(reinterpret_cast<cell *>(dat + frm_addr + sizeof(cell)));
+
+		if (ret_addr == 0)
+			break;
+
+		if (GetFunctionCall(amx, ret_addr, call_info))
+			dest.push_back(call_info);
+		else
+			dest.push_back({ 0, "<unknown>", "<unknown>" });
+
+		frm_addr = *(reinterpret_cast<cell *>(dat + frm_addr));
+		if (frm_addr == 0)
+			break;
+	}
+
+	//HACK: for some reason the oldest/highest call has a slightly incorrect ret_addr
+	dest.back().line--; 
+
+	return true;
+}
+
 const cell *CAmxDebugManager::GetNativeParamsPtr(AMX * const amx)
 {
 	unsigned char *amx_data = amx->data;
-	if (amx_data == NULL)
+	if (amx_data == nullptr)
 		amx_data = amx->base + reinterpret_cast<AMX_HEADER *>(amx->base)->dat;
 
 	cell arg_offset = reinterpret_cast<cell>(amx_data)+amx->stk;
@@ -170,4 +217,20 @@ bool samplog_GetLastAmxFunctionCall(AMX * const amx, samplog_AmxFuncCallInfo *de
 		return false;
 
 	return CAmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, *destination);
+}
+
+unsigned int samplog_GetAmxFunctionCallTrace(AMX * const amx, samplog_AmxFuncCallInfo ** destination, unsigned int max_size)
+{
+	if (destination == nullptr || max_size == 0)
+		return 0;
+
+	std::vector<AmxFuncCallInfo> calls;
+	if (!CAmxDebugManager::Get()->GetFunctionCallTrace(amx, calls))
+		return 0;
+	
+	size_t size = std::min(calls.size(), max_size);
+	for (size_t i = 0; i < size; ++i)
+		*destination[i] = calls.at(i);
+
+	return size;
 }

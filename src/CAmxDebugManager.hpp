@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 #include "amx/amx.h"
 #include "amx/amxdbg.h"
@@ -38,6 +39,7 @@ public:
 	void EraseAmx(AMX *amx);
 
 	bool GetFunctionCall(AMX * const amx, ucell address, AmxFuncCallInfo &dest);
+	bool GetFunctionCallTrace(AMX * const amx, std::vector<AmxFuncCallInfo> &dest);
 
 	const cell *GetNativeParamsPtr(AMX * const amx);
 
@@ -52,3 +54,5 @@ extern "C" DLL_PUBLIC void samplog_EraseAmx(AMX *amx);
 
 extern "C" DLL_PUBLIC bool samplog_GetLastAmxFunctionCall(
 	AMX * const amx, samplog_AmxFuncCallInfo *destination);
+extern "C" DLL_PUBLIC unsigned int samplog_GetAmxFunctionCallTrace(
+	AMX * const amx, samplog_AmxFuncCallInfo **destination, unsigned int max_size);
