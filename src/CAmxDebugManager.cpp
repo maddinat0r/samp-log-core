@@ -8,10 +8,10 @@
 CAmxDebugManager::CAmxDebugManager()
 {
 	string use_debuginfo;
-	if (CSampConfigReader::Get()->GetVar("logplugin_debuginfo", use_debuginfo)
+	if (CSampConfigReader::Get()->GetVar("logcore_debuginfo", use_debuginfo)
 		&& use_debuginfo.empty() == false && use_debuginfo.at(0) == '0')
 	{
-		// server.cfg var "logplugin_debuginfo" is set to '0', 
+		// server.cfg var "logcore_debuginfo" is set to '0', 
 		// disable whole debug info functionality
 		m_DisableDebugInfo = true;
 		return;

@@ -46,7 +46,7 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload()
 ----
 ###used server configuration variables
 - `logtimeformat` (using the same variable as the SA-MP server): uses the specified formatting for the date/time string of a log message  
-- `logplugin_debuginfo`: when set to `0`, disables all additional debug info functionality, even if a AMX file is compiled with debug informations (basically renders all functions in header `DebugInfo.hpp` useless, they always return `false`)  
+- `logcore_debuginfo`: when set to `0`, disables all additional debug info functionality, even if a AMX file is compiled with debug informations (basically renders all functions in header `DebugInfo.hpp` useless, they always return `false`)  
 
 ###Thanks to:
 - [Zeex' crashdetect](https://github.com/Zeex/samp-plugin-crashdetect) (many useful things about AMX structure and debug info there!)
