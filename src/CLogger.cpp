@@ -270,12 +270,16 @@ bool samplog_LogNativeCall(const char *module,
 	}
 	fmt_msg << ')';
 
-	AmxFuncCallInfo call_info;
-	if (CAmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, call_info) == false)
-		call_info.line = 0;
+	auto *call_info = static_cast<AmxFuncCallInfo *>(
+		std::malloc(sizeof(AmxFuncCallInfo)));
+	if (CAmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, *call_info) == false)
+	{
+		free(call_info);
+		call_info = nullptr;
+	}
 
 	CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-		module, LogLevel::DEBUG, fmt_msg.str(), call_info.line != 0 ? &call_info : nullptr)));
+		module, LogLevel::DEBUG, fmt_msg.str(), call_info)));
 
 	return true;
 }
