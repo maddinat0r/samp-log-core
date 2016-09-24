@@ -7,6 +7,7 @@
 using std::string;
 
 #include "loglevel.hpp"
+#include "CAmxDebugManager.hpp"
 
 
 class CMessage
@@ -14,17 +15,19 @@ class CMessage
 public:
 	CMessage(string module,
 		LogLevel level, string msg,
-		int line, string file, string func) :
+		samplog_AmxFuncCallInfo *info) :
 
 		timestamp(std::chrono::system_clock::now()),
 		log_module(std::move(module)),
 		loglevel(level),
 		text(std::move(msg)),
-		line(line),
-		file(std::move(file)),
-		function(std::move(func))
+		call_info(info)
 	{ }
-	~CMessage() = default;
+	~CMessage()
+	{
+		if (call_info)
+			free(const_cast<samplog_AmxFuncCallInfo *>(call_info));
+	}
 
 	CMessage(const CMessage &rhs) = delete;
 	CMessage operator=(const CMessage &rhs) = delete;
@@ -33,17 +36,12 @@ public:
 	CMessage operator=(const CMessage &&rhs) = delete;
 
 public:
-	const string
-		text,
-		file,
-		function;
-
-	int const line;
-
+	const string text;
 	const std::chrono::system_clock::time_point timestamp;
 
-	LogLevel const loglevel;
+	const samplog_AmxFuncCallInfo * const call_info;
 
+	LogLevel const loglevel;
 	const string log_module;
 
 };

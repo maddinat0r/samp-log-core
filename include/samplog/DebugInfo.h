@@ -20,18 +20,26 @@
 
 typedef struct tagAMX AMX;
 
+extern "C" typedef struct
+{
+	int line;
+	const char *file;
+	const char *function;
+} samplog_AmxFuncCallInfo;
+
 
 extern "C" DLL_PUBLIC void samplog_RegisterAmx(AMX *amx);
 extern "C" DLL_PUBLIC void samplog_EraseAmx(AMX *amx);
 
-extern "C" DLL_PUBLIC bool samplog_GetLastAmxLine(AMX * const amx, int *line);
-extern "C" DLL_PUBLIC bool samplog_GetLastAmxFile(AMX * const amx, const char **file);
-extern "C" DLL_PUBLIC bool samplog_GetLastAmxFunction(AMX * const amx, const char **function);
+extern "C" DLL_PUBLIC bool samplog_GetLastAmxFunctionCall(
+	AMX * const amx, samplog_AmxFuncCallInfo *destination);
 
 
 #ifdef __cplusplus
 namespace samplog
 {
+	typedef samplog_AmxFuncCallInfo AmxFuncCallInfo;
+
 	inline void RegisterAmx(AMX *amx)
 	{
 		samplog_RegisterAmx(amx);
@@ -41,17 +49,9 @@ namespace samplog
 		samplog_EraseAmx(amx);
 	}
 
-	inline bool GetLastAmxLine(AMX * const amx, int &line)
+	inline bool GetLastAmxFunctionCall(AMX * const amx, AmxFuncCallInfo &dest)
 	{
-		return samplog_GetLastAmxLine(amx, &line);
-	}
-	inline bool GetLastAmxFile(AMX * const amx, const char * &file)
-	{
-		return samplog_GetLastAmxFile(amx, &file);
-	}
-	inline bool GetLastAmxFunction(AMX * const amx, const char * &function)
-	{
-		return samplog_GetLastAmxFunction(amx, &function);
+		return samplog_GetLastAmxFunctionCall(amx, &dest);
 	}
 }
 #endif /* __cplusplus */

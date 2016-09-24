@@ -128,9 +128,9 @@ void CLogManager::Process()
 				"[" << loglevel_str << "] " <<
 				msg->text;
 
-			if (msg->line != 0)
+			if (msg->call_info)
 			{
-				logfile << " (" << msg->file << ":" << msg->line << ")";
+				logfile << " (" << msg->call_info->file << ":" << msg->call_info->line << ")";
 			}
 			logfile << '\n' << std::flush;
 
@@ -148,9 +148,10 @@ void CLogManager::Process()
 					"[" << timestamp << "] " <<
 					"[" << modulename << "] " <<
 					msg->text;
-				if (msg->line != 0)
+				if (msg->call_info)
 				{
-					(*loglevel_file) << " (" << msg->file << ":" << msg->line << ")";
+					(*loglevel_file) << 
+						" (" << msg->call_info->file << ":" << msg->call_info->line << ")";
 				}
 				(*loglevel_file) << '\n' << std::flush;
 			}
@@ -184,13 +185,21 @@ void samplog_Exit()
 }
 
 bool samplog_LogMessage(const char *module, LogLevel level, const char *msg,
-	int line /*= 0*/, const char *file /*= ""*/, const char *func /*= ""*/)
+	const samplog_AmxFuncCallInfo *call_info /*= NULL*/)
 {
 	if (module == nullptr || strlen(module) == 0)
 		return false;
 
+	samplog_AmxFuncCallInfo *my_call_info = nullptr;
+	if (call_info != nullptr)
+	{
+		my_call_info = static_cast<samplog_AmxFuncCallInfo *>(
+			std::malloc(sizeof(samplog_AmxFuncCallInfo)));
+		std::memcpy(my_call_info, call_info, sizeof(samplog_AmxFuncCallInfo));
+	}
+
 	CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-		module, level, msg ? msg : "", line, file ? file : "", func ? func : "")));
+		module, level, msg ? msg : "", my_call_info)));
 	return true;
 }
 
@@ -261,17 +270,12 @@ bool samplog_LogNativeCall(const char *module,
 	}
 	fmt_msg << ')';
 
-	int line = 0;
-	const char
-		*file = "",
-		*func = "";
+	samplog_AmxFuncCallInfo call_info;
 
-	CAmxDebugManager::Get()->GetLastAmxLine(amx, line);
-	CAmxDebugManager::Get()->GetLastAmxFile(amx, &file);
-	CAmxDebugManager::Get()->GetLastAmxFunction(amx, &func);
+	CAmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, call_info);
 
 	CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-		module, LogLevel::DEBUG, fmt_msg.str(), line, file, func)));
+		module, LogLevel::DEBUG, fmt_msg.str(), &call_info)));
 
 	return true;
 }

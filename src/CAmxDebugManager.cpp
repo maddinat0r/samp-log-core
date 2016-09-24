@@ -120,20 +120,7 @@ void CAmxDebugManager::EraseAmx(AMX *amx)
 	m_AmxDebugMap.erase(amx);
 }
 
-
-bool CAmxDebugManager::GetLastAmxLine(AMX * const amx, int &line)
-{
-	if (m_DisableDebugInfo)
-		return false;
-
-	auto it = m_AmxDebugMap.find(amx);
-	if (it != m_AmxDebugMap.end())
-		return dbg_LookupLine(it->second, amx->cip, &line) == AMX_ERR_NONE && line++;
-
-	return false;
-}
-
-bool CAmxDebugManager::GetLastAmxFile(AMX * const amx, const char **file)
+bool CAmxDebugManager::GetFunctionCall(AMX * const amx, ucell address, samplog_AmxFuncCallInfo &dest)
 {
 	if (m_DisableDebugInfo)
 		return false;
@@ -142,19 +129,18 @@ bool CAmxDebugManager::GetLastAmxFile(AMX * const amx, const char **file)
 	if (it == m_AmxDebugMap.end())
 		return false;
 
-	return dbg_LookupFile(it->second, amx->cip, file) == AMX_ERR_NONE;
-}
+	AMX_DBG *amx_dbg = it->second;
 
-bool CAmxDebugManager::GetLastAmxFunction(AMX * const amx, const char **function)
-{
-	if (m_DisableDebugInfo)
+	if (dbg_LookupLine(amx_dbg, address, &(dest.line)) != AMX_ERR_NONE)
 		return false;
 
-	auto it = m_AmxDebugMap.find(amx);
-	if (it == m_AmxDebugMap.end())
+	if (dbg_LookupFile(amx_dbg, address, &(dest.file)) != AMX_ERR_NONE)
 		return false;
 
-	return dbg_LookupFunction(it->second, amx->cip, function) == AMX_ERR_NONE;
+	if (dbg_LookupFunction(amx_dbg, address, &(dest.function)) != AMX_ERR_NONE)
+		return false;
+
+	return true;
 }
 
 const cell *CAmxDebugManager::GetNativeParamsPtr(AMX * const amx)
@@ -178,17 +164,10 @@ void samplog_EraseAmx(AMX *amx)
 	CAmxDebugManager::Get()->EraseAmx(amx);
 }
 
-bool samplog_GetLastAmxLine(AMX * const amx, int *line)
+bool samplog_GetLastAmxFunctionCall(AMX * const amx, samplog_AmxFuncCallInfo *destination)
 {
-	return CAmxDebugManager::Get()->GetLastAmxLine(amx, *line);
-}
+	if (destination == nullptr)
+		return false;
 
-bool samplog_GetLastAmxFile(AMX * const amx, const char **file)
-{
-	return CAmxDebugManager::Get()->GetLastAmxFile(amx, file);
-}
-
-bool samplog_GetLastAmxFunction(AMX * const amx, const char **function)
-{
-	return CAmxDebugManager::Get()->GetLastAmxFunction(amx, function);
+	return CAmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, *destination);
 }

@@ -4,7 +4,6 @@
 
 
 #include "Logger.h"
-#include "DebugInfo.h"
 
 
 //NOTE: Passing "-fvisibility=hidden" as a compiler option to GCC is advised!
@@ -59,25 +58,17 @@ namespace samplog
 	public:
 		inline bool Log(LogLevel level, const char *msg)
 		{
-			return CLogger::Log(level, msg, 0, "", "");
+			return CLogger::Log(level, msg);
 		}
 		bool Log(AMX * const amx, const LogLevel level, const char *msg)
 		{
 			if (!CLogger::IsLogLevel(level))
 				return false;
 
-			const char
-				*func = "",
-				*file = "";
-			int line = 0;
+			AmxFuncCallInfo call_info;
 
-			if (samplog::GetLastAmxLine(amx, line))
-			{
-				samplog::GetLastAmxFile(amx, file);
-				samplog::GetLastAmxFunction(amx, func);
-			}
-
-			return CLogger::Log(level, msg, line, file, func);
+			return GetLastAmxFunctionCall(amx, call_info) 
+				&& CLogger::Log(level, msg, call_info);
 		}
 		inline bool LogNativeCall(AMX * const amx, const char *name, const char *params_format)
 		{
