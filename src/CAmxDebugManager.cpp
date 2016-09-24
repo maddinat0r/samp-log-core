@@ -120,7 +120,7 @@ void CAmxDebugManager::EraseAmx(AMX *amx)
 	m_AmxDebugMap.erase(amx);
 }
 
-bool CAmxDebugManager::GetFunctionCall(AMX * const amx, ucell address, samplog_AmxFuncCallInfo &dest)
+bool CAmxDebugManager::GetFunctionCall(AMX * const amx, ucell address, AmxFuncCallInfo &dest)
 {
 	if (m_DisableDebugInfo)
 		return false;

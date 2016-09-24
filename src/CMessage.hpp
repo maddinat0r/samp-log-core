@@ -15,7 +15,7 @@ class CMessage
 public:
 	CMessage(string module,
 		LogLevel level, string msg,
-		samplog_AmxFuncCallInfo *info) :
+		AmxFuncCallInfo *info) :
 
 		timestamp(std::chrono::system_clock::now()),
 		log_module(std::move(module)),
@@ -26,7 +26,7 @@ public:
 	~CMessage()
 	{
 		if (call_info)
-			free(const_cast<samplog_AmxFuncCallInfo *>(call_info));
+			free(const_cast<AmxFuncCallInfo *>(call_info));
 	}
 
 	CMessage(const CMessage &rhs) = delete;
@@ -39,7 +39,7 @@ public:
 	const string text;
 	const std::chrono::system_clock::time_point timestamp;
 
-	const samplog_AmxFuncCallInfo * const call_info;
+	const AmxFuncCallInfo * const call_info;
 
 	LogLevel const loglevel;
 	const string log_module;

@@ -20,6 +20,8 @@ extern "C" typedef struct
 	const char *function;
 } samplog_AmxFuncCallInfo;
 
+typedef samplog_AmxFuncCallInfo AmxFuncCallInfo;
+
 class CAmxDebugManager : public CSingleton<CAmxDebugManager>
 {
 	friend class CSingleton<CAmxDebugManager>;
@@ -35,7 +37,7 @@ public:
 	void RegisterAmx(AMX *amx);
 	void EraseAmx(AMX *amx);
 
-	bool GetFunctionCall(AMX * const amx, ucell address, samplog_AmxFuncCallInfo &dest);
+	bool GetFunctionCall(AMX * const amx, ucell address, AmxFuncCallInfo &dest);
 
 	const cell *GetNativeParamsPtr(AMX * const amx);
 
