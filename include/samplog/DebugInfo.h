@@ -61,7 +61,7 @@ namespace samplog
 	inline bool GetAmxFunctionCallTrace(AMX * const amx, std::vector<AmxFuncCallInfo> &dest)
 	{
 		dest.resize(32);
-		size_t size = samplog_GetAmxFunctionCallTrace(
+		unsigned int size = samplog_GetAmxFunctionCallTrace(
 			amx, reinterpret_cast<AmxFuncCallInfo **>(dest.data()), dest.size());
 		dest.resize(size);
 		return size != 0;
