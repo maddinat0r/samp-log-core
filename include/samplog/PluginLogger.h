@@ -65,9 +65,9 @@ namespace samplog
 			if (!CLogger::IsLogLevel(level))
 				return false;
 
-			AmxFuncCallInfo call_info;
+			std::vector<AmxFuncCallInfo> call_info;
 
-			return GetLastAmxFunctionCall(amx, call_info) 
+			return GetAmxFunctionCallTrace(amx, call_info)
 				&& CLogger::Log(level, msg, call_info);
 		}
 		inline bool LogNativeCall(AMX * const amx, const char *name, const char *params_format)

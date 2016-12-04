@@ -26,12 +26,14 @@ extern "C" DLL_PUBLIC void samplog_Init();
 extern "C" DLL_PUBLIC void samplog_Exit();
 extern "C" DLL_PUBLIC bool samplog_LogMessage(
 	const char *module, samplog_LogLevel level, const char *msg,
-	const samplog_AmxFuncCallInfo *call_info = NULL);
+	samplog_AmxFuncCallInfo const *call_info = NULL,
+	unsigned int call_info_size = 0);
 
 
 #ifdef __cplusplus
 
 #include <string>
+#include <vector>
 
 namespace samplog
 {
@@ -45,9 +47,10 @@ namespace samplog
 	}
 	inline bool LogMessage(
 		const char *module, LogLevel level, const char *msg,
-		const AmxFuncCallInfo *call_info = nullptr)
+		samplog_AmxFuncCallInfo const *call_info = nullptr,
+		unsigned int call_info_size = 0)
 	{
-		return samplog_LogMessage(module, level, msg, call_info);
+		return samplog_LogMessage(module, level, msg, call_info, call_info_size);
 	}
 	
 	class CLogger
@@ -75,12 +78,13 @@ namespace samplog
 		}
 
 		inline bool Log(LogLevel level, const char *msg,
-			const AmxFuncCallInfo &call_info)
+			std::vector<AmxFuncCallInfo> const &call_info)
 		{
 			if (!IsLogLevel(level))
 				return false;
 
-			return samplog::LogMessage(m_Module.c_str(), level, msg, &call_info);
+			return samplog::LogMessage(m_Module.c_str(), level, msg, 
+				call_info.data(), call_info.size());
 		}
 
 		inline bool Log(LogLevel level, const char *msg)
@@ -88,7 +92,7 @@ namespace samplog
 			if (!IsLogLevel(level))
 				return false;
 
-			return samplog::LogMessage(m_Module.c_str(), level, msg, nullptr);
+			return samplog::LogMessage(m_Module.c_str(), level, msg);
 		}
 
 	protected:

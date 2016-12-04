@@ -81,7 +81,7 @@ namespace
 			signal_number, Signals.at(signal_number), info->si_errno, info->si_code, info->si_status);
 
 		CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-			"log-core", LogLevel::ERROR, err_msg, nullptr)));
+			"log-core", LogLevel::ERROR, err_msg, { })));
 		CLogManager::Get()->Destroy();
 
 		ExitWithDefaultSignalHandler(signal_number);

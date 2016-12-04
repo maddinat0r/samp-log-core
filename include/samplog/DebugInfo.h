@@ -34,7 +34,7 @@ extern "C" DLL_PUBLIC void samplog_EraseAmx(AMX *amx);
 extern "C" DLL_PUBLIC bool samplog_GetLastAmxFunctionCall(
 	AMX * const amx, samplog_AmxFuncCallInfo *destination);
 extern "C" DLL_PUBLIC unsigned int samplog_GetAmxFunctionCallTrace(
-		AMX * const amx, samplog_AmxFuncCallInfo **destination, unsigned int max_size);
+		AMX * const amx, samplog_AmxFuncCallInfo *destination, unsigned int max_size);
 
 
 
@@ -62,7 +62,7 @@ namespace samplog
 	{
 		dest.resize(32);
 		unsigned int size = samplog_GetAmxFunctionCallTrace(
-			amx, reinterpret_cast<AmxFuncCallInfo **>(dest.data()), dest.size());
+			amx, dest.data(), dest.size());
 		dest.resize(size);
 		return size != 0;
 	}

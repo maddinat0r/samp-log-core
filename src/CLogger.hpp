@@ -65,7 +65,8 @@ extern "C" DLL_PUBLIC void samplog_Init();
 extern "C" DLL_PUBLIC void samplog_Exit();
 extern "C" DLL_PUBLIC bool samplog_LogMessage(
 	const char *module, LogLevel level, const char *msg,
-	const samplog_AmxFuncCallInfo *call_info = NULL);
+	samplog_AmxFuncCallInfo const *call_info = NULL, 
+	unsigned int call_info_size = 0);
 extern "C" DLL_PUBLIC bool samplog_LogNativeCall(
 	const char *module, AMX * const amx,
 	const char *name, const char *params_format);

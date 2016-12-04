@@ -119,20 +119,31 @@ void CLogManager::Process()
 				HashedModules.insert(module_hash);
 			}
 
+			// build log string
+			fmt::MemoryWriter log_string;
+
+			log_string << msg->text;
+			if (!msg->call_info.empty())
+			{
+				log_string << " (";
+				bool first = true;
+				for (auto const &ci : msg->call_info)
+				{
+					if (!first)
+						log_string << " -> ";
+					log_string << ci.file << ":" << ci.line;
+					first = false;
+				}
+				log_string << ")";
+			}
+
 			//default logging
 			std::ofstream logfile("logs/" + modulename + ".log",
 				std::ofstream::out | std::ofstream::app);
-
 			logfile <<
 				"[" << timestamp << "] " <<
 				"[" << loglevel_str << "] " <<
-				msg->text;
-
-			if (msg->call_info)
-			{
-				logfile << " (" << msg->call_info->file << ":" << msg->call_info->line << ")";
-			}
-			logfile << '\n' << std::flush;
+				log_string.str() << '\n' << std::flush;
 
 
 			//per-log-level logging
@@ -147,13 +158,7 @@ void CLogManager::Process()
 				(*loglevel_file) <<
 					"[" << timestamp << "] " <<
 					"[" << modulename << "] " <<
-					msg->text;
-				if (msg->call_info)
-				{
-					(*loglevel_file) << 
-						" (" << msg->call_info->file << ":" << msg->call_info->line << ")";
-				}
-				(*loglevel_file) << '\n' << std::flush;
+					log_string.str() << '\n' << std::flush;
 			}
 
 			//lock the log message queue again (because while-condition and cv.wait)
@@ -185,21 +190,20 @@ void samplog_Exit()
 }
 
 bool samplog_LogMessage(const char *module, LogLevel level, const char *msg,
-	const samplog_AmxFuncCallInfo *call_info /*= NULL*/)
+	samplog_AmxFuncCallInfo const *call_info /*= NULL*/, unsigned int call_info_size /*= 0*/)
 {
 	if (module == nullptr || strlen(module) == 0)
 		return false;
 
-	AmxFuncCallInfo *my_call_info = nullptr;
-	if (call_info != nullptr)
+	std::vector<AmxFuncCallInfo> my_call_info;
+	if (call_info != nullptr && call_info_size != 0)
 	{
-		my_call_info = static_cast<AmxFuncCallInfo *>(
-			std::malloc(sizeof(AmxFuncCallInfo)));
-		std::memcpy(my_call_info, call_info, sizeof(AmxFuncCallInfo));
+		for (unsigned int i = 0; i != call_info_size; ++i)
+			my_call_info.push_back(call_info[i]);
 	}
 
 	CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-		module, level, msg ? msg : "", my_call_info)));
+		module, level, msg ? msg : "", std::move(my_call_info))));
 	return true;
 }
 
@@ -270,16 +274,13 @@ bool samplog_LogNativeCall(const char *module,
 	}
 	fmt_msg << ')';
 
-	auto *call_info = static_cast<AmxFuncCallInfo *>(
-		std::malloc(sizeof(AmxFuncCallInfo)));
-	if (CAmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, *call_info) == false)
-	{
-		free(call_info);
-		call_info = nullptr;
-	}
+	//auto *call_info = static_cast<AmxFuncCallInfo *>(
+	//	std::malloc(sizeof(AmxFuncCallInfo)));
+	std::vector<AmxFuncCallInfo> call_info;
+	CAmxDebugManager::Get()->GetFunctionCallTrace(amx, call_info);
 
 	CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-		module, LogLevel::DEBUG, fmt_msg.str(), call_info)));
+		module, LogLevel::DEBUG, fmt_msg.str(), std::move(call_info))));
 
 	return true;
 }

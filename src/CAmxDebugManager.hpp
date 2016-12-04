@@ -55,4 +55,4 @@ extern "C" DLL_PUBLIC void samplog_EraseAmx(AMX *amx);
 extern "C" DLL_PUBLIC bool samplog_GetLastAmxFunctionCall(
 	AMX * const amx, samplog_AmxFuncCallInfo *destination);
 extern "C" DLL_PUBLIC unsigned int samplog_GetAmxFunctionCallTrace(
-	AMX * const amx, samplog_AmxFuncCallInfo **destination, unsigned int max_size);
+	AMX * const amx, samplog_AmxFuncCallInfo *destination, unsigned int max_size);

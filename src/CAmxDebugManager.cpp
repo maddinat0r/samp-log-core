@@ -219,7 +219,7 @@ bool samplog_GetLastAmxFunctionCall(AMX * const amx, samplog_AmxFuncCallInfo *de
 	return CAmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, *destination);
 }
 
-unsigned int samplog_GetAmxFunctionCallTrace(AMX * const amx, samplog_AmxFuncCallInfo ** destination, unsigned int max_size)
+unsigned int samplog_GetAmxFunctionCallTrace(AMX * const amx, samplog_AmxFuncCallInfo * destination, unsigned int max_size)
 {
 	if (destination == nullptr || max_size == 0)
 		return 0;
@@ -230,7 +230,7 @@ unsigned int samplog_GetAmxFunctionCallTrace(AMX * const amx, samplog_AmxFuncCal
 	
 	size_t size = std::min(calls.size(), max_size);
 	for (size_t i = 0; i < size; ++i)
-		*destination[i] = calls.at(i);
+		destination[i] = calls.at(i);
 
 	return size;
 }
