@@ -141,6 +141,7 @@ bool CAmxDebugManager::GetFunctionCall(AMX * const amx, ucell address, AmxFuncCa
 	if (dbg_LookupFunction(amx_dbg, address, &(dest.function)) != AMX_ERR_NONE)
 		return false;
 
+	dest.line++; // HACK: not sure if this is correct
 	return true;
 }
 
@@ -184,8 +185,10 @@ bool CAmxDebugManager::GetFunctionCallTrace(AMX * const amx, std::vector<AmxFunc
 			break;
 	}
 
-	//HACK: for some reason the oldest/highest call has a slightly incorrect ret_addr
-	dest.back().line--; 
+	//HACK: for some reason the oldest/highest call (not cip though) 
+	//      has a slightly incorrect ret_addr
+	if (dest.size() > 1)
+		dest.back().line--;
 
 	return true;
 }
