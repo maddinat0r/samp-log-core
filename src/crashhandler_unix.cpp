@@ -36,7 +36,7 @@ namespace
 	   {SIGFPE, "SIGFPE"},
 	   {SIGILL, "SIGILL"},
 	   {SIGSEGV, "SIGSEGV"},
-	   {SIGTERM, "SIGTERM"},
+	   {SIGINT, "SIGINT"},
 	};
 
 	std::map<crashhandler::Signal, struct sigaction> OldSignalActions;
