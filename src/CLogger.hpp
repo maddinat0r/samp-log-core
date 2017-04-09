@@ -68,5 +68,5 @@ extern "C" DLL_PUBLIC bool samplog_LogMessage(
 	samplog_AmxFuncCallInfo const *call_info = NULL, 
 	unsigned int call_info_size = 0);
 extern "C" DLL_PUBLIC bool samplog_LogNativeCall(
-	const char *module, AMX * const amx,
+	const char *module, AMX * const amx, cell * const params,
 	const char *name, const char *params_format);

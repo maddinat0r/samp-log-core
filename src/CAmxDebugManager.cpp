@@ -193,16 +193,6 @@ bool CAmxDebugManager::GetFunctionCallTrace(AMX * const amx, std::vector<AmxFunc
 	return true;
 }
 
-const cell *CAmxDebugManager::GetNativeParamsPtr(AMX * const amx)
-{
-	unsigned char *amx_data = amx->data;
-	if (amx_data == nullptr)
-		amx_data = amx->base + reinterpret_cast<AMX_HEADER *>(amx->base)->dat;
-
-	cell arg_offset = reinterpret_cast<cell>(amx_data)+amx->stk;
-	return reinterpret_cast<cell *>(arg_offset);
-}
-
 
 void samplog_RegisterAmx(AMX *amx)
 {

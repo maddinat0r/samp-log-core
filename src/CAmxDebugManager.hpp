@@ -41,8 +41,6 @@ public:
 	bool GetFunctionCall(AMX * const amx, ucell address, AmxFuncCallInfo &dest);
 	bool GetFunctionCallTrace(AMX * const amx, std::vector<AmxFuncCallInfo> &dest);
 
-	const cell *GetNativeParamsPtr(AMX * const amx);
-
 private:
 	bool m_DisableDebugInfo = false;
 	unordered_map<AMX_HEADER *, AMX_DBG *> m_AvailableDebugInfo;

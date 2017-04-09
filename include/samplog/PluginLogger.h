@@ -22,11 +22,8 @@
 #endif
 
 
-typedef struct tagAMX AMX;
-
-
 extern "C" DLL_PUBLIC bool samplog_LogNativeCall(
-	const char *module, AMX * const amx,
+	const char *module, AMX * const amx, cell * const params,
 	const char *name, const char *params_format);
 
 
@@ -37,9 +34,9 @@ extern "C" DLL_PUBLIC bool samplog_LogNativeCall(
 namespace samplog
 {
 	inline bool LogNativeCall(const char *module, AMX * const amx, 
-		const char *name, const char *params_format)
+		cell * const params, const char *name, const char *params_format)
 	{
-		return samplog_LogNativeCall(module, amx, name, params_format);
+		return samplog_LogNativeCall(module, amx, params, name, params_format);
 	}
 
 	class CPluginLogger : public CLogger
@@ -70,9 +67,10 @@ namespace samplog
 			return GetAmxFunctionCallTrace(amx, call_info)
 				&& CLogger::Log(level, msg, call_info);
 		}
-		inline bool LogNativeCall(AMX * const amx, const char *name, const char *params_format)
+		inline bool LogNativeCall(AMX * const amx, cell * const params, 
+			const char *name, const char *params_format)
 		{
-			return samplog::LogNativeCall(m_Module.c_str(), amx, name, params_format);
+			return samplog::LogNativeCall(m_Module.c_str(), amx, params, name, params_format);
 		}
 	};
 

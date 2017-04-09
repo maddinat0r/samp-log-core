@@ -208,12 +208,15 @@ bool samplog_LogMessage(const char *module, LogLevel level, const char *msg,
 }
 
 bool samplog_LogNativeCall(const char *module,
-	AMX * const amx, const char *name, const char *params_format)
+	AMX * const amx, cell * const params, const char *name, const char *params_format)
 {
 	if (module == nullptr || strlen(module) == 0)
 		return false;
 
 	if (amx == nullptr)
+		return false;
+
+	if (params == nullptr)
 		return false;
 
 	if (name == nullptr || strlen(name) == 0)
@@ -222,9 +225,6 @@ bool samplog_LogNativeCall(const char *module,
 	if (params_format == nullptr) // params_format == "" is valid (no parameters)
 		return false;
 
-	const cell *params = CAmxDebugManager::Get()->GetNativeParamsPtr(amx);
-	if (params == nullptr)
-		return false;
 
 	size_t format_len = strlen(params_format);
 
@@ -274,8 +274,6 @@ bool samplog_LogNativeCall(const char *module,
 	}
 	fmt_msg << ')';
 
-	//auto *call_info = static_cast<AmxFuncCallInfo *>(
-	//	std::malloc(sizeof(AmxFuncCallInfo)));
 	std::vector<AmxFuncCallInfo> call_info;
 	CAmxDebugManager::Get()->GetFunctionCallTrace(amx, call_info);
 
