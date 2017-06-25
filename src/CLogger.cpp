@@ -16,6 +16,7 @@
 #include "amx/amx2.h"
 
 #include <fmt/format.h>
+#include <fmt/time.h>
 
 
 CLogManager::CLogManager() :
@@ -83,10 +84,9 @@ void CLogManager::Process()
 			//now be queued
 			lk.unlock();
 
-			char timestamp[64];
+			std::string timestamp;
 			std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
-			std::strftime(timestamp, sizeof(timestamp) / sizeof(char),
-				m_DateTimeFormat.c_str(), std::localtime(&now_c));
+			timestamp = fmt::format(m_DateTimeFormat, fmt::localtime(now_c));
 
 			const char *loglevel_str = "<unknown>";
 			switch (msg->loglevel)
