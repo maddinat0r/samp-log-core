@@ -4,6 +4,7 @@
 [submodule "libs/tinydir"]
 	path = libs/tinydir
 	url = https://github.com/cxong/tinydir.git
-[submodule "libs/cppformat"]
-	path = libs/cppformat
-	url = https://github.com/cppformat/cppformat.git
+[submodule "libs/fmt"]
+	path = libs/fmt
+	url = https://github.com/fmtlib/fmt.git
+	branch = release-4.0

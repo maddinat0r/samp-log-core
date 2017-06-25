@@ -14,7 +14,7 @@ if(UNIX)
 endif()
 
 set(LOGCORE_LIBS_DIR "${PROJECT_SOURCE_DIR}/libs")
-add_subdirectory(libs/cppformat)
-mark_as_advanced(FMT_TEST FMT_INSTALL FMT_PEDANTIC FMT_DOC FMT_CPPFORMAT FMT_USE_CPP11 WINSDK_SETENV)
+add_subdirectory(libs/fmt)
+mark_as_advanced(FMT_TEST FMT_INSTALL FMT_PEDANTIC FMT_DOC FMT_CPPFORMAT FMT_USE_CPP11)
 
 add_subdirectory(src)
