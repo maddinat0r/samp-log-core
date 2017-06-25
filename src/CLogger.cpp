@@ -20,20 +20,33 @@
 
 
 CLogManager::CLogManager() :
-	m_ThreadRunning(true)
+	m_ThreadRunning(true),
+	m_DateTimeFormat("{:%x %X}")
 {
 	crashhandler::Install();
 
-	if (CSampConfigReader::Get()->GetVar("logtimeformat", m_DateTimeFormat))
+	std::string cfg_time_format;
+	if (CSampConfigReader::Get()->GetVar("logtimeformat", cfg_time_format))
 	{
 		//delete brackets
 		size_t pos = 0;
-		while ((pos = m_DateTimeFormat.find_first_of("[]()")) != std::string::npos)
-			m_DateTimeFormat.erase(pos, 1);
-	}
-	else
-	{
-		m_DateTimeFormat = "%x %X";
+		while ((pos = cfg_time_format.find_first_of("[]()")) != std::string::npos)
+			cfg_time_format.erase(pos, 1);
+
+		try
+		{
+			std::string fmt_time_format = "{:" + cfg_time_format + "}";
+			fmt::format(fmt_time_format, fmt::localtime(std::time(nullptr)));
+			m_DateTimeFormat = fmt_time_format;
+		}
+		catch (const fmt::FormatError&)
+		{
+			std::string error_msg =
+				fmt::format("invalid datetime format string \"{}\", falling back to default one",
+					cfg_time_format);
+			CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
+				"log-core", LogLevel::WARNING, error_msg, {})));
+		}
 	}
 
 	CreateFolder("logs");
