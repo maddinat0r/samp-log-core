@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(samp-log-core)
 
-set(LOGCORE_VERSION "0.3")
+set(LOGCORE_VERSION "0.4")
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/libs/cmake")
 
 set(CMAKE_CXX_STANDARD 11) #required for fmt library
