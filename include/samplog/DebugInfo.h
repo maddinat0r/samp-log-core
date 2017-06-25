@@ -2,6 +2,8 @@
 #ifndef INC_SAMPLOG_DEBUGINFO_H
 #define INC_SAMPLOG_DEBUGINFO_H
 
+#include <stdint.h>
+
 //NOTE: Passing "-fvisibility=hidden" as a compiler option to GCC is advised!
 #if defined _WIN32 || defined __CYGWIN__
 # ifdef __GNUC__
@@ -19,6 +21,7 @@
 
 
 typedef struct tagAMX AMX;
+typedef int32_t cell;
 
 extern "C" typedef struct
 {
