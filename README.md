@@ -25,7 +25,7 @@ cell AMX_NATIVE_CALL MyNativeFunction(AMX *amx, cell *params)
 	logger.Log(amx, LogLevel::ERROR, "error message with debug info (line number, file) appended");
 
 	//logs the native call with the actual passed values as debug message
-	logger.LogNativeCall(amx, "MyNativeFunction", "dfs");
+	logger.LogNativeCall(amx, params, "MyNativeFunction", "dfs");
 	//possible log message: 
 	//    "[<datetime>] [DEBUG] MyNativeFunction(123, 45.6789, "mystring") (my-script.pwn:43)"
 
