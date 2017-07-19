@@ -72,6 +72,27 @@ namespace samplog
 		{
 			return samplog::LogNativeCall(m_Module.c_str(), amx, params, name, params_format);
 		}
+
+		inline bool operator()(const char *msg)
+		{
+			return Log(LogLevel::INFO, msg);
+		}
+
+		inline bool operator()(LogLevel level, const char *msg)
+		{
+			return Log(level, msg);
+		}
+
+		inline bool operator()(AMX * const amx, const LogLevel level, const char *msg)
+		{
+			return Log(amx, level, msg);
+		}
+
+		inline bool operator()(AMX * const amx, cell * const params,
+			const char *name, const char *params_format)
+		{
+			return LogNativeCall(amx, params, name, params_format);
+		}
 	};
 
 	typedef CPluginLogger PluginLogger_t;
