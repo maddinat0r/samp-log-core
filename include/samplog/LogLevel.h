@@ -14,6 +14,8 @@ enum samplog_LogLevel
 	INFO = 2,
 	WARNING = 4,
 	ERROR = 8,
+	FATAL = 16,
+	VERBOSE = 32,
 };
 
 inline samplog_LogLevel operator|(samplog_LogLevel a, samplog_LogLevel b)
