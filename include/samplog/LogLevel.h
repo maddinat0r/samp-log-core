@@ -16,6 +16,11 @@ enum samplog_LogLevel
 	ERROR = 8,
 };
 
+inline samplog_LogLevel operator|(samplog_LogLevel a, samplog_LogLevel b)
+{
+	return static_cast<samplog_LogLevel>(static_cast<int>(a) | static_cast<int>(b));
+}
+
 #ifdef __cplusplus
 namespace samplog
 {
