@@ -73,11 +73,6 @@ namespace samplog
 			return samplog::LogNativeCall(m_Module.c_str(), amx, params, name, params_format);
 		}
 
-		inline bool operator()(const char *msg)
-		{
-			return Log(LogLevel::INFO, msg);
-		}
-
 		inline bool operator()(LogLevel level, const char *msg)
 		{
 			return Log(level, msg);
