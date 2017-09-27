@@ -1,10 +1,10 @@
-#include "CSampConfigReader.hpp"
+#include "SampConfigReader.hpp"
 
 #include <fstream>
 #include <algorithm>
 
 
-CSampConfigReader::CSampConfigReader()
+SampConfigReader::SampConfigReader()
 {
 	std::ifstream config_file("server.cfg");
 	while (config_file.good())
@@ -20,7 +20,7 @@ CSampConfigReader::CSampConfigReader()
 	}
 }
 
-bool CSampConfigReader::GetVar(string varname, string &dest)
+bool SampConfigReader::GetVar(string varname, string &dest)
 {
 	varname += ' ';
 	for (auto &i : m_FileContent)
@@ -34,7 +34,7 @@ bool CSampConfigReader::GetVar(string varname, string &dest)
 	return false;
 }
 
-bool CSampConfigReader::GetVarList(string varname, vector<string> &dest)
+bool SampConfigReader::GetVarList(string varname, vector<string> &dest)
 {
 	dest.clear();
 
@@ -57,7 +57,7 @@ bool CSampConfigReader::GetVarList(string varname, vector<string> &dest)
 	return dest.size() > 1;
 }
 
-bool CSampConfigReader::GetGamemodeList(vector<string> &dest)
+bool SampConfigReader::GetGamemodeList(vector<string> &dest)
 {
 	string
 		varname("gamemode"),

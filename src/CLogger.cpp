@@ -11,7 +11,7 @@
 #endif
 
 #include "CLogger.hpp"
-#include "CSampConfigReader.hpp"
+#include "SampConfigReader.hpp"
 #include "crashhandler.hpp"
 #include "amx/amx2.h"
 
@@ -26,7 +26,7 @@ CLogManager::CLogManager() :
 	crashhandler::Install();
 
 	std::string cfg_time_format;
-	if (CSampConfigReader::Get()->GetVar("logtimeformat", cfg_time_format))
+	if (SampConfigReader::Get()->GetVar("logtimeformat", cfg_time_format))
 	{
 		//delete brackets
 		size_t pos = 0;

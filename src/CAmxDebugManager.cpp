@@ -1,5 +1,5 @@
 #include "CAmxDebugManager.hpp"
-#include "CSampConfigReader.hpp"
+#include "SampConfigReader.hpp"
 
 #include <cassert>
 #include <tinydir/tinydir.h>
@@ -9,7 +9,7 @@
 CAmxDebugManager::CAmxDebugManager()
 {
 	string use_debuginfo;
-	if (CSampConfigReader::Get()->GetVar("logcore_debuginfo", use_debuginfo)
+	if (SampConfigReader::Get()->GetVar("logcore_debuginfo", use_debuginfo)
 		&& use_debuginfo.empty() == false && use_debuginfo.at(0) == '0')
 	{
 		// server.cfg var "logcore_debuginfo" is set to '0', 
@@ -19,7 +19,7 @@ CAmxDebugManager::CAmxDebugManager()
 	}
 
 	vector<string> gamemodes;
-	if (!CSampConfigReader::Get()->GetGamemodeList(gamemodes))
+	if (!SampConfigReader::Get()->GetGamemodeList(gamemodes))
 		return;
 
 	for (auto &g : gamemodes)

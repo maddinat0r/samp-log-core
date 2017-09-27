@@ -14,8 +14,8 @@ endif()
 add_library(log-core SHARED
 	CAmxDebugManager.cpp
 	CAmxDebugManager.hpp
-	CSampConfigReader.cpp
-	CSampConfigReader.hpp
+	SampConfigReader.cpp
+	SampConfigReader.hpp
 	CMessage.hpp
 	CSingleton.hpp
 	CLogger.cpp
