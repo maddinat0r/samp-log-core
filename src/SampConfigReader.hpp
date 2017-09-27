@@ -1,12 +1,10 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "CSingleton.hpp"
-
-using std::string;
-using std::vector;
 
 
 class SampConfigReader : public CSingleton<SampConfigReader>
@@ -17,10 +15,11 @@ private:
 	~SampConfigReader() = default;
 
 public:
-	bool GetVar(string varname, string &dest);
-	bool GetVarList(string varname, vector<string> &dest);
-	bool GetGamemodeList(vector<string> &dest);
+	bool GetVar(const char *varname, std::string &dest) const;
+	bool GetVarList(const char *varname, std::vector<std::string> &dest) const;
+	bool GetGamemodeList(std::vector<std::string> &dest) const;
 
 private:
-	vector<string> m_FileContent;
+	std::unordered_map<std::string, std::string> _settings;
+
 };

@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <algorithm>
+#include <fmt/format.h>
 
 
 SampConfigReader::SampConfigReader()
@@ -9,43 +10,41 @@ SampConfigReader::SampConfigReader()
 	std::ifstream config_file("server.cfg");
 	while (config_file.good())
 	{
-		string line_buffer;
+		std::string line_buffer;
 		std::getline(config_file, line_buffer);
 
 		size_t cr_pos = line_buffer.find_first_of("\r\n");
-		if (cr_pos != string::npos)
+		if (cr_pos != std::string::npos)
 			line_buffer.erase(cr_pos);
 
-		m_FileContent.push_back(std::move(line_buffer));
+		size_t split_pos = line_buffer.find(' ');
+		if (split_pos != std::string::npos)
+			_settings.emplace(line_buffer.substr(0, split_pos), line_buffer.substr(split_pos + 1));
 	}
 }
 
-bool SampConfigReader::GetVar(string varname, string &dest)
+bool SampConfigReader::GetVar(const char *varname, std::string &dest) const
 {
-	varname += ' ';
-	for (auto &i : m_FileContent)
+	if (_settings.find(varname) != _settings.end())
 	{
-		if (i.find(varname) == 0)
-		{
-			dest = i.substr(varname.length());
-			return true;
-		}
+		dest = _settings.at(varname);
+		return true;
 	}
 	return false;
 }
 
-bool SampConfigReader::GetVarList(string varname, vector<string> &dest)
+bool SampConfigReader::GetVarList(const char *varname, std::vector<std::string> &dest) const
 {
-	dest.clear();
-
-	string data;
-	if (GetVar(std::move(varname), data) == false)
+	std::string data;
+	if (GetVar(varname, data) == false)
 		return false;
+
+	dest.clear();
 
 	size_t
 		last_pos = 0,
 		current_pos = 0;
-	while (last_pos != string::npos)
+	while (last_pos != std::string::npos)
 	{
 		if (last_pos != 0)
 			++last_pos;
@@ -54,17 +53,17 @@ bool SampConfigReader::GetVarList(string varname, vector<string> &dest)
 		dest.push_back(data.substr(last_pos, current_pos - last_pos));
 		last_pos = current_pos;
 	}
-	return dest.size() > 1;
+	return true;
 }
 
-bool SampConfigReader::GetGamemodeList(vector<string> &dest)
+bool SampConfigReader::GetGamemodeList(std::vector<std::string> &dest) const
 {
-	string
-		varname("gamemode"),
-		value;
+	std::string value;
 	unsigned int counter = 0;
 
-	while (GetVar(varname + std::to_string(counter), value))
+	dest.clear();
+
+	while (GetVar(fmt::format("gamemode{}", counter).c_str(), value))
 	{
 		dest.push_back(value.substr(0, value.find(' ')));
 		++counter;

@@ -4,6 +4,7 @@
 #include <cassert>
 #include <tinydir/tinydir.h>
 #include <algorithm>
+#include <vector>
 
 
 CAmxDebugManager::CAmxDebugManager()
@@ -18,7 +19,7 @@ CAmxDebugManager::CAmxDebugManager()
 		return;
 	}
 
-	vector<string> gamemodes;
+	std::vector<string> gamemodes;
 	if (!SampConfigReader::Get()->GetGamemodeList(gamemodes))
 		return;
 
