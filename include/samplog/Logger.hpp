@@ -1,6 +1,6 @@
 #pragma once
-#ifndef INC_SAMPLOG_LOGGER_H
-#define INC_SAMPLOG_LOGGER_H
+#ifndef INC_SAMPLOG_LOGGER_HPP
+#define INC_SAMPLOG_LOGGER_HPP
 
 #include "ILogger.hpp"
 
@@ -19,4 +19,4 @@ namespace samplog
 }
 
 
-#endif /* INC_SAMPLOG_LOGGER_H */
+#endif /* INC_SAMPLOG_LOGGER_HPP */

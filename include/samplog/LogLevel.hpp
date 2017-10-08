@@ -1,6 +1,6 @@
 #pragma once
-#ifndef INC_SAMPLOG_LOGLEVEL_H
-#define INC_SAMPLOG_LOGLEVEL_H
+#ifndef INC_SAMPLOG_LOGLEVEL_HPP
+#define INC_SAMPLOG_LOGLEVEL_HPP
 
 #ifdef ERROR //because Microsoft
 #undef ERROR
@@ -27,4 +27,4 @@ namespace samplog
 }
 
 
-#endif /* INC_SAMPLOG_LOGLEVEL_H */
+#endif /* INC_SAMPLOG_LOGLEVEL_HPP */

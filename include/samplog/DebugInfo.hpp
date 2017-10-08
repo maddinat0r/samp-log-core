@@ -1,6 +1,6 @@
 #pragma once
-#ifndef INC_SAMPLOG_DEBUGINFO_H
-#define INC_SAMPLOG_DEBUGINFO_H
+#ifndef INC_SAMPLOG_DEBUGINFO_HPP
+#define INC_SAMPLOG_DEBUGINFO_HPP
 
 #include <stdint.h>
 #include "export.h"
@@ -59,4 +59,4 @@ namespace samplog
 
 #undef DLL_PUBLIC
 
-#endif /* INC_SAMPLOG_DEBUGINFO_H */
+#endif /* INC_SAMPLOG_DEBUGINFO_HPP */

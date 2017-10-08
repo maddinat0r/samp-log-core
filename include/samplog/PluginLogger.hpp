@@ -1,9 +1,9 @@
 #pragma once
-#ifndef INC_SAMPLOG_PLUGINLOGGER_H
-#define INC_SAMPLOG_PLUGINLOGGER_H
+#ifndef INC_SAMPLOG_PLUGINLOGGER_HPP
+#define INC_SAMPLOG_PLUGINLOGGER_HPP
 
 
-#include "Logger.h"
+#include "Logger.hpp"
 
 #include <string>
 
@@ -71,4 +71,4 @@ namespace samplog
 
 }
 
-#endif /* INC_SAMPLOG_PLUGINLOGGER_H */
+#endif /* INC_SAMPLOG_PLUGINLOGGER_HPP */

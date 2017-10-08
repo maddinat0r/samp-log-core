@@ -1,9 +1,9 @@
 #pragma once
-#ifndef INC_SAMPLOG_ILOGGER_H
-#define INC_SAMPLOG_ILOGGER_H
+#ifndef INC_SAMPLOG_ILOGGER_HPP
+#define INC_SAMPLOG_ILOGGER_HPP
 
 #include "LogLevel.hpp"
-#include "DebugInfo.h"
+#include "DebugInfo.hpp"
 #include "export.h"
 
 #include <vector>
@@ -32,4 +32,4 @@ namespace samplog
 
 #undef DLL_PUBLIC
 
-#endif /* INC_SAMPLOG_ILOGGER_H */
+#endif /* INC_SAMPLOG_ILOGGER_HPP */
