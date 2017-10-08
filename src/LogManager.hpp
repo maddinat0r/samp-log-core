@@ -15,7 +15,6 @@
 #include <samplog/LogLevel.hpp>
 #include "CMessage.hpp"
 #include "CAmxDebugManager.hpp"
-#include <samplog/export.h>
 
 
 class LogManager : public CSingleton<LogManager>
@@ -59,14 +58,3 @@ private:
 
 	std::atomic<int> m_PluginCounter{ 0 };
 };
-
-
-extern "C" DLL_PUBLIC void samplog_Init();
-extern "C" DLL_PUBLIC void samplog_Exit();
-extern "C" DLL_PUBLIC bool samplog_LogMessage(
-	const char *module, samplog::LogLevel level, const char *msg,
-	samplog_AmxFuncCallInfo const *call_info = NULL, 
-	unsigned int call_info_size = 0);
-extern "C" DLL_PUBLIC bool samplog_LogNativeCall(
-	const char *module, AMX * const amx, cell * const params,
-	const char *name, const char *params_format);

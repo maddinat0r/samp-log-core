@@ -5,23 +5,15 @@
 #include <unordered_map>
 #include <vector>
 
+#include "CSingleton.hpp"
 #include "amx/amx.h"
 #include "amx/amxdbg.h"
-#include "CSingleton.hpp"
 #include <samplog/export.h>
+#include <samplog/DebugInfo.hpp>
 
 using std::string;
 using std::unordered_map;
 
-
-extern "C" typedef struct
-{
-	int line;
-	const char *file;
-	const char *function;
-} samplog_AmxFuncCallInfo;
-
-typedef samplog_AmxFuncCallInfo AmxFuncCallInfo;
 
 class CAmxDebugManager : public CSingleton<CAmxDebugManager>
 {
@@ -38,19 +30,11 @@ public:
 	void RegisterAmx(AMX *amx);
 	void EraseAmx(AMX *amx);
 
-	bool GetFunctionCall(AMX * const amx, ucell address, AmxFuncCallInfo &dest);
-	bool GetFunctionCallTrace(AMX * const amx, std::vector<AmxFuncCallInfo> &dest);
+	bool GetFunctionCall(AMX * const amx, ucell address, samplog::AmxFuncCallInfo &dest);
+	bool GetFunctionCallTrace(AMX * const amx, std::vector<samplog::AmxFuncCallInfo> &dest);
 
 private:
 	bool m_DisableDebugInfo = false;
 	unordered_map<AMX_HEADER *, AMX_DBG *> m_AvailableDebugInfo;
 	unordered_map<AMX *, AMX_DBG *> m_AmxDebugMap;
 };
-
-extern "C" DLL_PUBLIC void samplog_RegisterAmx(AMX *amx);
-extern "C" DLL_PUBLIC void samplog_EraseAmx(AMX *amx);
-
-extern "C" DLL_PUBLIC bool samplog_GetLastAmxFunctionCall(
-	AMX * const amx, samplog_AmxFuncCallInfo *destination);
-extern "C" DLL_PUBLIC unsigned int samplog_GetAmxFunctionCallTrace(
-	AMX * const amx, samplog_AmxFuncCallInfo *destination, unsigned int max_size);

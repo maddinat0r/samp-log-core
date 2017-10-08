@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <vector>
 
+using samplog::AmxFuncCallInfo;
+
 
 CAmxDebugManager::CAmxDebugManager()
 {
@@ -205,7 +207,7 @@ void samplog_EraseAmx(AMX *amx)
 	CAmxDebugManager::Get()->EraseAmx(amx);
 }
 
-bool samplog_GetLastAmxFunctionCall(AMX * const amx, samplog_AmxFuncCallInfo *destination)
+bool samplog_GetLastAmxFunctionCall(AMX * const amx, samplog::AmxFuncCallInfo *destination)
 {
 	if (destination == nullptr)
 		return false;
@@ -213,7 +215,7 @@ bool samplog_GetLastAmxFunctionCall(AMX * const amx, samplog_AmxFuncCallInfo *de
 	return CAmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, *destination);
 }
 
-unsigned int samplog_GetAmxFunctionCallTrace(AMX * const amx, samplog_AmxFuncCallInfo * destination, unsigned int max_size)
+unsigned int samplog_GetAmxFunctionCallTrace(AMX * const amx, samplog::AmxFuncCallInfo * destination, unsigned int max_size)
 {
 	if (destination == nullptr || max_size == 0)
 		return 0;

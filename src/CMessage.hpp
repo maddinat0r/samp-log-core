@@ -16,7 +16,7 @@ class CMessage
 public:
 	CMessage(string module,
 		samplog::LogLevel level, string msg,
-		std::vector<AmxFuncCallInfo> &&info) :
+		std::vector<samplog::AmxFuncCallInfo> &&info) :
 
 		timestamp(std::chrono::system_clock::now()),
 		log_module(std::move(module)),
@@ -36,7 +36,7 @@ public:
 	const string text;
 	const std::chrono::system_clock::time_point timestamp;
 
-	const std::vector<AmxFuncCallInfo> call_info;
+	const std::vector<samplog::AmxFuncCallInfo> call_info;
 
 	samplog::LogLevel const loglevel;
 	const string log_module;
