@@ -7,7 +7,7 @@
 
 using std::string;
 
-#include "loglevel.hpp"
+#include <samplog/LogLevel.hpp>
 #include "CAmxDebugManager.hpp"
 
 
@@ -15,7 +15,7 @@ class CMessage
 {
 public:
 	CMessage(string module,
-		LogLevel level, string msg,
+		samplog::LogLevel level, string msg,
 		std::vector<AmxFuncCallInfo> &&info) :
 
 		timestamp(std::chrono::system_clock::now()),
@@ -38,7 +38,7 @@ public:
 
 	const std::vector<AmxFuncCallInfo> call_info;
 
-	LogLevel const loglevel;
+	samplog::LogLevel const loglevel;
 	const string log_module;
 
 };

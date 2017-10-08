@@ -10,6 +10,8 @@
 #include "crashhandler.hpp"
 #include "CLogger.hpp"
 
+using samplog::LogLevel;
+
 
 namespace
 {

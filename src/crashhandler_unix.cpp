@@ -28,6 +28,8 @@
 
 #include "CLogger.hpp"
 
+using samplog::LogLevel;
+
 
 namespace 
 {

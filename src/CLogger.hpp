@@ -12,7 +12,7 @@
 #include <fstream>
 
 #include "CSingleton.hpp"
-#include "loglevel.hpp"
+#include <samplog/LogLevel.hpp>
 #include "CMessage.hpp"
 #include "CAmxDebugManager.hpp"
 #include "export.h"
@@ -64,7 +64,7 @@ private:
 extern "C" DLL_PUBLIC void samplog_Init();
 extern "C" DLL_PUBLIC void samplog_Exit();
 extern "C" DLL_PUBLIC bool samplog_LogMessage(
-	const char *module, LogLevel level, const char *msg,
+	const char *module, samplog::LogLevel level, const char *msg,
 	samplog_AmxFuncCallInfo const *call_info = NULL, 
 	unsigned int call_info_size = 0);
 extern "C" DLL_PUBLIC bool samplog_LogNativeCall(

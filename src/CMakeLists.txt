@@ -11,6 +11,8 @@ else()
 	set(CRASHHANDLER_CPP crashhandler_unix.cpp)
 endif()
 
+set(LOGCORE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/samplog)
+
 add_library(log-core SHARED
 	CAmxDebugManager.cpp
 	CAmxDebugManager.hpp
@@ -23,8 +25,10 @@ add_library(log-core SHARED
 	export.h
 	crashhandler.hpp
 	${CRASHHANDLER_CPP}
-	loglevel.hpp
+	${LOGCORE_INCLUDE_DIR}/LogLevel.hpp
 )
+
+target_include_directories(log-core PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 target_compile_features(log-core PUBLIC 
 	cxx_auto_type 
