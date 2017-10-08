@@ -10,12 +10,12 @@ Logger::Logger(std::string modulename) :
 	_module_name(std::move(modulename)),
 	_loglevel(LogLevel::ERROR | LogLevel::WARNING)
 {
-	LogManager::Get()->IncreasePluginCounter();
+	LogManager::Get()->RegisterLogger(this);
 }
 
 Logger::~Logger()
 {
-	LogManager::Get()->DecreasePluginCounter();
+	LogManager::Get()->UnregisterLogger(this);
 }
 
 bool Logger::Log(LogLevel level, const char *msg, 

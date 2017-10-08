@@ -11,6 +11,7 @@
 #endif
 
 #include "LogManager.hpp"
+#include "Logger.hpp"
 #include "SampConfigReader.hpp"
 #include "crashhandler.hpp"
 #include "amx/amx2.h"
@@ -58,6 +59,18 @@ LogManager::~LogManager()
 	m_QueueNotifier.notify_one();
 	m_Thread->join();
 	delete m_Thread;
+}
+
+void LogManager::RegisterLogger(Logger *logger)
+{
+	m_Loggers.emplace(logger->GetModuleName(), logger);
+}
+
+void LogManager::UnregisterLogger(Logger *logger)
+{
+	m_Loggers.erase(logger->GetModuleName());
+	if (m_Loggers.size() == 0) //last logger
+		CSingleton::Destroy();
 }
 
 void LogManager::QueueLogMessage(Message_t &&msg)

@@ -34,6 +34,11 @@ public:
 		delete this;
 	}
 
+	inline std::string GetModuleName() const
+	{
+		return _module_name;
+	}
+
 protected:
 	std::string _module_name;
 

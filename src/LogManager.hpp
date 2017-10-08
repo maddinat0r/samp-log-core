@@ -6,15 +6,14 @@
 #include <thread>
 #include <queue>
 #include <mutex>
-#include <map>
+#include <unordered_map>
 #include <condition_variable>
-#include <functional>
 #include <fstream>
 
 #include "CSingleton.hpp"
-#include <samplog/LogLevel.hpp>
 #include "CMessage.hpp"
-#include "CAmxDebugManager.hpp"
+
+class Logger;
 
 
 class LogManager : public CSingleton<LogManager>
@@ -27,15 +26,8 @@ private:
 	LogManager(const LogManager &&rhs) = delete;
 
 public:
-	inline void IncreasePluginCounter()
-	{
-		++m_PluginCounter;
-	}
-	inline void DecreasePluginCounter()
-	{
-		if (--m_PluginCounter == 0) //last plugin
-			CSingleton::Destroy();
-	}
+	void RegisterLogger(Logger *logger);
+	void UnregisterLogger(Logger *logger);
 	void QueueLogMessage(Message_t &&msg);
 
 private:
@@ -47,6 +39,8 @@ private:
 		m_WarningLog,
 		m_ErrorLog;
 
+	std::unordered_map<std::string, Logger *> m_Loggers;
+
 	std::atomic<bool> m_ThreadRunning;
 	std::thread *m_Thread = nullptr;
 
@@ -55,6 +49,4 @@ private:
 	std::queue<Message_t> m_LogMsgQueue;
 
 	std::string m_DateTimeFormat;
-
-	std::atomic<int> m_PluginCounter{ 0 };
 };
