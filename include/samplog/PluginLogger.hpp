@@ -19,7 +19,6 @@ namespace samplog
 		~PluginLogger() = default;
 		PluginLogger(PluginLogger const &rhs) = delete;
 		PluginLogger& operator=(PluginLogger const &rhs) = delete;
-
 		PluginLogger(PluginLogger &&other) = delete;
 		PluginLogger& operator=(PluginLogger &&other) = delete;
 
@@ -35,6 +34,12 @@ namespace samplog
 		inline bool Log(LogLevel level, const char *msg)
 		{
 			return _logger->Log(level, msg);
+		}
+
+		inline bool Log(LogLevel level, const char *msg,
+			std::vector<AmxFuncCallInfo> const &call_info)
+		{
+			return _logger->Log(level, msg, call_info);
 		}
 
 		inline bool Log(AMX * const amx, const LogLevel level, const char *msg)
