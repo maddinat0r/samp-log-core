@@ -29,6 +29,11 @@ public:
 	bool LogNativeCall(AMX * const amx, cell * const params,
 		const char *name, const char *params_format) override;
 
+	void Destroy() override
+	{
+		delete this;
+	}
+
 protected:
 	std::string _module_name;
 
