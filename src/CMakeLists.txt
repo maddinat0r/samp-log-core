@@ -20,6 +20,8 @@ add_library(log-core SHARED
 	SampConfigReader.hpp
 	CMessage.hpp
 	CSingleton.hpp
+	Logger.cpp
+	Logger.hpp
 	LogManager.cpp
 	LogManager.hpp
 	crashhandler.hpp
