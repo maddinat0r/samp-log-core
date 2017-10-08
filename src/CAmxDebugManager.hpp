@@ -8,7 +8,7 @@
 #include "amx/amx.h"
 #include "amx/amxdbg.h"
 #include "CSingleton.hpp"
-#include "export.h"
+#include <samplog/export.h>
 
 using std::string;
 using std::unordered_map;

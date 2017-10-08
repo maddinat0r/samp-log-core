@@ -15,7 +15,7 @@
 #include <samplog/LogLevel.hpp>
 #include "CMessage.hpp"
 #include "CAmxDebugManager.hpp"
-#include "export.h"
+#include <samplog/export.h>
 
 
 class CLogManager : public CSingleton<CLogManager>

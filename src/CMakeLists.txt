@@ -22,10 +22,11 @@ add_library(log-core SHARED
 	CSingleton.hpp
 	CLogger.cpp
 	CLogger.hpp
-	export.h
 	crashhandler.hpp
 	${CRASHHANDLER_CPP}
 	${LOGCORE_INCLUDE_DIR}/LogLevel.hpp
+	${LOGCORE_INCLUDE_DIR}/ILogger.hpp
+	${LOGCORE_INCLUDE_DIR}/export.h
 )
 
 target_include_directories(log-core PUBLIC "${PROJECT_SOURCE_DIR}/include")
@@ -56,6 +57,7 @@ set_target_properties(log-core PROPERTIES PREFIX "")
 
 target_include_directories(log-core PUBLIC ${LOGCORE_LIBS_DIR})
 
+add_definitions(-DIN_DCC_PLUGIN)
 if(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX)
 endif()
