@@ -22,8 +22,10 @@ class LogManager : public CSingleton<LogManager>
 private:
 	LogManager();
 	~LogManager();
-	LogManager(const LogManager &rhs) = delete;
-	LogManager(const LogManager &&rhs) = delete;
+	LogManager(LogManager&&) = delete;
+	LogManager& operator=(LogManager&&) = delete;
+	LogManager(const LogManager&) = delete;
+	LogManager& operator=(const LogManager&) = delete;
 
 public:
 	void RegisterLogger(Logger *logger);
