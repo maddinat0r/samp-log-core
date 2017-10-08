@@ -5,70 +5,49 @@
 
 #include "Logger.h"
 
-
-//NOTE: Passing "-fvisibility=hidden" as a compiler option to GCC is advised!
-#if defined _WIN32 || defined __CYGWIN__
-# ifdef __GNUC__
-#  define DLL_PUBLIC __attribute__ ((dllimport))
-# else
-#  define DLL_PUBLIC __declspec(dllimport)
-# endif
-#else
-# if __GNUC__ >= 4
-#  define DLL_PUBLIC __attribute__ ((visibility ("default")))
-# else
-#  define DLL_PUBLIC
-# endif
-#endif
-
-
-extern "C" DLL_PUBLIC bool samplog_LogNativeCall(
-	const char *module, AMX * const amx, cell * const params,
-	const char *name, const char *params_format);
-
-
-#ifdef __cplusplus
-
 #include <string>
+
 
 namespace samplog
 {
-	inline bool LogNativeCall(const char *module, AMX * const amx, 
-		cell * const params, const char *name, const char *params_format)
-	{
-		return samplog_LogNativeCall(module, amx, params, name, params_format);
-	}
-
-	class CPluginLogger : public CLogger
+	class PluginLogger
 	{
 	public:
-		explicit CPluginLogger(std::string pluginname) :
-			CLogger("plugins/" + pluginname)
+		explicit PluginLogger(std::string pluginname) :
+			_logger(CreateLogger(pluginname.insert(0, "plugins/").c_str()))
 		{ }
-		~CPluginLogger() = default;
-		CPluginLogger(CPluginLogger const &rhs) = delete;
-		CPluginLogger& operator=(CPluginLogger const &rhs) = delete;
+		~PluginLogger() = default;
+		PluginLogger(PluginLogger const &rhs) = delete;
+		PluginLogger& operator=(PluginLogger const &rhs) = delete;
 
-		CPluginLogger(CPluginLogger &&other) = delete;
-		CPluginLogger& operator=(CPluginLogger &&other) = delete;
+		PluginLogger(PluginLogger &&other) = delete;
+		PluginLogger& operator=(PluginLogger &&other) = delete;
+
+	private:
+		Logger_t _logger;
 
 	public:
-		using CLogger::Log;
-
-		bool Log(AMX * const amx, const LogLevel level, const char *msg)
+		inline bool IsLogLevel(LogLevel log_level)
 		{
-			if (!CLogger::IsLogLevel(level))
-				return false;
-
-			std::vector<AmxFuncCallInfo> call_info;
-
-			return GetAmxFunctionCallTrace(amx, call_info)
-				&& CLogger::Log(level, msg, call_info);
+			return _logger->IsLogLevel(log_level);
 		}
-		inline bool LogNativeCall(AMX * const amx, cell * const params, 
+
+		inline bool Log(LogLevel level, const char *msg)
+		{
+			return _logger->Log(level, msg);
+		}
+
+		inline bool Log(AMX * const amx, const LogLevel level, const char *msg)
+		{
+			std::vector<AmxFuncCallInfo> call_info;
+			return GetAmxFunctionCallTrace(amx, call_info)
+				&& _logger->Log(level, msg, call_info);
+		}
+
+		inline bool LogNativeCall(AMX * const amx, cell * const params,
 			const char *name, const char *params_format)
 		{
-			return samplog::LogNativeCall(m_Module.c_str(), amx, params, name, params_format);
+			return _logger->LogNativeCall(amx, params, name, params_format);
 		}
 
 		inline bool operator()(LogLevel level, const char *msg)
@@ -88,12 +67,8 @@ namespace samplog
 		}
 	};
 
-	typedef CPluginLogger PluginLogger_t;
+	typedef PluginLogger PluginLogger_t;
 
 }
-
-#endif /* __cplusplus */
-
-#undef DLL_PUBLIC
 
 #endif /* INC_SAMPLOG_PLUGINLOGGER_H */
