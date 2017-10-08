@@ -12,7 +12,7 @@ namespace samplog
 {
 	using Logger_t = std::unique_ptr<ILogger, std::function<void(ILogger*)>>;
 
-	Logger_t CreateLogger(const char *module_name)
+	inline Logger_t CreateLogger(const char *module_name)
 	{
 		return Logger_t(samplog_CreateLogger(module_name), std::mem_fn(&ILogger::Destroy));
 	}

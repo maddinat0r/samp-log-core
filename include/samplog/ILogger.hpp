@@ -27,9 +27,9 @@ namespace samplog
 		virtual void Destroy() = 0;
 		virtual ~ILogger() = default;
 	};
-
-	extern "C" DLL_PUBLIC ILogger *samplog_CreateLogger(const char *module);
 }
+
+extern "C" DLL_PUBLIC samplog::ILogger *samplog_CreateLogger(const char *module);
 
 
 #undef DLL_PUBLIC
