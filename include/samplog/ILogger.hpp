@@ -8,12 +8,13 @@
 
 #include <vector>
 
+
 namespace samplog
 {
 	class ILogger
 	{
 	public:
-		virtual bool IsLogLevel(LogLevel log_level) = 0;
+		virtual bool IsLogLevel(LogLevel log_level) const = 0;
 
 		virtual bool LogNativeCall(AMX * const amx, cell * const params, 
 			const char *name, const char *params_format) = 0;
@@ -24,6 +25,7 @@ namespace samplog
 		virtual bool Log(LogLevel level, const char *msg) = 0;
 
 		virtual void Destroy() = 0;
+		virtual ~ILogger() = default;
 	};
 
 	extern "C" DLL_PUBLIC ILogger *samplog_CreateLogger(const char *module);
