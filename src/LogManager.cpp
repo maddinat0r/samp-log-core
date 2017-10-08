@@ -108,6 +108,12 @@ void LogManager::Process()
 			case LogLevel::ERROR:
 				loglevel_str = "ERROR";
 				break;
+			case LogLevel::FATAL:
+				loglevel_str = "FATAL";
+				break;
+			case LogLevel::VERBOSE:
+				loglevel_str = "VERBOSE";
+				break;
 			}
 
 			const string &modulename = msg->log_module;
