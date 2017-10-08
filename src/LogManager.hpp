@@ -18,14 +18,14 @@
 #include <samplog/export.h>
 
 
-class CLogManager : public CSingleton<CLogManager>
+class LogManager : public CSingleton<LogManager>
 {
-	friend class CSingleton<CLogManager>;
+	friend class CSingleton<LogManager>;
 private:
-	CLogManager();
-	~CLogManager();
-	CLogManager(const CLogManager &rhs) = delete;
-	CLogManager(const CLogManager &&rhs) = delete;
+	LogManager();
+	~LogManager();
+	LogManager(const LogManager &rhs) = delete;
+	LogManager(const LogManager &&rhs) = delete;
 
 public:
 	inline void IncreasePluginCounter()

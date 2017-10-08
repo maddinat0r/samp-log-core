@@ -26,7 +26,7 @@
 #include <ucontext.h>
 #endif
 
-#include "CLogger.hpp"
+#include "LogManager.hpp"
 
 using samplog::LogLevel;
 
@@ -82,9 +82,9 @@ namespace
 			"signal {:d} ({:s}) catched; shutting log-core down (errno: {}, signal code: {}, exit status: {})",
 			signal_number, Signals.at(signal_number), info->si_errno, info->si_code, info->si_status);
 
-		CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
+		LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
 			"log-core", LogLevel::ERROR, err_msg, { })));
-		CLogManager::Get()->Destroy();
+		LogManager::Get()->Destroy();
 
 		ExitWithDefaultSignalHandler(signal_number);
 	}

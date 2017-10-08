@@ -8,7 +8,7 @@
 #include <map>
 #include <csignal>
 #include "crashhandler.hpp"
-#include "CLogger.hpp"
+#include "LogManager.hpp"
 
 using samplog::LogLevel;
 
@@ -59,9 +59,9 @@ namespace
 			"exception {:#X} ({:s}) from {:s} catched; shutting log-core down",
 			fatal_signal, signal_str, handler ? handler : "invalid");
 
-		CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
+		LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
 			"log-core", LogLevel::ERROR, err_msg, { })));
-		CLogManager::Get()->Destroy();
+		LogManager::Get()->Destroy();
 
 		return EXCEPTION_CONTINUE_EXECUTION;
 	}
@@ -86,9 +86,9 @@ namespace
 	{
 		if (dwCtrlType == CTRL_CLOSE_EVENT)
 		{
-			CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
+			LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
 				"log-core", LogLevel::INFO, "received Windows console close event; shutting log-core down", { })));
-			CLogManager::Get()->Destroy();
+			LogManager::Get()->Destroy();
 		}
 		return FALSE; //let other handlers have a chance to clean stuff up
 	}

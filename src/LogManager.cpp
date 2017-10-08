@@ -10,7 +10,7 @@
 #  include <sys/stat.h>
 #endif
 
-#include "CLogger.hpp"
+#include "LogManager.hpp"
 #include "SampConfigReader.hpp"
 #include "crashhandler.hpp"
 #include "amx/amx2.h"
@@ -21,7 +21,7 @@
 using samplog::LogLevel;
 
 
-CLogManager::CLogManager() :
+LogManager::LogManager() :
 	m_ThreadRunning(true),
 	m_DateTimeFormat("{:%x %X}")
 {
@@ -46,10 +46,10 @@ CLogManager::CLogManager() :
 	m_WarningLog.open("logs/warnings.log");
 	m_ErrorLog.open("logs/errors.log");
 
-	m_Thread = new std::thread(std::bind(&CLogManager::Process, this));
+	m_Thread = new std::thread(std::bind(&LogManager::Process, this));
 }
 
-CLogManager::~CLogManager()
+LogManager::~LogManager()
 {
 	{
 		std::lock_guard<std::mutex> lg(m_QueueMtx);
@@ -60,7 +60,7 @@ CLogManager::~CLogManager()
 	delete m_Thread;
 }
 
-void CLogManager::QueueLogMessage(Message_t &&msg)
+void LogManager::QueueLogMessage(Message_t &&msg)
 {
 	{
 		std::lock_guard<std::mutex> lg(m_QueueMtx);
@@ -69,7 +69,7 @@ void CLogManager::QueueLogMessage(Message_t &&msg)
 	m_QueueNotifier.notify_one();
 }
 
-void CLogManager::Process()
+void LogManager::Process()
 {
 	std::unique_lock<std::mutex> lk(m_QueueMtx);
 	std::set<size_t> HashedModules;
@@ -172,7 +172,7 @@ void CLogManager::Process()
 	} while (m_ThreadRunning);
 }
 
-void CLogManager::CreateFolder(std::string foldername)
+void LogManager::CreateFolder(std::string foldername)
 {
 #ifdef WIN32
 	std::replace(foldername.begin(), foldername.end(), '/', '\\');
@@ -186,12 +186,12 @@ void CLogManager::CreateFolder(std::string foldername)
 
 void samplog_Init()
 {
-	CLogManager::Get()->IncreasePluginCounter();
+	LogManager::Get()->IncreasePluginCounter();
 }
 
 void samplog_Exit()
 {
-	CLogManager::Get()->DecreasePluginCounter();
+	LogManager::Get()->DecreasePluginCounter();
 }
 
 bool samplog_LogMessage(const char *module, LogLevel level, const char *msg,
@@ -207,7 +207,7 @@ bool samplog_LogMessage(const char *module, LogLevel level, const char *msg,
 			my_call_info.push_back(call_info[i]);
 	}
 
-	CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
+	LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
 		module, level, msg ? msg : "", std::move(my_call_info))));
 	return true;
 }
@@ -282,7 +282,7 @@ bool samplog_LogNativeCall(const char *module,
 	std::vector<AmxFuncCallInfo> call_info;
 	CAmxDebugManager::Get()->GetFunctionCallTrace(amx, call_info);
 
-	CLogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
+	LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
 		module, LogLevel::DEBUG, fmt_msg.str(), std::move(call_info))));
 
 	return true;
