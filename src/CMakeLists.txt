@@ -59,7 +59,7 @@ set_target_properties(log-core PROPERTIES PREFIX "")
 
 target_include_directories(log-core PUBLIC ${LOGCORE_LIBS_DIR})
 
-add_definitions(-DIN_DCC_PLUGIN)
+add_definitions(-DIN_LOGCORE_PLUGIN)
 if(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX)
 endif()
