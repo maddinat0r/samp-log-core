@@ -24,6 +24,10 @@ namespace samplog
 	{
 		return static_cast<LogLevel>(static_cast<int>(a) | static_cast<int>(b));
 	}
+	inline LogLevel &operator|=(LogLevel &in, LogLevel val)
+	{
+		return in = in | val;
+	}
 }
 
 
