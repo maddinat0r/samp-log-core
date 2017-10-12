@@ -2,7 +2,7 @@
 #include "SampConfigReader.hpp"
 
 #include <cassert>
-#include <tinydir/tinydir.h>
+#include <tinydir.h>
 #include <algorithm>
 #include <vector>
 

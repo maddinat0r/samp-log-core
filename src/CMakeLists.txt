@@ -58,6 +58,7 @@ target_compile_features(log-core PUBLIC
 set_target_properties(log-core PROPERTIES PREFIX "")
 
 target_include_directories(log-core PUBLIC 
+	${LOGCORE_LIBS_DIR}/tinydir
 	${LOGCORE_LIBS_DIR}/yaml-cpp/include
 )
 
