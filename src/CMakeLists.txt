@@ -57,7 +57,9 @@ target_compile_features(log-core PUBLIC
 
 set_target_properties(log-core PROPERTIES PREFIX "")
 
-target_include_directories(log-core PUBLIC ${LOGCORE_LIBS_DIR})
+target_include_directories(log-core PUBLIC 
+	${LOGCORE_LIBS_DIR}/yaml-cpp/include
+)
 
 add_definitions(-DIN_LOGCORE_PLUGIN)
 if(MSVC)
@@ -68,8 +70,8 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(log-core rt)
 endif()
 
-add_dependencies(log-core amx fmt)
-target_link_libraries(log-core amx fmt)
+add_dependencies(log-core amx fmt yaml-cpp)
+target_link_libraries(log-core amx fmt yaml-cpp)
 
 if(LOGCORE_INSTALL_DEV)
 	install(TARGETS log-core DESTINATION "lib/")
