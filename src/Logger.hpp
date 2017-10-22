@@ -2,6 +2,7 @@
 
 #include <samplog/export.h>
 #include <samplog/ILogger.hpp>
+#include "LogConfigReader.hpp"
 
 using samplog::LogLevel;
 
@@ -13,14 +14,9 @@ public:
 	~Logger();
 
 public:
-	inline void SetLogLevel(LogLevel log_level)
-	{
-		_loglevel = log_level;
-	}
-
 	inline bool IsLogLevel(LogLevel log_level) const override
 	{
-		return (_loglevel & log_level) == log_level;
+		return (_config.LogLevel & log_level) == log_level;
 	}
 
 	bool Log(LogLevel level, const char *msg,
@@ -39,10 +35,9 @@ public:
 		return _module_name;
 	}
 
-protected:
+private:
 	std::string _module_name;
 
-private:
-	LogLevel _loglevel;
+	LogConfig _config;
 
 };

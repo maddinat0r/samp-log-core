@@ -7,9 +7,9 @@
 
 
 Logger::Logger(std::string modulename) :
-	_module_name(std::move(modulename)),
-	_loglevel(LogLevel::ERROR | LogLevel::WARNING)
+	_module_name(std::move(modulename))
 {
+	LogConfigReader::Get()->GetLoggerConfig(_module_name, _config);
 	LogManager::Get()->RegisterLogger(this);
 }
 

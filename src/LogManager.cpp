@@ -13,6 +13,7 @@
 #include "LogManager.hpp"
 #include "Logger.hpp"
 #include "SampConfigReader.hpp"
+#include "LogConfigReader.hpp"
 #include "crashhandler.hpp"
 #include "amx/amx2.h"
 
@@ -41,6 +42,8 @@ LogManager::LogManager() :
 		// will assert if invalid and on Windows
 		fmt::format(m_DateTimeFormat, fmt::localtime(std::time(nullptr)));
 	}
+
+	LogConfigReader::Get(); // force init
 
 	CreateFolder("logs");
 
