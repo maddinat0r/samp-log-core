@@ -54,6 +54,9 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 	if (params_format == nullptr) // params_format == "" is valid (no parameters)
 		return false;
 
+	if (!IsLogLevel(LogLevel::DEBUG))
+		return false;
+
 
 	size_t format_len = strlen(params_format);
 
