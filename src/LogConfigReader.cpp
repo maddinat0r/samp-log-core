@@ -21,16 +21,17 @@ void LogConfigReader::ParseConfigFile()
 	}
 
 	_logger_configs.clear();
-	for (auto &n : root["Logger"])
+	YAML::Node const &loggers = root["Logger"];
+	for (YAML::const_iterator y_it = loggers.begin(); y_it != loggers.end(); ++y_it)
 	{
-		auto module_name = n.first.as<std::string>();
+		auto module_name = y_it->first.as<std::string>();
 		LogConfig config;
 
-		YAML::Node &log_levels = n["LogLevel"];
+		YAML::Node const &log_levels = y_it->second["LogLevel"];
 		if (log_levels.IsSequence()) // log level is specified, remove default log level
 			config.LogLevel = LogLevel::NONE;
 
-		for (auto &nl : log_levels)
+		for (YAML::const_iterator y_it_level = log_levels.begin(); y_it_level != log_levels.end(); ++y_it_level)
 		{
 			static const std::unordered_map<std::string, LogLevel> loglevel_str_map = {
 				{ "Debug",   LogLevel::DEBUG },
@@ -40,16 +41,16 @@ void LogConfigReader::ParseConfigFile()
 				//{ "Fatal",   LogLevel::FATAL }, // this one is always on
 				{ "Verbose", LogLevel::VERBOSE }
 			};
-			auto &level_str = nl.as<std::string>();
+			auto &level_str = y_it_level->as<std::string>();
 			auto &it = loglevel_str_map.find(level_str);
 			if (it != loglevel_str_map.end())
 				config.LogLevel |= (*it).second;
 		}
 
-		YAML::Node &log_rotation = n["LogRotation"];
+		YAML::Node const &log_rotation = y_it->second["LogRotation"];
 		if (log_rotation)
 		{
-			YAML::Node
+			YAML::Node const
 				&type = log_rotation["Type"],
 				&trigger = log_rotation["Trigger"];
 			if (type && trigger)
@@ -87,4 +88,13 @@ void LogConfigReader::ParseConfigFile()
 
 		_logger_configs.emplace(module_name, std::move(config));
 	}
+
+	// TODO: parse per-loglevel settings
+	/*
+	LogLevel:
+        Debug:
+            PrintToConsole: true
+        Error:
+            PrintToConsole: true
+	*/
 }
