@@ -61,7 +61,7 @@ set_target_properties(log-core PROPERTIES PREFIX "")
 
 target_include_directories(log-core PUBLIC 
 	${LOGCORE_LIBS_DIR}/tinydir
-	${LOGCORE_LIBS_DIR}/yaml-cpp/include
+	${YAML_CPP_INCLUDE_DIR}
 )
 
 add_definitions(-DIN_LOGCORE_PLUGIN)

@@ -8,6 +8,3 @@
 	path = libs/fmt
 	url = https://github.com/fmtlib/fmt.git
 	branch = release-4.0
-[submodule "libs/yaml-cpp"]
-	path = libs/yaml-cpp
-	url = https://github.com/jbeder/yaml-cpp.git
