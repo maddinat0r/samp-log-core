@@ -2,12 +2,26 @@ language: cpp
 sudo: required
 dist: trusty
 
+env:
+  matrix:
+    - BUILD_TYPE=Release
+    - BUILD_TYPE=Debug
+
 addons:
   apt:
     packages:
     - cmake
     - g++-multilib
 
-before_script: cmake .
+install:
+  - git clone --recursive https://github.com/jbeder/yaml-cpp.git > /dev/null
+  - cd yaml-cpp
+  - cmake . -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_GMOCK=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF > /dev/null
+  - make -j2 > /dev/null
+  - sudo make install > /dev/null
+  - sudo ldconfig
+  - cd ..
+
+before_script: cmake . -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
 
 script: make -j2
