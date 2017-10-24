@@ -41,8 +41,8 @@ void LogConfigReader::ParseConfigFile()
 				//{ "Fatal",   LogLevel::FATAL }, // this one is always on
 				{ "Verbose", LogLevel::VERBOSE }
 			};
-			auto &level_str = y_it_level->as<std::string>();
-			auto &it = loglevel_str_map.find(level_str);
+			auto const &level_str = y_it_level->as<std::string>();
+			auto const &it = loglevel_str_map.find(level_str);
 			if (it != loglevel_str_map.end())
 				config.Level |= (*it).second;
 		}
@@ -60,8 +60,8 @@ void LogConfigReader::ParseConfigFile()
 					{ "Date", LogConfig::LogRotationType::DATE },
 					{ "Size", LogConfig::LogRotationType::SIZE }
 				};
-				auto &type_str = type.as<std::string>();
-				auto &it = logrotation_type_str_map.find(type_str);
+				auto const &type_str = type.as<std::string>();
+				auto const &it = logrotation_type_str_map.find(type_str);
 				if (it != logrotation_type_str_map.end())
 				{
 					config.Rotation = it->second;
