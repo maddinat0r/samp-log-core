@@ -13,7 +13,7 @@ using samplog::LogLevel;
 
 struct LogConfig
 {
-	enum LogRotationType
+	enum class LogRotationType
 	{
 		NONE,
 		DATE,
