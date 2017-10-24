@@ -16,7 +16,7 @@ public:
 public:
 	inline bool IsLogLevel(LogLevel log_level) const override
 	{
-		return (_config.LogLevel & log_level) == log_level;
+		return (_config.Level & log_level) == log_level;
 	}
 
 	bool Log(LogLevel level, const char *msg,

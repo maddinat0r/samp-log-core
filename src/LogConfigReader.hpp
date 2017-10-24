@@ -20,8 +20,8 @@ struct LogConfig
 		SIZE
 	};
 
-	LogLevel LogLevel = LogLevel::ERROR | LogLevel::WARNING | LogLevel::FATAL;
-	LogRotationType LogRotation = LogRotationType::NONE;
+	LogLevel Level = LogLevel::ERROR | LogLevel::WARNING | LogLevel::FATAL;
+	LogRotationType Rotation = LogRotationType::NONE;
 	union
 	{
 		unsigned int FileSize; // in megabytes

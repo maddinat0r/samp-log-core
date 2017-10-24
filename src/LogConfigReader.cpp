@@ -29,7 +29,7 @@ void LogConfigReader::ParseConfigFile()
 
 		YAML::Node const &log_levels = y_it->second["LogLevel"];
 		if (log_levels.IsSequence()) // log level is specified, remove default log level
-			config.LogLevel = LogLevel::NONE;
+			config.Level = LogLevel::NONE;
 
 		for (YAML::const_iterator y_it_level = log_levels.begin(); y_it_level != log_levels.end(); ++y_it_level)
 		{
@@ -44,7 +44,7 @@ void LogConfigReader::ParseConfigFile()
 			auto &level_str = y_it_level->as<std::string>();
 			auto &it = loglevel_str_map.find(level_str);
 			if (it != loglevel_str_map.end())
-				config.LogLevel |= (*it).second;
+				config.Level |= (*it).second;
 		}
 
 		YAML::Node const &log_rotation = y_it->second["LogRotation"];
@@ -64,8 +64,8 @@ void LogConfigReader::ParseConfigFile()
 				auto &it = logrotation_type_str_map.find(type_str);
 				if (it != logrotation_type_str_map.end())
 				{
-					config.LogRotation = it->second;
-					switch (config.LogRotation)
+					config.Rotation = it->second;
+					switch (config.Rotation)
 					{
 						case LogConfig::LogRotationType::DATE:
 							config.LogRotationValue.DateHours = std::chrono::hours(trigger.as<unsigned int>(24));
