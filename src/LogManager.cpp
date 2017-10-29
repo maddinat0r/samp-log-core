@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include <ctime>
 #include <unordered_set>
 
@@ -217,17 +218,8 @@ void LogManager::Process()
 
 			if (LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel).PrintToConsole)
 			{
-				// escape '%' chars for printf in log string
-				std::string loglevel_str_printf = loglevel_str;
-				size_t start_pos = 0;
-				while ((start_pos = loglevel_str_printf.find('%', start_pos)) != std::string::npos)
-				{
-					loglevel_str_printf.replace(start_pos, 1, "%%");
-					start_pos += 2; // In case 'to' contains 'from', like replacing 'x' with 'yx'
-				}
-
-				printf("[%s][%s][%s] %s\n", timestamp.c_str(), modulename.c_str(), 
-					loglevel_str_printf.c_str(), log_string.c_str());
+				std::cout << "[" << timestamp << "] [" << modulename << "] [" << loglevel_str << "] " <<
+					log_string.str() << std::endl;
 			}
 
 			//lock the log message queue again (because while-condition and cv.wait)
