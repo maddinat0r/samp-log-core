@@ -4,6 +4,7 @@
 #include "amx/amx2.h"
 
 #include <fmt/format.h>
+#include <cstring>
 
 
 Logger::Logger(std::string modulename) :
@@ -116,5 +117,8 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 
 samplog::ILogger *samplog_CreateLogger(const char *module)
 {
+	if (strstr(module, "log-core") != nullptr)
+		return nullptr;
+
 	return new Logger(module);
 }
