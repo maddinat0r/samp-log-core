@@ -61,14 +61,8 @@ public: // functions
 		}
 		return false;
 	}
-	bool GetLogLevelConfig(LogLevel level, LogLevelConfig &dest) const
+	LogLevelConfig GetLogLevelConfig(LogLevel level)
 	{
-		auto it = _level_configs.find(level);
-		if (it != _level_configs.end())
-		{
-			dest = it->second;
-			return true;
-		}
-		return false;
+		return _level_configs[level];
 	}
 };
