@@ -1,5 +1,7 @@
 #include "LogConfigReader.hpp"
+#include "LogManager.hpp"
 #include <yaml-cpp/yaml.h>
+#include <fmt/format.h>
 
 
 void LogConfigReader::ParseConfigFile()
@@ -19,9 +21,10 @@ void LogConfigReader::ParseConfigFile()
 	{
 		root = YAML::LoadFile("log-config.yml");
 	}
-	catch (const YAML::ParserException&)
+	catch (const YAML::ParserException& e)
 	{
-		// TODO: log error in log-core logger
+		LogManager::Get()->LogInternal(LogLevel::ERROR, 
+			fmt::format("could not parse log config file: {}", e.what()));
 		return;
 	}
 	catch (const YAML::BadFile&)
@@ -79,12 +82,18 @@ void LogConfigReader::ParseConfigFile()
 				}
 				else
 				{
-					// TODO: invalid log rotation type
+					LogManager::Get()->LogInternal(LogLevel::WARNING,
+						fmt::format(
+							"could not parse log rotation setting for logger '{}': invalid log rotation type '{}'", 
+							module_name, type_str));
 				}
 			}
 			else
 			{
-				// TODO: log rotation not completely specified
+				LogManager::Get()->LogInternal(LogLevel::WARNING,
+					fmt::format(
+						"could not parse log rotation setting for logger '{}': log rotation not completely specified",
+						module_name));
 			}
 		}
 
@@ -104,7 +113,8 @@ void LogConfigReader::ParseConfigFile()
 		}
 		else
 		{
-			// TODO: invalid log level
+			LogManager::Get()->LogInternal(LogLevel::WARNING,
+				fmt::format("could not parse log level setting: invalid log level '{}'", level_str));
 			continue;
 		}
 
