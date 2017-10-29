@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <string>
+#include <map>
 #include <unordered_map>
 
 
@@ -43,7 +44,7 @@ private:
 
 private: // variables
 	std::unordered_map<std::string, LogConfig> _logger_configs;
-	std::unordered_map<LogLevel, LogLevelConfig> _level_configs;
+	std::map<LogLevel, LogLevelConfig> _level_configs;
 
 private: // functions
 	void ParseConfigFile();
