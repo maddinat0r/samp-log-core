@@ -33,9 +33,7 @@ class LogConfigReader : public CSingleton<LogConfigReader>
 {
 	friend CSingleton<LogConfigReader>;
 private:
-	LogConfigReader();
-
-public:
+	LogConfigReader() = default;
 	~LogConfigReader() = default;
 
 private: // variables
@@ -45,6 +43,7 @@ private: // functions
 	void ParseConfigFile();
 
 public: // functions
+	void Initialize();
 	bool GetLoggerConfig(std::string const &module_name, LogConfig &dest) const
 	{
 		auto it = _logger_configs.find(module_name);

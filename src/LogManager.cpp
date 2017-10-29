@@ -43,7 +43,7 @@ LogManager::LogManager() :
 		fmt::format(m_DateTimeFormat, fmt::localtime(std::time(nullptr)));
 	}
 
-	LogConfigReader::Get(); // force init
+	LogConfigReader::Get()->Initialize();
 
 	CreateFolder("logs");
 

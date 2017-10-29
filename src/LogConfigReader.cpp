@@ -2,11 +2,6 @@
 #include <yaml-cpp/yaml.h>
 
 
-LogConfigReader::LogConfigReader()
-{
-	ParseConfigFile();
-}
-
 void LogConfigReader::ParseConfigFile()
 {
 	YAML::Node root;
@@ -97,4 +92,9 @@ void LogConfigReader::ParseConfigFile()
         Error:
             PrintToConsole: true
 	*/
+}
+
+void LogConfigReader::Initialize()
+{
+	ParseConfigFile();
 }
