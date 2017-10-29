@@ -217,7 +217,7 @@ void LogManager::Process()
 
 			if (LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel).PrintToConsole)
 			{
-				printf("[%s][%s][%s] %s", timestamp.c_str(), modulename.c_str(), loglevel_str, log_string.c_str());
+				printf("[%s][%s][%s] %s\n", timestamp.c_str(), modulename.c_str(), loglevel_str, log_string.c_str());
 			}
 
 			//lock the log message queue again (because while-condition and cv.wait)
