@@ -34,7 +34,6 @@ public:
 
 private:
 	void Process();
-	void CreateFolder(std::string foldername);
 
 private:
 	std::ofstream

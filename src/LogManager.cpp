@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <fstream>
 #include <ctime>
-#include <set>
+#include <unordered_set>
 
 #ifdef WIN32
 #  define WIN32_LEAN_AND_MEAN
@@ -21,6 +21,55 @@
 #include <fmt/time.h>
 
 using samplog::LogLevel;
+
+
+const char *GetLogLevelAsString(LogLevel level)
+{
+	switch (level)
+	{
+		case LogLevel::DEBUG:
+			return "DEBUG";
+		case LogLevel::INFO:
+			return "INFO";
+		case LogLevel::WARNING:
+			return "WARNING";
+		case LogLevel::ERROR:
+			return "ERROR";
+		case LogLevel::FATAL:
+			return "FATAL";
+		case LogLevel::VERBOSE:
+			return "VERBOSE";
+	}
+	return "<unknown>";
+}
+
+void WriteCallInfoString(Message_t const &msg, fmt::MemoryWriter &log_string)
+{
+	if (!msg->call_info.empty())
+	{
+		log_string << " (";
+		bool first = true;
+		for (auto const &ci : msg->call_info)
+		{
+			if (!first)
+				log_string << " -> ";
+			log_string << ci.file << ":" << ci.line;
+			first = false;
+		}
+		log_string << ")";
+	}
+}
+
+void CreateFolder(std::string foldername)
+{
+#ifdef WIN32
+	std::replace(foldername.begin(), foldername.end(), '/', '\\');
+	CreateDirectoryA(foldername.c_str(), NULL);
+#else
+	std::replace(foldername.begin(), foldername.end(), '\\', '/');
+	mkdir(foldername.c_str(), ACCESSPERMS);
+#endif
+}
 
 
 LogManager::LogManager() :
@@ -91,8 +140,7 @@ void LogManager::QueueLogMessage(Message_t &&msg)
 void LogManager::Process()
 {
 	std::unique_lock<std::mutex> lk(m_QueueMtx);
-	std::set<size_t> HashedModules;
-	std::hash<std::string> StringHash;
+	std::unordered_set<std::string> hashed_modules;
 
 	do
 	{
@@ -108,36 +156,8 @@ void LogManager::Process()
 			//now be queued
 			lk.unlock();
 
-			std::string timestamp;
-			std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
-			timestamp = fmt::format(m_DateTimeFormat, fmt::localtime(now_c));
-
-			const char *loglevel_str = "<unknown>";
-			switch (msg->loglevel)
-			{
-				case LogLevel::DEBUG:
-					loglevel_str = "DEBUG";
-					break;
-				case LogLevel::INFO:
-					loglevel_str = "INFO";
-					break;
-				case LogLevel::WARNING:
-					loglevel_str = "WARNING";
-					break;
-				case LogLevel::ERROR:
-					loglevel_str = "ERROR";
-					break;
-				case LogLevel::FATAL:
-					loglevel_str = "FATAL";
-					break;
-				case LogLevel::VERBOSE:
-					loglevel_str = "VERBOSE";
-					break;
-			}
-
 			const string &modulename = msg->log_module;
-			size_t module_hash = StringHash(modulename);
-			if (HashedModules.find(module_hash) == HashedModules.end())
+			if (hashed_modules.count(modulename) == 0)
 			{
 				//create possibly non-existing folders before opening log file
 				size_t pos = 0;
@@ -146,26 +166,20 @@ void LogManager::Process()
 					CreateFolder("logs/" + modulename.substr(0, pos++));
 				}
 
-				HashedModules.insert(module_hash);
+				hashed_modules.insert(modulename);
 			}
+
+			std::string timestamp;
+			std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
+			timestamp = fmt::format(m_DateTimeFormat, fmt::localtime(now_c));
+
+			const char *loglevel_str = GetLogLevelAsString(msg->loglevel);
 
 			// build log string
 			fmt::MemoryWriter log_string;
 
 			log_string << msg->text;
-			if (!msg->call_info.empty())
-			{
-				log_string << " (";
-				bool first = true;
-				for (auto const &ci : msg->call_info)
-				{
-					if (!first)
-						log_string << " -> ";
-					log_string << ci.file << ":" << ci.line;
-					first = false;
-				}
-				log_string << ")";
-			}
+			WriteCallInfoString(msg, log_string);
 
 			//default logging
 			std::ofstream logfile("logs/" + modulename + ".log",
@@ -178,9 +192,9 @@ void LogManager::Process()
 
 			//per-log-level logging
 			std::ofstream *loglevel_file = nullptr;
-			if (msg->loglevel & LogLevel::WARNING)
+			if (msg->loglevel == LogLevel::WARNING)
 				loglevel_file = &m_WarningLog;
-			else if (msg->loglevel & LogLevel::ERROR)
+			else if (msg->loglevel == LogLevel::ERROR)
 				loglevel_file = &m_ErrorLog;
 
 			if (loglevel_file != nullptr)
@@ -195,15 +209,4 @@ void LogManager::Process()
 			lk.lock();
 		}
 	} while (m_ThreadRunning);
-}
-
-void LogManager::CreateFolder(std::string foldername)
-{
-#ifdef WIN32
-	std::replace(foldername.begin(), foldername.end(), '/', '\\');
-	CreateDirectoryA(foldername.c_str(), NULL);
-#else
-	std::replace(foldername.begin(), foldername.end(), '\\', '/');
-	mkdir(foldername.c_str(), ACCESSPERMS);
-#endif
 }
