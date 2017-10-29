@@ -4,6 +4,16 @@
 
 void LogConfigReader::ParseConfigFile()
 {
+	static const std::unordered_map<std::string, LogLevel> loglevel_str_map = {
+		{ "Debug",   LogLevel::DEBUG },
+		{ "Info",    LogLevel::INFO },
+		{ "Warning", LogLevel::WARNING },
+		{ "Error",   LogLevel::ERROR },
+		{ "Fatal",   LogLevel::FATAL },
+		{ "Verbose", LogLevel::VERBOSE }
+	};
+
+
 	YAML::Node root;
 	try
 	{
@@ -28,14 +38,6 @@ void LogConfigReader::ParseConfigFile()
 
 		for (YAML::const_iterator y_it_level = log_levels.begin(); y_it_level != log_levels.end(); ++y_it_level)
 		{
-			static const std::unordered_map<std::string, LogLevel> loglevel_str_map = {
-				{ "Debug",   LogLevel::DEBUG },
-				{ "Info",    LogLevel::INFO },
-				{ "Warning", LogLevel::WARNING },
-				{ "Error",   LogLevel::ERROR },
-				//{ "Fatal",   LogLevel::FATAL }, // this one is always on
-				{ "Verbose", LogLevel::VERBOSE }
-			};
 			auto const &level_str = y_it_level->as<std::string>();
 			auto const &it = loglevel_str_map.find(level_str);
 			if (it != loglevel_str_map.end())
@@ -84,14 +86,32 @@ void LogConfigReader::ParseConfigFile()
 		_logger_configs.emplace(module_name, std::move(config));
 	}
 
-	// TODO: parse per-loglevel settings
-	/*
-	LogLevel:
-        Debug:
-            PrintToConsole: true
-        Error:
-            PrintToConsole: true
-	*/
+	_level_configs.clear();
+	YAML::Node const &levels = root["LogLevel"];
+	for (YAML::const_iterator y_it = levels.begin(); y_it != levels.end(); ++y_it)
+	{
+		auto const &level_str = y_it->first.as<std::string>();
+		auto const &it = loglevel_str_map.find(level_str);
+		LogLevel level;
+		if (it != loglevel_str_map.end())
+		{
+			level = (*it).second;
+		}
+		else
+		{
+			// TODO: invalid log level
+			continue;
+		}
+
+		LogLevelConfig config;
+		YAML::Node const &console_print_opt = y_it->second["PrintToConsole"];
+		if (console_print_opt)
+		{
+			config.PrintToConsole = console_print_opt.as<bool>(false);
+		}
+
+		_level_configs.emplace(level, std::move(config));
+	}
 }
 
 void LogConfigReader::Initialize()

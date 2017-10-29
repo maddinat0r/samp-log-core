@@ -29,6 +29,11 @@ struct LogConfig
 	} LogRotationValue;
 };
 
+struct LogLevelConfig
+{
+	bool PrintToConsole = false;
+};
+
 class LogConfigReader : public CSingleton<LogConfigReader>
 {
 	friend CSingleton<LogConfigReader>;
@@ -38,6 +43,7 @@ private:
 
 private: // variables
 	std::unordered_map<std::string, LogConfig> _logger_configs;
+	std::unordered_map<LogLevel, LogLevelConfig> _level_configs;
 
 private: // functions
 	void ParseConfigFile();
@@ -48,6 +54,16 @@ public: // functions
 	{
 		auto it = _logger_configs.find(module_name);
 		if (it != _logger_configs.end())
+		{
+			dest = it->second;
+			return true;
+		}
+		return false;
+	}
+	bool GetLogLevelConfig(LogLevel level, LogLevelConfig &dest) const
+	{
+		auto it = _level_configs.find(level);
+		if (it != _level_configs.end())
 		{
 			dest = it->second;
 			return true;
