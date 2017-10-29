@@ -112,6 +112,10 @@ LogManager::~LogManager()
 	m_QueueNotifier.notify_one();
 	m_Thread->join();
 	delete m_Thread;
+
+	m_WarningLog.close();
+	m_ErrorLog.close();
+	m_FatalLog.close();
 }
 
 void LogManager::RegisterLogger(Logger *logger)
