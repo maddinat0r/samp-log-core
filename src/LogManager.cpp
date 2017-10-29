@@ -226,7 +226,8 @@ void LogManager::Process()
 					start_pos += 2; // In case 'to' contains 'from', like replacing 'x' with 'yx'
 				}
 
-				printf("[%s][%s][%s] %s\n", timestamp.c_str(), modulename.c_str(), loglevel_str_printf, log_string.c_str());
+				printf("[%s][%s][%s] %s\n", timestamp.c_str(), modulename.c_str(), 
+					loglevel_str_printf.c_str(), log_string.c_str());
 			}
 
 			//lock the log message queue again (because while-condition and cv.wait)
