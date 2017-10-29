@@ -19,9 +19,14 @@ void LogConfigReader::ParseConfigFile()
 	{
 		root = YAML::LoadFile("log-config.yml");
 	}
-	catch (const std::exception&)
-	{ 
+	catch (const YAML::ParserException&)
+	{
 		// TODO: log error in log-core logger
+		return;
+	}
+	catch (const YAML::BadFile&)
+	{
+		// file likely doesn't exist, ignore
 		return;
 	}
 
