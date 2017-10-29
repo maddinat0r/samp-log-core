@@ -112,24 +112,24 @@ void LogManager::Process()
 			const char *loglevel_str = "<unknown>";
 			switch (msg->loglevel)
 			{
-			case LogLevel::DEBUG:
-				loglevel_str = "DEBUG";
-				break;
-			case LogLevel::INFO:
-				loglevel_str = "INFO";
-				break;
-			case LogLevel::WARNING:
-				loglevel_str = "WARNING";
-				break;
-			case LogLevel::ERROR:
-				loglevel_str = "ERROR";
-				break;
-			case LogLevel::FATAL:
-				loglevel_str = "FATAL";
-				break;
-			case LogLevel::VERBOSE:
-				loglevel_str = "VERBOSE";
-				break;
+				case LogLevel::DEBUG:
+					loglevel_str = "DEBUG";
+					break;
+				case LogLevel::INFO:
+					loglevel_str = "INFO";
+					break;
+				case LogLevel::WARNING:
+					loglevel_str = "WARNING";
+					break;
+				case LogLevel::ERROR:
+					loglevel_str = "ERROR";
+					break;
+				case LogLevel::FATAL:
+					loglevel_str = "FATAL";
+					break;
+				case LogLevel::VERBOSE:
+					loglevel_str = "VERBOSE";
+					break;
 			}
 
 			const string &modulename = msg->log_module;
