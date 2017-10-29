@@ -212,6 +212,11 @@ void LogManager::Process()
 					log_string.str() << '\n' << std::flush;
 			}
 
+			if (LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel).PrintToConsole)
+			{
+				printf("[%s][%s][%s] %s", timestamp.c_str(), modulename.c_str(), loglevel_str, log_string.c_str());
+			}
+
 			//lock the log message queue again (because while-condition and cv.wait)
 			lk.lock();
 		}
