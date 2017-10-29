@@ -38,7 +38,8 @@ private:
 private:
 	std::ofstream
 		m_WarningLog,
-		m_ErrorLog;
+		m_ErrorLog,
+		m_FatalLog;
 
 	std::mutex m_LoggersMutex;
 	std::unordered_map<std::string, Logger *> m_Loggers;

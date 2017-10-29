@@ -98,6 +98,7 @@ LogManager::LogManager() :
 
 	m_WarningLog.open("logs/warnings.log");
 	m_ErrorLog.open("logs/errors.log");
+	m_FatalLog.open("logs/fatals.log");
 
 	m_Thread = new std::thread(std::bind(&LogManager::Process, this));
 }
@@ -196,6 +197,8 @@ void LogManager::Process()
 				loglevel_file = &m_WarningLog;
 			else if (msg->loglevel == LogLevel::ERROR)
 				loglevel_file = &m_ErrorLog;
+			else if (msg->loglevel == LogLevel::FATAL)
+				loglevel_file = &m_FatalLog;
 
 			if (loglevel_file != nullptr)
 			{
