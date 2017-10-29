@@ -10,8 +10,8 @@
 Logger::Logger(std::string modulename) :
 	_module_name(std::move(modulename))
 {
-	LogConfigReader::Get()->GetLoggerConfig(_module_name, _config);
 	LogManager::Get()->RegisterLogger(this);
+	LogConfigReader::Get()->GetLoggerConfig(_module_name, _config);
 }
 
 Logger::~Logger()
