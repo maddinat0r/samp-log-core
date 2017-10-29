@@ -126,11 +126,14 @@ void LogManager::RegisterLogger(Logger *logger)
 
 void LogManager::UnregisterLogger(Logger *logger)
 {
-	std::lock_guard<std::mutex> lg(m_LoggersMutex);
-	m_Loggers.erase(logger->GetModuleName());
-	if (m_Loggers.size() == 0) //last logger
+	bool is_last = false;
+	{
+		std::lock_guard<std::mutex> lg(m_LoggersMutex);
+		m_Loggers.erase(logger->GetModuleName());
+		is_last = (m_Loggers.size() == 0);
+	}
+	if (is_last) //last logger
 		CSingleton::Destroy();
-	// TODO we're destroying our class while the mutex is still locked...
 }
 
 void LogManager::QueueLogMessage(Message_t &&msg)
