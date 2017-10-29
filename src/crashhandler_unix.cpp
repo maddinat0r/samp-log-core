@@ -82,8 +82,7 @@ namespace
 			"signal {:d} ({:s}) catched; shutting log-core down (errno: {}, signal code: {}, exit status: {})",
 			signal_number, Signals.at(signal_number), info->si_errno, info->si_code, info->si_status);
 
-		LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-			"log-core", LogLevel::ERROR, err_msg, { })));
+		LogManager::Get()->LogInternal(LogLevel::ERROR, err_msg);
 		LogManager::Get()->Destroy();
 
 		ExitWithDefaultSignalHandler(signal_number);

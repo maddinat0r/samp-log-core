@@ -59,8 +59,7 @@ namespace
 			"exception {:#X} ({:s}) from {:s} catched; shutting log-core down",
 			fatal_signal, signal_str, handler ? handler : "invalid");
 
-		LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-			"log-core", LogLevel::ERROR, err_msg, { })));
+		LogManager::Get()->LogInternal(LogLevel::ERROR, err_msg);
 		LogManager::Get()->Destroy();
 
 		return EXCEPTION_CONTINUE_EXECUTION;
@@ -86,8 +85,7 @@ namespace
 	{
 		if (dwCtrlType == CTRL_CLOSE_EVENT)
 		{
-			LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-				"log-core", LogLevel::INFO, "received Windows console close event; shutting log-core down", { })));
+			LogManager::Get()->LogInternal(LogLevel::INFO, "received Windows console close event; shutting log-core down");
 			LogManager::Get()->Destroy();
 		}
 		return FALSE; //let other handlers have a chance to clean stuff up

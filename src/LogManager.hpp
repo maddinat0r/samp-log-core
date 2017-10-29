@@ -13,6 +13,8 @@
 #include "CSingleton.hpp"
 #include "CMessage.hpp"
 
+#include <samplog/LogLevel.hpp>
+
 class Logger;
 
 
@@ -31,6 +33,12 @@ public:
 	void RegisterLogger(Logger *logger);
 	void UnregisterLogger(Logger *logger);
 	void QueueLogMessage(Message_t &&msg);
+
+	void LogInternal(samplog::LogLevel level, std::string msg)
+	{
+		QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
+			"log-core", level, msg, { })));
+	}
 
 private:
 	void Process();
