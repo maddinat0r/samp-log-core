@@ -59,7 +59,7 @@ namespace
 			"exception {:#X} ({:s}) from {:s} catched; shutting log-core down",
 			fatal_signal, signal_str, handler ? handler : "invalid");
 
-		LogManager::Get()->LogInternal(LogLevel::ERROR, err_msg);
+		LogManager::Get()->LogInternal(LogLevel::INFO, err_msg);
 		LogManager::Get()->Destroy();
 
 		return EXCEPTION_CONTINUE_EXECUTION;
