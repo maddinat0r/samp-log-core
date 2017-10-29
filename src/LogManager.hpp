@@ -41,6 +41,7 @@ private:
 		m_WarningLog,
 		m_ErrorLog;
 
+	std::mutex m_LoggersMutex;
 	std::unordered_map<std::string, Logger *> m_Loggers;
 
 	std::atomic<bool> m_ThreadRunning;
