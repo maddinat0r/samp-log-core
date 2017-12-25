@@ -71,12 +71,17 @@ void LogConfigReader::ParseConfigFile()
 		LogConfig config;
 
 		YAML::Node const &log_levels = y_it->second["LogLevel"];
-		if (log_levels.IsSequence()) // log level is specified, remove default log level
+		if (log_levels && !log_levels.IsNull()) // log level is specified, remove default log level
 			config.Level = LogLevel::NONE;
 
-		for (YAML::const_iterator y_it_level = log_levels.begin(); y_it_level != log_levels.end(); ++y_it_level)
+		if (log_levels.IsSequence())
 		{
+			for (YAML::const_iterator y_it_level = log_levels.begin(); y_it_level != log_levels.end(); ++y_it_level)
 				ParseLogLevel(module_name, *y_it_level, config.Level);
+		}
+		else
+		{
+			ParseLogLevel(module_name, log_levels, config.Level);
 		}
 
 		YAML::Node const &log_rotation = y_it->second["LogRotation"];
