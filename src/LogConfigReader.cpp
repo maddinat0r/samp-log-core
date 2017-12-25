@@ -4,7 +4,7 @@
 #include <fmt/format.h>
 
 
-void ParseLogLevel(std::string const &logger_name, YAML::Node const &level_node, LogLevel &dest)
+bool ParseLogLevel(YAML::Node const &level_node, LogLevel &dest, std::string const &error_msg)
 {
 	static const std::unordered_map<std::string, LogLevel> loglevel_str_map = {
 		{ "Debug",   LogLevel::DEBUG },
@@ -21,21 +21,20 @@ void ParseLogLevel(std::string const &logger_name, YAML::Node const &level_node,
 	if (level_str.empty())
 	{
 		LogManager::Get()->LogInternal(LogLevel::WARNING,
-			fmt::format("could not parse log level setting for logger '{}': \
-							invalid log level specified", logger_name));
-		return;
+			fmt::format("{}: invalid log level specified", error_msg));
+		return false;
 	}
+
 	auto const &it = loglevel_str_map.find(level_str);
-	if (it != loglevel_str_map.end())
-	{
-		dest |= (*it).second;
-	}
-	else
+	if (it == loglevel_str_map.end())
 	{
 		LogManager::Get()->LogInternal(LogLevel::WARNING,
-			fmt::format("could not parse log level setting for logger '{}': \
-							invalid log level '{}'", logger_name, level_str));
+			fmt::format("{}: invalid log level '{}'", error_msg, level_str));
+		return false;
 	}
+
+	dest |= (*it).second;
+	return true;
 }
 
 void LogConfigReader::ParseConfigFile()
@@ -70,18 +69,23 @@ void LogConfigReader::ParseConfigFile()
 		}
 		LogConfig config;
 
+		std::string const error_msg_loglevel = fmt::format(
+			"could not parse log level setting for logger '{}'", module_name);
 		YAML::Node const &log_levels = y_it->second["LogLevel"];
 		if (log_levels && !log_levels.IsNull()) // log level is specified, remove default log level
 			config.Level = LogLevel::NONE;
 
 		if (log_levels.IsSequence())
 		{
-			for (YAML::const_iterator y_it_level = log_levels.begin(); y_it_level != log_levels.end(); ++y_it_level)
-				ParseLogLevel(module_name, *y_it_level, config.Level);
+			for (YAML::const_iterator y_it_level = log_levels.begin();
+				y_it_level != log_levels.end(); ++y_it_level)
+			{
+				ParseLogLevel(*y_it_level, config.Level, error_msg_loglevel);
+			}
 		}
 		else
 		{
-			ParseLogLevel(module_name, log_levels, config.Level);
+			ParseLogLevel(log_levels, config.Level, error_msg_loglevel);
 		}
 
 		YAML::Node const &log_rotation = y_it->second["LogRotation"];
@@ -142,19 +146,9 @@ void LogConfigReader::ParseConfigFile()
 	YAML::Node const &levels = root["LogLevel"];
 	for (YAML::const_iterator y_it = levels.begin(); y_it != levels.end(); ++y_it)
 	{
-		auto const &level_str = y_it->first.as<std::string>();
-		auto const &it = loglevel_str_map.find(level_str);
 		LogLevel level;
-		if (it != loglevel_str_map.end())
-		{
-			level = (*it).second;
-		}
-		else
-		{
-			LogManager::Get()->LogInternal(LogLevel::WARNING,
-				fmt::format("could not parse log level setting: invalid log level '{}'", level_str));
+		if (!ParseLogLevel(y_it->first, level, "could not parse log level setting"))
 			continue;
-		}
 
 		LogLevelConfig config;
 		YAML::Node const &console_print_opt = y_it->second["PrintToConsole"];
