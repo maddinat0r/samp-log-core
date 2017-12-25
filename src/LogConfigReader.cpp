@@ -4,7 +4,7 @@
 #include <fmt/format.h>
 
 
-void LogConfigReader::ParseConfigFile()
+void ParseLogLevel(std::string const &logger_name, YAML::Node const &level_node, LogLevel &dest)
 {
 	static const std::unordered_map<std::string, LogLevel> loglevel_str_map = {
 		{ "Debug",   LogLevel::DEBUG },
@@ -17,7 +17,15 @@ void LogConfigReader::ParseConfigFile()
 					 | LogLevel::WARNING | LogLevel::INFO | LogLevel::DEBUG }
 	};
 
+	auto const &it = loglevel_str_map.find(level_str);
+	if (it != loglevel_str_map.end())
+	{
+		dest |= (*it).second;
+	}
+}
 
+void LogConfigReader::ParseConfigFile()
+{
 	YAML::Node root;
 	try
 	{
@@ -54,10 +62,7 @@ void LogConfigReader::ParseConfigFile()
 
 		for (YAML::const_iterator y_it_level = log_levels.begin(); y_it_level != log_levels.end(); ++y_it_level)
 		{
-			auto const &level_str = y_it_level->as<std::string>();
-			auto const &it = loglevel_str_map.find(level_str);
-			if (it != loglevel_str_map.end())
-				config.Level |= (*it).second;
+				ParseLogLevel(module_name, *y_it_level, config.Level);
 		}
 
 		YAML::Node const &log_rotation = y_it->second["LogRotation"];
