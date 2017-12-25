@@ -97,6 +97,12 @@ void LogConfigReader::ParseConfigFile()
 			}
 		}
 
+		YAML::Node const &console_print = y_it->second["PrintToConsole"];
+		if (console_print && console_print.IsScalar())
+		{
+			config.PrintToConsole = console_print.as<bool>(false);
+		}
+
 		_logger_configs.emplace(module_name, std::move(config));
 	}
 

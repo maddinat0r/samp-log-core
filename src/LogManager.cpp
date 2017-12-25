@@ -216,7 +216,11 @@ void LogManager::Process()
 					log_string.str() << '\n' << std::flush;
 			}
 
-			if (LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel).PrintToConsole)
+			LogConfig log_config;
+			LogConfigReader::Get()->GetLoggerConfig(modulename, log_config);
+
+			if (LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel).PrintToConsole
+				|| log_config.PrintToConsole)
 			{
 				std::cout << "[" << timestamp << "] [" << modulename << "] [" << loglevel_str << "] " <<
 					log_string.str() << std::endl;
