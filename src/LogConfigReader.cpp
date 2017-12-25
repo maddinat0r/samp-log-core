@@ -152,7 +152,7 @@ void LogConfigReader::ParseConfigFile()
 
 		LogLevelConfig config;
 		YAML::Node const &console_print_opt = y_it->second["PrintToConsole"];
-		if (console_print_opt)
+		if (console_print_opt && console_print_opt.IsScalar())
 		{
 			config.PrintToConsole = console_print_opt.as<bool>(false);
 		}
