@@ -222,8 +222,8 @@ void LogManager::Process()
 			if (LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel).PrintToConsole
 				|| log_config.PrintToConsole)
 			{
-				std::cout << "[" << timestamp << "] [" << modulename << "] [" << loglevel_str << "] " <<
-					log_string.str() << std::endl;
+				std::cout << "[" << timestamp << "] [" << modulename << "] [" 
+					<< loglevel_str << "] " << log_string.str() << std::endl;
 			}
 
 			//lock the log message queue again (because while-condition and cv.wait)

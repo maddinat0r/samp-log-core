@@ -59,7 +59,7 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 		return false;
 
 
-	size_t format_len = strlen(params_format);
+	size_t const format_len = strlen(params_format);
 
 	fmt::MemoryWriter fmt_msg;
 	fmt_msg << name << '(';
