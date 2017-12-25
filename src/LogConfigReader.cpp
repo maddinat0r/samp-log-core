@@ -39,7 +39,13 @@ void LogConfigReader::ParseConfigFile()
 	YAML::Node const &loggers = root["Logger"];
 	for (YAML::const_iterator y_it = loggers.begin(); y_it != loggers.end(); ++y_it)
 	{
-		auto module_name = y_it->first.as<std::string>();
+		auto module_name = y_it->first.as<std::string>(std::string());
+		if (module_name.empty())
+		{
+			LogManager::Get()->LogInternal(LogLevel::ERROR,
+				fmt::format("could not parse logger config: invalid logger name"));
+			continue;
+		}
 		LogConfig config;
 
 		YAML::Node const &log_levels = y_it->second["LogLevel"];
