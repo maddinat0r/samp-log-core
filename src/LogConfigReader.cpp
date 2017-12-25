@@ -17,10 +17,24 @@ void ParseLogLevel(std::string const &logger_name, YAML::Node const &level_node,
 					 | LogLevel::WARNING | LogLevel::INFO | LogLevel::DEBUG }
 	};
 
+	auto const &level_str = level_node.as<std::string>(std::string());
+	if (level_str.empty())
+	{
+		LogManager::Get()->LogInternal(LogLevel::WARNING,
+			fmt::format("could not parse log level setting for logger '{}': \
+							invalid log level specified", logger_name));
+		return;
+	}
 	auto const &it = loglevel_str_map.find(level_str);
 	if (it != loglevel_str_map.end())
 	{
 		dest |= (*it).second;
+	}
+	else
+	{
+		LogManager::Get()->LogInternal(LogLevel::WARNING,
+			fmt::format("could not parse log level setting for logger '{}': \
+							invalid log level '{}'", logger_name, level_str));
 	}
 }
 
