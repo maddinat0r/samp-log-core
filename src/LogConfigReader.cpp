@@ -109,10 +109,12 @@ void LogConfigReader::ParseConfigFile()
 					switch (config.Rotation)
 					{
 						case LogConfig::LogRotationType::DATE:
-							config.LogRotationValue.DateHours = std::chrono::hours(trigger.as<unsigned int>(24));
+							config.LogRotationValue.DateHours = 
+								std::chrono::hours(trigger.as<unsigned int>(24));
 							break;
 						case LogConfig::LogRotationType::SIZE:
-							config.LogRotationValue.FileSize = trigger.as<unsigned int>(100);
+							config.LogRotationValue.FileSize = 
+								trigger.as<unsigned int>(100);
 							break;
 					}
 				}
@@ -120,7 +122,8 @@ void LogConfigReader::ParseConfigFile()
 				{
 					LogManager::Get()->LogInternal(LogLevel::WARNING,
 						fmt::format(
-							"could not parse log rotation setting for logger '{}': invalid log rotation type '{}'", 
+							"could not parse log rotation setting for logger '{}': " \
+							"invalid log rotation type '{}'", 
 							module_name, type_str));
 				}
 			}
@@ -128,16 +131,15 @@ void LogConfigReader::ParseConfigFile()
 			{
 				LogManager::Get()->LogInternal(LogLevel::WARNING,
 					fmt::format(
-						"could not parse log rotation setting for logger '{}': log rotation not completely specified",
+						"could not parse log rotation setting for logger '{}': " \
+						"log rotation not completely specified",
 						module_name));
 			}
 		}
 
 		YAML::Node const &console_print = y_it->second["PrintToConsole"];
 		if (console_print && console_print.IsScalar())
-		{
 			config.PrintToConsole = console_print.as<bool>(false);
-		}
 
 		_logger_configs.emplace(module_name, std::move(config));
 	}
@@ -153,9 +155,7 @@ void LogConfigReader::ParseConfigFile()
 		LogLevelConfig config;
 		YAML::Node const &console_print_opt = y_it->second["PrintToConsole"];
 		if (console_print_opt && console_print_opt.IsScalar())
-		{
 			config.PrintToConsole = console_print_opt.as<bool>(false);
-		}
 
 		_level_configs.emplace(level, std::move(config));
 	}
