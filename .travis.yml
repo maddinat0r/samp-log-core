@@ -16,7 +16,7 @@ addons:
 install:
   - git clone --recursive https://github.com/jbeder/yaml-cpp.git > /dev/null
   - cd yaml-cpp
-  - cmake . -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_GMOCK=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF > /dev/null
+  - cmake . -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_GMOCK=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF -DYAML_CPP_BUILD_TESTS=OFF > /dev/null
   - make -j2 > /dev/null
   - sudo make install > /dev/null
   - sudo ldconfig
