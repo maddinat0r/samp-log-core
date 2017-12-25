@@ -12,7 +12,9 @@ void LogConfigReader::ParseConfigFile()
 		{ "Warning", LogLevel::WARNING },
 		{ "Error",   LogLevel::ERROR },
 		{ "Fatal",   LogLevel::FATAL },
-		{ "Verbose", LogLevel::VERBOSE }
+		{ "Verbose", LogLevel::VERBOSE },
+		{ "All",     LogLevel::VERBOSE | LogLevel::FATAL | LogLevel::ERROR
+					 | LogLevel::WARNING | LogLevel::INFO | LogLevel::DEBUG }
 	};
 
 
