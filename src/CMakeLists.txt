@@ -7,6 +7,7 @@ add_subdirectory(amx)
 
 if(WIN32)
 	set(CRASHHANDLER_CPP crashhandler_windows.cpp)
+	set(FILECHANGEDETECTOR_CPP FileChangeDetectorWindows.cpp)
 else()
 	set(CRASHHANDLER_CPP crashhandler_unix.cpp)
 endif()
@@ -29,6 +30,7 @@ add_library(log-core SHARED
 	crashhandler.hpp
 	${CRASHHANDLER_CPP}
 	FileChangeDetector.hpp
+	${FILECHANGEDETECTOR_CPP}
 	${LOGCORE_INCLUDE_DIR}/LogLevel.hpp
 	${LOGCORE_INCLUDE_DIR}/ILogger.hpp
 	${LOGCORE_INCLUDE_DIR}/export.h
