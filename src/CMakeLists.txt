@@ -28,6 +28,7 @@ add_library(log-core SHARED
 	LogManager.hpp
 	crashhandler.hpp
 	${CRASHHANDLER_CPP}
+	FileChangeDetector.hpp
 	${LOGCORE_INCLUDE_DIR}/LogLevel.hpp
 	${LOGCORE_INCLUDE_DIR}/ILogger.hpp
 	${LOGCORE_INCLUDE_DIR}/export.h
