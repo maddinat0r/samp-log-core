@@ -37,7 +37,7 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 	char buf[2048];
 	FILE_NOTIFY_INFORMATION *notify_info;
 	auto last_execution_tp = std::chrono::steady_clock::now();
-	while (true)
+	while (_isThreadRunning)
 	{
 		BOOL result = ReadDirectoryChangesW(dir_handle, &buf, sizeof(buf), FALSE,
 			FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE,
@@ -90,13 +90,13 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 					// don't spam with change events
 					// also FILE_ACTION_MODIFIED seem to come in twice with a delay of several ms
 					auto current_tp = std::chrono::steady_clock::now();
-					if (current_tp - last_execution_tp  > std::chrono::milliseconds(100))
+					if (current_tp - last_execution_tp > std::chrono::milliseconds(100))
 					{
 						_callback();
 						last_execution_tp = current_tp;
 					}
 				}
-					break;
+				break;
 				case FILE_ACTION_REMOVED:
 				case FILE_ACTION_RENAMED_OLD_NAME:
 					// we only care if the file is still valid and has the name that we want
@@ -105,8 +105,6 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 					// TODO: warning message: unknown file action
 					break;
 			}
-
-
 		} while (notify_info->NextEntryOffset != 0);
 	}
 
