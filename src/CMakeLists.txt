@@ -10,6 +10,7 @@ if(WIN32)
 	set(FILECHANGEDETECTOR_CPP FileChangeDetectorWindows.cpp)
 else()
 	set(CRASHHANDLER_CPP crashhandler_unix.cpp)
+	set(FILECHANGEDETECTOR_CPP FileChangeDetectorLinux.cpp)
 endif()
 
 set(LOGCORE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/samplog)
