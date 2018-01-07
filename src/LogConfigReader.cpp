@@ -4,6 +4,8 @@
 #include <fmt/format.h>
 
 
+static const std::string CONFIG_FILE_NAME = "log-config.yml";
+
 bool ParseLogLevel(YAML::Node const &level_node, LogLevel &dest, std::string const &error_msg)
 {
 	static const std::unordered_map<std::string, LogLevel> loglevel_str_map = {
@@ -42,7 +44,7 @@ void LogConfigReader::ParseConfigFile()
 	YAML::Node root;
 	try
 	{
-		root = YAML::LoadFile("log-config.yml");
+		root = YAML::LoadFile(CONFIG_FILE_NAME);
 	}
 	catch (const YAML::ParserException& e)
 	{
@@ -164,4 +166,8 @@ void LogConfigReader::ParseConfigFile()
 void LogConfigReader::Initialize()
 {
 	ParseConfigFile();
+	_fileWatcher.reset(new FileChangeDetector(CONFIG_FILE_NAME, [this]()
+	{
+		ParseConfigFile();
+	}));
 }

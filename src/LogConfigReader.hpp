@@ -2,11 +2,13 @@
 
 #include "CSingleton.hpp"
 #include "samplog/LogLevel.hpp"
+#include "FileChangeDetector.hpp"
 
 #include <chrono>
 #include <string>
 #include <map>
 #include <unordered_map>
+#include <memory>
 
 
 using samplog::LogLevel;
@@ -46,6 +48,7 @@ private:
 private: // variables
 	std::unordered_map<std::string, LogConfig> _logger_configs;
 	std::map<LogLevel, LogLevelConfig> _level_configs;
+	std::unique_ptr<FileChangeDetector> _fileWatcher;
 
 private: // functions
 	void ParseConfigFile();
