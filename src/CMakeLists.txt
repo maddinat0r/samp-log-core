@@ -37,7 +37,7 @@ add_library(log-core SHARED
 	${LOGCORE_INCLUDE_DIR}/export.h
 )
 
-target_include_directories(log-core PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_include_directories(log-core PRIVATE "../include")
 
 target_compile_features(log-core PUBLIC 
 	cxx_auto_type 
@@ -63,7 +63,7 @@ target_compile_features(log-core PUBLIC
 
 set_target_properties(log-core PROPERTIES PREFIX "")
 
-target_include_directories(log-core PUBLIC 
+target_include_directories(log-core PRIVATE 
 	${LOGCORE_LIBS_DIR}/tinydir
 	${YAML_CPP_INCLUDE_DIR}
 )
@@ -78,11 +78,55 @@ if(UNIX AND NOT APPLE)
 endif()
 
 add_dependencies(log-core amx fmt yaml-cpp)
-target_link_libraries(log-core amx fmt yaml-cpp)
+target_link_libraries(log-core
+	PRIVATE amx
+	PRIVATE fmt
+	PRIVATE yaml-cpp)
 
 if(LOGCORE_INSTALL_DEV)
-	install(TARGETS log-core DESTINATION "lib/")
-	install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/" DESTINATION "include/")
+	set(INCLUDE_INSTALL_DIR include)
+	install(TARGETS log-core EXPORT log-core-targets
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+		RUNTIME DESTINATION bin
+		INCLUDES DESTINATION include
+	)
+	install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/" DESTINATION include)
+	
+	include(CMakePackageConfigHelpers)
+	write_basic_package_version_file(
+		"${CMAKE_CURRENT_BINARY_DIR}/log-core/log-core-ConfigVersion.cmake"
+		VERSION ${LOGCORE_VERSION}
+		COMPATIBILITY SameMajorVersion
+	)
+
+	export(EXPORT log-core-targets
+		FILE "${CMAKE_CURRENT_BINARY_DIR}/log-core/log-core-Targets.cmake"
+	)
+	
+	configure_package_config_file(
+		${PROJECT_SOURCE_DIR}/cmake/log-core-Config.cmake.in
+		${CMAKE_CURRENT_BINARY_DIR}/log-core-Config.cmake
+		INSTALL_DESTINATION cmake
+		PATH_VARS INCLUDE_INSTALL_DIR
+	)
+
+	set(ConfigPackageLocation cmake)
+	install(EXPORT log-core-targets
+	  FILE
+		log-core-Targets.cmake
+	  DESTINATION
+		${ConfigPackageLocation}
+	)
+	install(
+	  FILES
+		${CMAKE_CURRENT_BINARY_DIR}/log-core-Config.cmake
+		"${CMAKE_CURRENT_BINARY_DIR}/log-core/log-core-ConfigVersion.cmake"
+	  DESTINATION
+		${ConfigPackageLocation}
+	  COMPONENT
+		Devel
+	)
 else()
 	install(TARGETS log-core 
 		RUNTIME DESTINATION "./"
