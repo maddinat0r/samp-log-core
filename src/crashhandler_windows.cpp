@@ -56,7 +56,7 @@ namespace
 		auto it = KnownExceptionsMap.find(fatal_signal);
 		const std::string signal_str = (it != KnownExceptionsMap.end()) ? it->second : "<unknown>";
 		const std::string err_msg = fmt::format(
-			"exception {:#X} ({:s}) from {:s} catched; shutting log-core down",
+			"exception {:#X} ({:s}) from {:s} caught; shutting log-core down",
 			fatal_signal, signal_str, handler ? handler : "invalid");
 
 		LogManager::Get()->LogInternal(LogLevel::INFO, err_msg);

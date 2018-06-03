@@ -64,7 +64,7 @@ namespace
 		const int signal_number = static_cast<int>(fatal_signal_id);
 		RestoreSignalHandler(signal_number);
 		std::cerr << "\n\n" << "[log-core] fatal signal '" << signal_number
-			<< "' (" << Signals.at(fatal_signal_id) << ") catched   \n\n" << std::flush;
+			<< "' (" << Signals.at(fatal_signal_id) << ") caught   \n\n" << std::flush;
 
 		raise(signal_number);
 	}
@@ -79,7 +79,7 @@ namespace
 		}
 
 		const std::string err_msg = fmt::format(
-			"signal {:d} ({:s}) catched; shutting log-core down (errno: {}, signal code: {}, exit status: {})",
+			"signal {:d} ({:s}) caught; shutting log-core down (errno: {}, signal code: {}, exit status: {})",
 			signal_number, Signals.at(signal_number), info->si_errno, info->si_code, info->si_status);
 
 		LogManager::Get()->LogInternal(LogLevel::INFO, err_msg);
