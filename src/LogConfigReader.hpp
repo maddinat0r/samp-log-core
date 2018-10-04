@@ -28,8 +28,8 @@ struct LogConfig
 	bool PrintToConsole = false;
 	union
 	{
-		unsigned int FileSize; // in megabytes
-		std::chrono::hours DateHours; // in hours
+		unsigned int FileSize; // in kilobytes
+		std::chrono::minutes Date; // in minutes
 	} LogRotationValue;
 };
 

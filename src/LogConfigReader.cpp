@@ -39,6 +39,62 @@ bool ParseLogLevel(YAML::Node const &level_node, LogLevel &dest, std::string con
 	return true;
 }
 
+bool ParseDuration(std::string const &duration, std::chrono::minutes &dest)
+{
+	auto type_idx = duration.find_first_not_of("0123456789");
+	if (type_idx == std::string::npos || type_idx == 0)
+		return false;
+
+	int dur = std::stoi(duration); // works as long as the string starts with a number
+	switch (tolower(duration.at(type_idx)))
+	{
+	case 'm':
+		dest = std::chrono::minutes(dur);
+		break;
+	case 'h':
+		dest = std::chrono::hours(dur);
+		break;
+	case 'd':
+		dest = std::chrono::hours(dur * 24);
+		break;
+	case 'w':
+		dest = std::chrono::hours(dur * 24 * 7);
+		break;
+	default:
+		return false;
+	}
+
+	return true;
+}
+
+bool ParseFileSize(std::string const &size, unsigned int &dest_in_kb)
+{
+	auto type_idx = size.find_first_not_of("0123456789");
+	if (type_idx == std::string::npos || type_idx == 0)
+		return false;
+
+	int size_val = std::stoi(size); // works as long as the string starts with a number
+	if (size.length() != (type_idx + 2) || tolower(size.at(type_idx + 1)) != 'b')
+		return false;
+
+	switch (tolower(size.at(type_idx)))
+	{
+	case 'k':
+		dest_in_kb = size_val;
+		break;
+	case 'm':
+		dest_in_kb = size_val * 1000;
+		break;
+	case 'g':
+		dest_in_kb = size_val * 1000 * 1000;
+		break;
+	default:
+		return false;
+	}
+
+	return true;
+}
+
 void LogConfigReader::ParseConfigFile()
 {
 	YAML::Node root;
@@ -111,13 +167,31 @@ void LogConfigReader::ParseConfigFile()
 					switch (config.Rotation)
 					{
 						case LogConfig::LogRotationType::DATE:
-							config.LogRotationValue.DateHours = 
-								std::chrono::hours(trigger.as<unsigned int>(24));
-							break;
+						{
+							auto time_str = trigger.as<std::string>("24h");
+							if (!ParseDuration(time_str, config.LogRotationValue.Date))
+							{
+								config.LogRotationValue.Date = std::chrono::hours(24);
+								LogManager::Get()->LogInternal(LogLevel::WARNING,
+									fmt::format(
+										"could not parse date log rotation duration " \
+										"for logger '{}': invalid duration \"{}\"",
+										module_name, time_str));
+							}
+						} break;
 						case LogConfig::LogRotationType::SIZE:
-							config.LogRotationValue.FileSize = 
-								trigger.as<unsigned int>(100);
-							break;
+						{
+							auto size_str = trigger.as<std::string>("100MB");
+							if (!ParseFileSize(size_str, config.LogRotationValue.FileSize))
+							{
+								config.LogRotationValue.FileSize = 100;
+								LogManager::Get()->LogInternal(LogLevel::WARNING,
+									fmt::format(
+										"could not parse file log rotation size " \
+										"for logger '{}': invalid size \"{}\"",
+										module_name, size_str));
+							}
+						} break;
 					}
 				}
 				else
@@ -168,6 +242,8 @@ void LogConfigReader::Initialize()
 	ParseConfigFile();
 	_fileWatcher.reset(new FileChangeDetector(CONFIG_FILE_NAME, [this]()
 	{
+		LogManager::Get()->LogInternal(LogLevel::INFO, 
+			"config file change detected, reloading");
 		ParseConfigFile();
 	}));
 }
