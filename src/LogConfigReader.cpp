@@ -261,7 +261,9 @@ void LogConfigReader::Initialize()
 	_fileWatcher.reset(new FileChangeDetector(CONFIG_FILE_NAME, [this]()
 	{
 		LogManager::Get()->LogInternal(LogLevel::INFO, 
-			"config file change detected, reloading");
+			"config file change detected, reloading...");
 		ParseConfigFile();
+		LogManager::Get()->LogInternal(LogLevel::INFO,
+			"reloading finished");
 	}));
 }
