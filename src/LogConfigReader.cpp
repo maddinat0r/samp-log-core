@@ -94,6 +94,15 @@ bool ParseFileSize(std::string const &size, unsigned int &dest_in_kb)
 	return true;
 }
 
+LogConfig GetInternalLogConfig()
+{
+	LogConfig config;
+	config.Level = LogLevel::ALL;
+	config.PrintToConsole = true;
+	return config;
+}
+
+
 void LogConfigReader::ParseConfigFile()
 {
 	YAML::Node root;
@@ -114,6 +123,10 @@ void LogConfigReader::ParseConfigFile()
 	}
 
 	_logger_configs.clear();
+
+	// default settings for log-core logger
+	_logger_configs.emplace("log-core", GetInternalLogConfig());
+
 	YAML::Node const &loggers = root["Logger"];
 	for (YAML::const_iterator y_it = loggers.begin(); y_it != loggers.end(); ++y_it)
 	{
