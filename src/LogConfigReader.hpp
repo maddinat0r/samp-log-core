@@ -71,7 +71,7 @@ public: // functions
 		}
 		return false;
 	}
-	LogLevelConfig GetLogLevelConfig(LogLevel level)
+	LogLevelConfig const &GetLogLevelConfig(LogLevel level)
 	{
 		return _level_configs[level];
 	}

@@ -58,7 +58,7 @@ fmt::rgb GetLogLevelColor(LogLevel level)
 	case LogLevel::ERROR:
 		return fmt::color::red;
 	case LogLevel::FATAL:
-		return fmt::color::red; //fmt::rgb(180, 0, 0);
+		return fmt::color::red;
 	case LogLevel::VERBOSE:
 		return fmt::color::white_smoke;
 	}
@@ -101,9 +101,15 @@ void EnsureTerminalColorSupport()
 
 #ifdef WIN32
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (console == INVALID_HANDLE_VALUE)
+		return;
+
 	DWORD console_opts;
-	GetConsoleMode(console, &console_opts);
-	SetConsoleMode(console, console_opts | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+	if (!GetConsoleMode(console, &console_opts))
+		return;
+
+	if (!SetConsoleMode(console, console_opts | ENABLE_VIRTUAL_TERMINAL_PROCESSING))
+		return;
 #endif
 	enabled = true;
 }
