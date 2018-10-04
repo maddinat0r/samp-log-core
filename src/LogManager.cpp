@@ -260,19 +260,27 @@ void LogManager::Process()
 
 			if (log_config.PrintToConsole || level_config.PrintToConsole)
 			{
-				EnsureTerminalColorSupport();
+				if (LogConfigReader::Get()->GetGlobalConfig().EnableColors)
+				{
+					EnsureTerminalColorSupport();
 
-				fmt::print("[");
-				fmt::print(fmt::rgb(255, 255, 150), timestamp);
-				fmt::print("] [");
-				fmt::print(fmt::color::sandy_brown, modulename);
-				fmt::print("] [");
-				auto loglevel_color = GetLogLevelColor(msg->loglevel);
-				if (msg->loglevel == LogLevel::FATAL)
-					fmt::print(fmt::color::white, loglevel_color, loglevel_str);
+					fmt::print("[");
+					fmt::print(fmt::rgb(255, 255, 150), timestamp);
+					fmt::print("] [");
+					fmt::print(fmt::color::sandy_brown, modulename);
+					fmt::print("] [");
+					auto loglevel_color = GetLogLevelColor(msg->loglevel);
+					if (msg->loglevel == LogLevel::FATAL)
+						fmt::print(fmt::color::white, loglevel_color, loglevel_str);
+					else
+						fmt::print(loglevel_color, loglevel_str);
+					fmt::print("] {:s}\n", log_string);
+				}
 				else
-					fmt::print(loglevel_color, loglevel_str);
-				fmt::print("] {:s}\n", log_string);
+				{
+					fmt::print("[{:s}] [{:s}] [{:s}] {:s}\n",
+						timestamp, modulename, loglevel_str, log_string);
+				}
 			}
 
 			//lock the log message queue again (because while-condition and cv.wait)

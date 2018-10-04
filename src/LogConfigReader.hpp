@@ -38,6 +38,11 @@ struct LogLevelConfig
 	bool PrintToConsole = false;
 };
 
+struct GlobalConfig
+{
+	bool EnableColors = true;
+};
+
 class LogConfigReader : public CSingleton<LogConfigReader>
 {
 	friend CSingleton<LogConfigReader>;
@@ -48,6 +53,7 @@ private:
 private: // variables
 	std::unordered_map<std::string, LogConfig> _logger_configs;
 	std::map<LogLevel, LogLevelConfig> _level_configs;
+	GlobalConfig _globalConfig;
 	std::unique_ptr<FileChangeDetector> _fileWatcher;
 
 private: // functions
@@ -68,5 +74,9 @@ public: // functions
 	LogLevelConfig GetLogLevelConfig(LogLevel level)
 	{
 		return _level_configs[level];
+	}
+	GlobalConfig const &GetGlobalConfig() const
+	{
+		return _globalConfig;
 	}
 };

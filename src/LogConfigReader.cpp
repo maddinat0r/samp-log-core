@@ -247,6 +247,12 @@ void LogConfigReader::ParseConfigFile()
 
 		_level_configs.emplace(level, std::move(config));
 	}
+
+	//global config settings
+	_globalConfig = GlobalConfig();
+	YAML::Node const &enable_colors = root["EnableColors"];
+	if (enable_colors && enable_colors.IsScalar())
+		_globalConfig.EnableColors = enable_colors.as<bool>(_globalConfig.EnableColors);
 }
 
 void LogConfigReader::Initialize()
