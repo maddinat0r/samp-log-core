@@ -81,20 +81,21 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 			if (strcmp(filename, change_filename) != 0)
 				continue;
 
+			bool execute = false;
 			switch (notify_info->Action)
 			{
 				case FILE_ACTION_ADDED:
-				case FILE_ACTION_MODIFIED:
 				case FILE_ACTION_RENAMED_NEW_NAME:
+					execute = true;
+					break;
+				case FILE_ACTION_MODIFIED:
 				{
-					// don't spam with change events
-					// also FILE_ACTION_MODIFIED seem to come in twice with a delay of several ms
-					auto current_tp = std::chrono::steady_clock::now();
-					if (current_tp - last_execution_tp > std::chrono::milliseconds(100))
-					{
-						_callback();
-						last_execution_tp = current_tp;
-					}
+					// skip every first update, because FILE_ACTION_MODIFIED seems
+					// to come in twice with a delay of several ms
+					static bool is_first = true;
+					if (!is_first)
+						execute = true;
+					is_first = !is_first;
 				}
 				break;
 				case FILE_ACTION_REMOVED:
@@ -104,6 +105,17 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 				default:
 					// TODO: warning message: unknown file action
 					break;
+			}
+
+			if (execute)
+			{
+				// don't spam with change events
+				auto current_tp = std::chrono::steady_clock::now();
+				if (current_tp - last_execution_tp > std::chrono::milliseconds(1000))
+				{
+					_callback();
+					last_execution_tp = current_tp;
+				}
 			}
 		} while (notify_info->NextEntryOffset != 0);
 	}
