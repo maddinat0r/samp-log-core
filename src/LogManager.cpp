@@ -256,9 +256,9 @@ void LogManager::Process()
 
 			LogConfig log_config;
 			LogConfigReader::Get()->GetLoggerConfig(modulename, log_config);
+			auto const &level_config = LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel);
 
-			if (LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel).PrintToConsole
-				|| log_config.PrintToConsole)
+			if (log_config.PrintToConsole || level_config.PrintToConsole)
 			{
 				EnsureTerminalColorSupport();
 
