@@ -118,7 +118,7 @@ void LogConfigReader::ParseConfigFile()
 	for (YAML::const_iterator y_it = loggers.begin(); y_it != loggers.end(); ++y_it)
 	{
 		auto module_name = y_it->first.as<std::string>(std::string());
-		if (module_name.empty())
+		if (module_name.empty() || module_name == "log-core")
 		{
 			LogManager::Get()->LogInternal(LogLevel::ERROR,
 				fmt::format("could not parse logger config: invalid logger name"));
