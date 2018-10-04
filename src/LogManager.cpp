@@ -44,20 +44,20 @@ const char *GetLogLevelAsString(LogLevel level)
 	return "<unknown>";
 }
 
-void WriteCallInfoString(Message_t const &msg, fmt::MemoryWriter &log_string)
+void WriteCallInfoString(Message_t const &msg, fmt::memory_buffer &log_string)
 {
 	if (!msg->call_info.empty())
 	{
-		log_string << " (";
+		fmt::format_to(log_string, " (");
 		bool first = true;
 		for (auto const &ci : msg->call_info)
 		{
 			if (!first)
-				log_string << " -> ";
-			log_string << ci.file << ":" << ci.line;
+				fmt::format_to(log_string, " -> ");
+			fmt::format_to(log_string, "{:s}:{:d}", ci.file, ci.line);
 			first = false;
 		}
-		log_string << ")";
+		fmt::format_to(log_string, ")");
 	}
 }
 
@@ -185,10 +185,12 @@ void LogManager::Process()
 			const char *loglevel_str = GetLogLevelAsString(msg->loglevel);
 
 			// build log string
-			fmt::MemoryWriter log_string;
+			fmt::memory_buffer log_string_buf;
 
-			log_string << msg->text;
-			WriteCallInfoString(msg, log_string);
+			fmt::format_to(log_string_buf, "{:s}", msg->text);
+			WriteCallInfoString(msg, log_string_buf);
+
+			std::string const log_string = fmt::to_string(log_string_buf);
 
 			//default logging
 			std::ofstream logfile("logs/" + modulename + ".log",
@@ -196,7 +198,7 @@ void LogManager::Process()
 			logfile <<
 				"[" << timestamp << "] " <<
 				"[" << loglevel_str << "] " <<
-				log_string.str() << '\n' << std::flush;
+				log_string << '\n' << std::flush;
 
 
 			//per-log-level logging
@@ -213,7 +215,7 @@ void LogManager::Process()
 				(*loglevel_file) <<
 					"[" << timestamp << "] " <<
 					"[" << modulename << "] " <<
-					log_string.str() << '\n' << std::flush;
+					log_string << '\n' << std::flush;
 			}
 
 			LogConfig log_config;
@@ -223,7 +225,7 @@ void LogManager::Process()
 				|| log_config.PrintToConsole)
 			{
 				std::cout << "[" << timestamp << "] [" << modulename << "] [" 
-					<< loglevel_str << "] " << log_string.str() << std::endl;
+					<< loglevel_str << "] " << log_string << std::endl;
 			}
 
 			//lock the log message queue again (because while-condition and cv.wait)

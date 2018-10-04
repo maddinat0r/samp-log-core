@@ -61,57 +61,58 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 
 	size_t const format_len = strlen(params_format);
 
-	fmt::MemoryWriter fmt_msg;
-	fmt_msg << name << '(';
+	fmt::memory_buffer fmt_msg;
+
+	fmt::format_to(fmt_msg, "{:s}(", name);
 
 	for (int i = 0; i != format_len; ++i)
 	{
 		if (i != 0)
-			fmt_msg << ", ";
+			fmt::format_to(fmt_msg, ", ");
 
 		cell current_param = params[i + 1];
 		switch (params_format[i])
 		{
 			case 'd': //decimal
 			case 'i': //integer
-				fmt_msg << static_cast<int>(current_param);
+				fmt::format_to(fmt_msg, "{:d}", static_cast<int>(current_param));
 				break;
 			case 'f': //float
-				fmt_msg << amx_ctof(current_param);
+				fmt::format_to(fmt_msg, "{:f}", amx_ctof(current_param));
 				break;
 			case 'h': //hexadecimal
 			case 'x': //
-				fmt_msg << fmt::hex(current_param);
+				fmt::format_to(fmt_msg, "{:x}", current_param);
 				break;
 			case 'b': //binary
-				fmt_msg << fmt::bin(current_param);
+				fmt::format_to(fmt_msg, "{:b}", current_param);
 				break;
 			case 's': //string
-				fmt_msg << '"' << amx_GetCppString(amx, current_param) << '"';
+				fmt::format_to(fmt_msg, "\"{:s}\"", amx_GetCppString(amx, current_param));
 				break;
 			case '*': //censored output
-				fmt_msg << "\"*****\"";
+				fmt::format_to(fmt_msg, "\"*****\"");
 				break;
 			case 'r': //reference
 			{
 				cell *addr_dest = nullptr;
 				amx_GetAddr(amx, current_param, &addr_dest);
-				fmt_msg << "0x" << fmt::pad(fmt::hexu(reinterpret_cast<unsigned int>(addr_dest)), 8, '0');
+				fmt::format_to(fmt_msg, "{:#08x}", reinterpret_cast<unsigned int>(addr_dest));
 			}	break;
 			case 'p': //pointer-value
-				fmt_msg << "0x" << fmt::pad(fmt::hexu(current_param), 8, '0');
+				fmt::format_to(fmt_msg, "{:#08x}", current_param);
 				break;
 			default:
 				return false; //unrecognized format specifier
 		}
 	}
-	fmt_msg << ')';
+	fmt::format_to(fmt_msg, ")");
 
 	std::vector<samplog::AmxFuncCallInfo> call_info;
 	CAmxDebugManager::Get()->GetFunctionCallTrace(amx, call_info);
 
 	LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-		_module_name, LogLevel::DEBUG, fmt_msg.str(), std::move(call_info))));
+		_module_name, LogLevel::DEBUG, fmt::to_string(fmt_msg), std::move(call_info))));
 	return true;
 }
 

@@ -16,7 +16,7 @@ endif()
 set(LOGCORE_LIBS_DIR "${PROJECT_SOURCE_DIR}/libs")
 
 add_subdirectory(libs/fmt)
-mark_as_advanced(FMT_TEST FMT_INSTALL FMT_PEDANTIC FMT_DOC FMT_CPPFORMAT FMT_USE_CPP11)
+mark_as_advanced(FMT_TEST FMT_INSTALL FMT_PEDANTIC FMT_DOC FMT_USE_CPP11 FMT_WERROR)
 
 find_package(yaml-cpp REQUIRED CONFIG)
 
