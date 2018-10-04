@@ -20,6 +20,7 @@
 
 #include <fmt/format.h>
 #include <fmt/time.h>
+#include <fmt/color.h>
 
 using samplog::LogLevel;
 
@@ -42,6 +43,26 @@ const char *GetLogLevelAsString(LogLevel level)
 			return "VERBOSE";
 	}
 	return "<unknown>";
+}
+
+fmt::rgb GetLogLevelColor(LogLevel level)
+{
+	switch (level)
+	{
+	case LogLevel::DEBUG:
+		return fmt::color::green;
+	case LogLevel::INFO:
+		return fmt::color::royal_blue;
+	case LogLevel::WARNING:
+		return fmt::color::orange;
+	case LogLevel::ERROR:
+		return fmt::color::red;
+	case LogLevel::FATAL:
+		return fmt::color::red; //fmt::rgb(180, 0, 0);
+	case LogLevel::VERBOSE:
+		return fmt::color::white_smoke;
+	}
+	return fmt::color::white;
 }
 
 void WriteCallInfoString(Message_t const &msg, fmt::memory_buffer &log_string)
@@ -70,6 +91,21 @@ void CreateFolder(std::string foldername)
 	std::replace(foldername.begin(), foldername.end(), '\\', '/');
 	mkdir(foldername.c_str(), ACCESSPERMS);
 #endif
+}
+
+void EnsureTerminalColorSupport()
+{
+	static bool enabled = false;
+	if (enabled)
+		return;
+
+#ifdef WIN32
+	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	DWORD console_opts;
+	GetConsoleMode(console, &console_opts);
+	SetConsoleMode(console, console_opts | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+#endif
+	enabled = true;
 }
 
 
@@ -224,8 +260,19 @@ void LogManager::Process()
 			if (LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel).PrintToConsole
 				|| log_config.PrintToConsole)
 			{
-				std::cout << "[" << timestamp << "] [" << modulename << "] [" 
-					<< loglevel_str << "] " << log_string << std::endl;
+				EnsureTerminalColorSupport();
+
+				fmt::print("[");
+				fmt::print(fmt::rgb(255, 255, 150), timestamp);
+				fmt::print("] [");
+				fmt::print(fmt::color::sandy_brown, modulename);
+				fmt::print("] [");
+				auto loglevel_color = GetLogLevelColor(msg->loglevel);
+				if (msg->loglevel == LogLevel::FATAL)
+					fmt::print(fmt::color::white, loglevel_color, loglevel_str);
+				else
+					fmt::print(loglevel_color, loglevel_str);
+				fmt::print("] {:s}\n", log_string);
 			}
 
 			//lock the log message queue again (because while-condition and cv.wait)
