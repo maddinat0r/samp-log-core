@@ -79,10 +79,11 @@ namespace
 		}
 
 		const std::string err_msg = fmt::format(
-			"signal {:d} ({:s}) caught; shutting log-core down (errno: {}, signal code: {}, exit status: {})",
+			"caught signal {:d} ({:s}) (errno: {}, signal code: {}, exit status: {})",
 			signal_number, Signals.at(signal_number), info->si_errno, info->si_code, info->si_status);
 
 		LogManager::Get()->LogInternal(LogLevel::INFO, err_msg);
+		LogManager::Get()->LogInternal(LogLevel::INFO, "log-core will now safely shut itself down");
 		LogManager::Get()->Destroy();
 
 		ExitWithDefaultSignalHandler(signal_number);

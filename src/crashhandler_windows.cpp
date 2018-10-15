@@ -56,10 +56,11 @@ namespace
 		auto it = KnownExceptionsMap.find(fatal_signal);
 		const std::string signal_str = (it != KnownExceptionsMap.end()) ? it->second : "<unknown>";
 		const std::string err_msg = fmt::format(
-			"exception {:#X} ({:s}) from {:s} caught; shutting log-core down",
+			"caught exception {:#X} ({:s}) from {:s}",
 			fatal_signal, signal_str, handler ? handler : "invalid");
 
 		LogManager::Get()->LogInternal(LogLevel::INFO, err_msg);
+		LogManager::Get()->LogInternal(LogLevel::INFO, "log-core will now safely shut itself down");
 		LogManager::Get()->Destroy();
 
 		return EXCEPTION_CONTINUE_EXECUTION;
@@ -85,7 +86,8 @@ namespace
 	{
 		if (dwCtrlType == CTRL_CLOSE_EVENT)
 		{
-			LogManager::Get()->LogInternal(LogLevel::INFO, "received Windows console close event; shutting log-core down");
+			LogManager::Get()->LogInternal(LogLevel::INFO, "received Windows console close event");
+			LogManager::Get()->LogInternal(LogLevel::INFO, "log-core will now safely shut itself down");
 			LogManager::Get()->Destroy();
 		}
 		return FALSE; //let other handlers have a chance to clean stuff up
