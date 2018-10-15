@@ -135,8 +135,25 @@ bool CAmxDebugManager::GetFunctionCall(AMX * const amx, ucell address, AmxFuncCa
 
 	AMX_DBG *amx_dbg = it->second;
 
-	if (dbg_LookupLine(amx_dbg, address, &(dest.line)) != AMX_ERR_NONE)
-		return false;
+	{
+		// workaround for possible overflow of amx_dbg->hdr->lines
+		// taken from Zeex' crashdetect plugin code
+		int num_lines = (
+			reinterpret_cast<unsigned char*>(amx_dbg->symboltbl[0]) -
+			reinterpret_cast<unsigned char*>(amx_dbg->linetbl)
+			) / sizeof(AMX_DBG_LINE);
+		int index = 0;
+		while (index < num_lines && amx_dbg->linetbl[index].address <= address)
+			index++;
+
+		if (index >= num_lines)
+			return false; // invalid address
+
+		if (--index < 0)
+			return false; // not found
+
+		dest.line = amx_dbg->linetbl[index].line + 1;
+	}
 
 	if (dbg_LookupFile(amx_dbg, address, &(dest.file)) != AMX_ERR_NONE)
 		return false;
@@ -144,7 +161,6 @@ bool CAmxDebugManager::GetFunctionCall(AMX * const amx, ucell address, AmxFuncCa
 	if (dbg_LookupFunction(amx_dbg, address, &(dest.function)) != AMX_ERR_NONE)
 		return false;
 
-	dest.line++; // HACK: not sure if this is correct
 	return true;
 }
 
