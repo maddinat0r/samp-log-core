@@ -227,7 +227,7 @@ void LogConfigReader::ParseConfigFile()
 
 		YAML::Node const &console_print = y_it->second["PrintToConsole"];
 		if (console_print && console_print.IsScalar())
-			config.PrintToConsole = console_print.as<bool>(false);
+			config.PrintToConsole = console_print.as<bool>(config.PrintToConsole);
 
 		_logger_configs.emplace(module_name, std::move(config));
 	}
@@ -243,7 +243,7 @@ void LogConfigReader::ParseConfigFile()
 		LogLevelConfig config;
 		YAML::Node const &console_print_opt = y_it->second["PrintToConsole"];
 		if (console_print_opt && console_print_opt.IsScalar())
-			config.PrintToConsole = console_print_opt.as<bool>(false);
+			config.PrintToConsole = console_print_opt.as<bool>(config.PrintToConsole);
 
 		_level_configs.emplace(level, std::move(config));
 	}
