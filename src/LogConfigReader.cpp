@@ -229,6 +229,10 @@ void LogConfigReader::ParseConfigFile()
 		if (console_print && console_print.IsScalar())
 			config.PrintToConsole = console_print.as<bool>(config.PrintToConsole);
 
+		YAML::Node const &append_logs = y_it->second["Append"];
+		if (append_logs && append_logs.IsScalar())
+			config.Append = append_logs.as<bool>(config.Append);
+
 		_logger_configs.emplace(module_name, std::move(config));
 	}
 

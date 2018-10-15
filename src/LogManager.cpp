@@ -208,6 +208,8 @@ void LogManager::Process()
 			lk.unlock();
 
 			const string &modulename = msg->log_module;
+			std::string const module_log_filename = "logs/" + modulename + ".log";
+
 			if (hashed_modules.count(modulename) == 0)
 			{
 				//create possibly non-existing folders before opening log file
@@ -220,73 +222,82 @@ void LogManager::Process()
 				hashed_modules.insert(modulename);
 			}
 
-			std::string timestamp;
-			std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
-			timestamp = fmt::format(m_DateTimeFormat, fmt::localtime(now_c));
 
-			const char *loglevel_str = GetLogLevelAsString(msg->loglevel);
-
-			// build log string
-			fmt::memory_buffer log_string_buf;
-
-			fmt::format_to(log_string_buf, "{:s}", msg->text);
-			WriteCallInfoString(msg, log_string_buf);
-
-			std::string const log_string = fmt::to_string(log_string_buf);
-
-			//default logging
-			std::ofstream logfile("logs/" + modulename + ".log",
-				std::ofstream::out | std::ofstream::app);
-			logfile <<
-				"[" << timestamp << "] " <<
-				"[" << loglevel_str << "] " <<
-				log_string << '\n' << std::flush;
-
-
-			//per-log-level logging
-			std::ofstream *loglevel_file = nullptr;
-			if (msg->loglevel == LogLevel::WARNING)
-				loglevel_file = &m_WarningLog;
-			else if (msg->loglevel == LogLevel::ERROR)
-				loglevel_file = &m_ErrorLog;
-			else if (msg->loglevel == LogLevel::FATAL)
-				loglevel_file = &m_FatalLog;
-
-			if (loglevel_file != nullptr)
+			if (msg->type == CMessage::Type::MESSAGE)
 			{
-				(*loglevel_file) <<
+				std::string timestamp;
+				std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
+				timestamp = fmt::format(m_DateTimeFormat, fmt::localtime(now_c));
+
+				const char *loglevel_str = GetLogLevelAsString(msg->loglevel);
+
+				// build log string
+				fmt::memory_buffer log_string_buf;
+
+				fmt::format_to(log_string_buf, "{:s}", msg->text);
+				WriteCallInfoString(msg, log_string_buf);
+
+				std::string const log_string = fmt::to_string(log_string_buf);
+
+				//default logging
+				std::ofstream logfile(module_log_filename,
+					std::ofstream::out | std::ofstream::app);
+				logfile <<
 					"[" << timestamp << "] " <<
-					"[" << modulename << "] " <<
+					"[" << loglevel_str << "] " <<
 					log_string << '\n' << std::flush;
-			}
 
-			LogConfig log_config;
-			LogConfigReader::Get()->GetLoggerConfig(modulename, log_config);
-			auto const &level_config = LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel);
 
-			if (log_config.PrintToConsole || level_config.PrintToConsole)
-			{
-				if (LogConfigReader::Get()->GetGlobalConfig().EnableColors)
+				//per-log-level logging
+				std::ofstream *loglevel_file = nullptr;
+				if (msg->loglevel == LogLevel::WARNING)
+					loglevel_file = &m_WarningLog;
+				else if (msg->loglevel == LogLevel::ERROR)
+					loglevel_file = &m_ErrorLog;
+				else if (msg->loglevel == LogLevel::FATAL)
+					loglevel_file = &m_FatalLog;
+
+				if (loglevel_file != nullptr)
 				{
-					EnsureTerminalColorSupport();
+					(*loglevel_file) <<
+						"[" << timestamp << "] " <<
+						"[" << modulename << "] " <<
+						log_string << '\n' << std::flush;
+				}
 
-					fmt::print("[");
-					fmt::print(fmt::rgb(255, 255, 150), timestamp);
-					fmt::print("] [");
-					fmt::print(fmt::color::sandy_brown, modulename);
-					fmt::print("] [");
-					auto loglevel_color = GetLogLevelColor(msg->loglevel);
-					if (msg->loglevel == LogLevel::FATAL)
-						fmt::print(fmt::color::white, loglevel_color, loglevel_str);
+				LogConfig log_config;
+				LogConfigReader::Get()->GetLoggerConfig(modulename, log_config);
+				auto const &level_config = LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel);
+
+				if (log_config.PrintToConsole || level_config.PrintToConsole)
+				{
+					if (LogConfigReader::Get()->GetGlobalConfig().EnableColors)
+					{
+						EnsureTerminalColorSupport();
+
+						fmt::print("[");
+						fmt::print(fmt::rgb(255, 255, 150), timestamp);
+						fmt::print("] [");
+						fmt::print(fmt::color::sandy_brown, modulename);
+						fmt::print("] [");
+						auto loglevel_color = GetLogLevelColor(msg->loglevel);
+						if (msg->loglevel == LogLevel::FATAL)
+							fmt::print(fmt::color::white, loglevel_color, loglevel_str);
+						else
+							fmt::print(loglevel_color, loglevel_str);
+						fmt::print("] {:s}\n", log_string);
+					}
 					else
-						fmt::print(loglevel_color, loglevel_str);
-					fmt::print("] {:s}\n", log_string);
+					{
+						fmt::print("[{:s}] [{:s}] [{:s}] {:s}\n",
+							timestamp, modulename, loglevel_str, log_string);
+					}
 				}
-				else
-				{
-					fmt::print("[{:s}] [{:s}] [{:s}] {:s}\n",
-						timestamp, modulename, loglevel_str, log_string);
-				}
+			}
+			else if (msg->type == CMessage::Type::ACTION_CLEAR)
+			{
+				// create file if it doesn't exist, and truncate whole content
+				std::ofstream logfile(module_log_filename, std::ofstream::trunc);
 			}
 
 			//lock the log message queue again (because while-condition and cv.wait)

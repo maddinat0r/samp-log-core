@@ -26,6 +26,7 @@ struct LogConfig
 	LogLevel Level = LogLevel::ERROR | LogLevel::WARNING | LogLevel::FATAL;
 	LogRotationType Rotation = LogRotationType::NONE;
 	bool PrintToConsole = false;
+	bool Append = true;
 	union
 	{
 		unsigned int FileSize; // in kilobytes
