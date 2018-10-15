@@ -241,12 +241,14 @@ void LogManager::Process()
 				std::string const log_string = fmt::to_string(log_string_buf);
 
 				//default logging
-				std::ofstream logfile(module_log_filename,
-					std::ofstream::out | std::ofstream::app);
-				logfile <<
-					"[" << timestamp << "] " <<
-					"[" << loglevel_str << "] " <<
-					log_string << '\n' << std::flush;
+				{
+					std::ofstream logfile(module_log_filename,
+						std::ofstream::out | std::ofstream::app);
+					logfile <<
+						"[" << timestamp << "] " <<
+						"[" << loglevel_str << "] " <<
+						log_string << '\n' << std::flush;
+				}
 				LogConfig log_config;
 				LogConfigReader::Get()->GetLoggerConfig(modulename, log_config);
 
