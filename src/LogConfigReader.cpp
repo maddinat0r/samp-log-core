@@ -236,7 +236,7 @@ void LogConfigReader::ParseConfigFile()
 	YAML::Node const &levels = root["LogLevel"];
 	for (YAML::const_iterator y_it = levels.begin(); y_it != levels.end(); ++y_it)
 	{
-		LogLevel level;
+		LogLevel level = static_cast<LogLevel>(0); // initialize to zero as ParseLogLevel OR's levels
 		if (!ParseLogLevel(y_it->first, level, "could not parse log level setting"))
 			continue;
 
