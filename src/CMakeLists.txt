@@ -28,6 +28,8 @@ add_library(log-core SHARED
 	Logger.hpp
 	LogManager.cpp
 	LogManager.hpp
+	LogRotationManager.cpp
+	LogRotationManager.hpp
 	crashhandler.hpp
 	${CRASHHANDLER_CPP}
 	FileChangeDetector.hpp

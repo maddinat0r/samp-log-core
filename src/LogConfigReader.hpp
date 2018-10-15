@@ -3,6 +3,7 @@
 #include "CSingleton.hpp"
 #include "samplog/LogLevel.hpp"
 #include "FileChangeDetector.hpp"
+#include "LogRotationManager.hpp"
 
 #include <chrono>
 #include <string>
@@ -16,22 +17,10 @@ using samplog::LogLevel;
 
 struct LogConfig
 {
-	enum class LogRotationType
-	{
-		NONE,
-		DATE,
-		SIZE
-	};
-
 	LogLevel Level = LogLevel::ERROR | LogLevel::WARNING | LogLevel::FATAL;
-	LogRotationType Rotation = LogRotationType::NONE;
 	bool PrintToConsole = false;
 	bool Append = true;
-	union
-	{
-		unsigned int FileSize; // in kilobytes
-		std::chrono::minutes Date; // in minutes
-	} LogRotationValue;
+	LogRotationConfig Rotation;
 };
 
 struct LogLevelConfig

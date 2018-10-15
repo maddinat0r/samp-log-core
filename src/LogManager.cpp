@@ -15,6 +15,7 @@
 #include "Logger.hpp"
 #include "SampConfigReader.hpp"
 #include "LogConfigReader.hpp"
+#include "LogRotationManager.hpp"
 #include "crashhandler.hpp"
 #include "amx/amx2.h"
 
@@ -246,6 +247,10 @@ void LogManager::Process()
 					"[" << timestamp << "] " <<
 					"[" << loglevel_str << "] " <<
 					log_string << '\n' << std::flush;
+				LogConfig log_config;
+				LogConfigReader::Get()->GetLoggerConfig(modulename, log_config);
+
+				LogRotationManager::Get()->Check(module_log_filename, log_config.Rotation);
 
 
 				//per-log-level logging
@@ -265,8 +270,6 @@ void LogManager::Process()
 						log_string << '\n' << std::flush;
 				}
 
-				LogConfig log_config;
-				LogConfigReader::Get()->GetLoggerConfig(modulename, log_config);
 				auto const &level_config = LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel);
 
 				if (log_config.PrintToConsole || level_config.PrintToConsole)

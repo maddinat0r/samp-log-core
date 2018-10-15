@@ -1,5 +1,6 @@
 #include "LogConfigReader.hpp"
 #include "LogManager.hpp"
+#include "LogRotationManager.hpp"
 #include <yaml-cpp/yaml.h>
 #include <fmt/format.h>
 
@@ -166,24 +167,24 @@ void LogConfigReader::ParseConfigFile()
 				&trigger = log_rotation["Trigger"];
 			if (type && trigger)
 			{
-				static const std::unordered_map<std::string, LogConfig::LogRotationType>
+				static const std::unordered_map<std::string, LogRotationType>
 					logrotation_type_str_map = {
-					{ "Date", LogConfig::LogRotationType::DATE },
-					{ "Size", LogConfig::LogRotationType::SIZE }
+					{ "Date", LogRotationType::DATE },
+					{ "Size", LogRotationType::SIZE }
 				};
 				auto const &type_str = type.as<std::string>();
 				auto const &it = logrotation_type_str_map.find(type_str);
 				if (it != logrotation_type_str_map.end())
 				{
-					config.Rotation = it->second;
-					switch (config.Rotation)
+					config.Rotation.Type = it->second;
+					switch (config.Rotation.Type)
 					{
-						case LogConfig::LogRotationType::DATE:
+						case LogRotationType::DATE:
 						{
 							auto time_str = trigger.as<std::string>("24h");
-							if (!ParseDuration(time_str, config.LogRotationValue.Date))
+							if (!ParseDuration(time_str, config.Rotation.Value.Date))
 							{
-								config.LogRotationValue.Date = std::chrono::hours(24);
+								config.Rotation.Value.Date = std::chrono::hours(24);
 								LogManager::Get()->LogInternal(LogLevel::WARNING,
 									fmt::format(
 										"could not parse date log rotation duration " \
@@ -191,12 +192,12 @@ void LogConfigReader::ParseConfigFile()
 										module_name, time_str));
 							}
 						} break;
-						case LogConfig::LogRotationType::SIZE:
+						case LogRotationType::SIZE:
 						{
 							auto size_str = trigger.as<std::string>("100MB");
-							if (!ParseFileSize(size_str, config.LogRotationValue.FileSize))
+							if (!ParseFileSize(size_str, config.Rotation.Value.FileSize))
 							{
-								config.LogRotationValue.FileSize = 100;
+								config.Rotation.Value.FileSize = 100;
 								LogManager::Get()->LogInternal(LogLevel::WARNING,
 									fmt::format(
 										"could not parse file log rotation size " \
