@@ -206,6 +206,10 @@ void LogConfigReader::ParseConfigFile()
 							}
 						} break;
 					}
+
+					YAML::Node const &backup_count = log_rotation["BackupCount"];
+					if (backup_count && backup_count.IsScalar())
+						config.Rotation.BackupCount = backup_count.as<int>(config.Rotation.BackupCount);
 				}
 				else
 				{

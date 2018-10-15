@@ -21,6 +21,7 @@ struct LogRotationConfig
 		unsigned int FileSize; // in kilobytes
 		std::chrono::minutes Date; // in minutes
 	} Value;
+	int BackupCount = 10;
 };
 
 class LogRotationManager : public CSingleton<LogRotationManager>
