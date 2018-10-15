@@ -40,7 +40,7 @@ struct LogLevelConfig
 
 struct GlobalConfig
 {
-	bool EnableColors = true;
+	bool EnableColors = false;
 };
 
 class LogConfigReader : public CSingleton<LogConfigReader>
