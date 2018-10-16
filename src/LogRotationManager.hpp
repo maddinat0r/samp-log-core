@@ -13,13 +13,20 @@ enum class LogRotationType
 	SIZE
 };
 
+enum class LogRotationTimeType
+{
+	DAILY,
+	WEEKLY,
+	MONTHLY
+};
+
 struct LogRotationConfig
 {
 	LogRotationType Type = LogRotationType::NONE;
 	union
 	{
 		unsigned int FileSize; // in kilobytes
-		std::chrono::minutes Date; // in minutes
+		LogRotationTimeType Date;
 	} Value;
 	int BackupCount = 10;
 };

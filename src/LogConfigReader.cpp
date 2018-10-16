@@ -39,30 +39,17 @@ bool ParseLogLevel(YAML::Node const &level_node, LogLevel &dest, std::string con
 	return true;
 }
 
-bool ParseDuration(std::string const &duration, std::chrono::minutes &dest)
+bool ParseDuration(std::string duration, LogRotationTimeType &dest)
 {
-	auto type_idx = duration.find_first_not_of("0123456789");
-	if (type_idx == std::string::npos || type_idx == 0)
+	std::transform(duration.begin(), duration.end(), duration.begin(), tolower);
+	if (duration == "daily")
+		dest = LogRotationTimeType::DAILY;
+	else if (duration == "weekly")
+		dest = LogRotationTimeType::WEEKLY;
+	else if (duration == "monthly")
+		dest = LogRotationTimeType::MONTHLY;
+	else
 		return false;
-
-	int dur = std::stoi(duration); // works as long as the string starts with a number
-	switch (tolower(duration.at(type_idx)))
-	{
-	case 'm':
-		dest = std::chrono::minutes(dur);
-		break;
-	case 'h':
-		dest = std::chrono::hours(dur);
-		break;
-	case 'd':
-		dest = std::chrono::hours(dur * 24);
-		break;
-	case 'w':
-		dest = std::chrono::hours(dur * 24 * 7);
-		break;
-	default:
-		return false;
-	}
 
 	return true;
 }
@@ -181,10 +168,10 @@ void LogConfigReader::ParseConfigFile()
 					{
 						case LogRotationType::DATE:
 						{
-							auto time_str = trigger.as<std::string>("24h");
+							auto time_str = trigger.as<std::string>("Daily");
 							if (!ParseDuration(time_str, config.Rotation.Value.Date))
 							{
-								config.Rotation.Value.Date = std::chrono::hours(24);
+								config.Rotation.Value.Date = LogRotationTimeType::DAILY;
 								LogManager::Get()->LogInternal(LogLevel::WARNING,
 									fmt::format(
 										"could not parse date log rotation duration " \
