@@ -208,8 +208,8 @@ void LogManager::Process()
 			//now be queued
 			lk.unlock();
 
-			const string &modulename = msg->log_module;
-			std::string const module_log_filename = "logs/" + modulename + ".log";
+			std::string const &modulename = msg->log_module;
+			std::string const module_log_filename = GetLogFilePath(modulename);
 
 			if (hashed_modules.count(modulename) == 0)
 			{

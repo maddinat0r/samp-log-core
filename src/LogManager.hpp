@@ -42,6 +42,10 @@ public:
 
 private:
 	void Process();
+	inline std::string GetLogFilePath(std::string const &modulename)
+	{
+		return "logs/" + modulename + ".log";
+	}
 
 private:
 	std::ofstream
