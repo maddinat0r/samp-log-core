@@ -12,6 +12,11 @@ void LogRotationManager::Check(std::string const &filepath, LogRotationConfig co
 	if (config.Type == LogRotationType::NONE)
 		return;
 
+	auto const filepath_offset = filepath.find_last_of('/');
+	std::string const
+		file_dir = filepath.substr(0, filepath_offset),
+		file_name = filepath.substr(filepath_offset + 1);
+
 	if (config.Type == LogRotationType::SIZE)
 	{
 		std::streamoff size = -1;
@@ -26,13 +31,9 @@ void LogRotationManager::Check(std::string const &filepath, LogRotationConfig co
 		if (size < (config.Value.FileSize * 1000))
 			return; // file not large enough
 
-		auto const filepath_offset = filepath.find_last_of('/');
-		std::string const
-			file_dir = filepath.substr(0, filepath_offset),
-			file_name = filepath.substr(filepath_offset + 1);
 		std::vector<int> moved_nums;
 
-		if (config.BackupCount != 0)
+		if (config.BackupCount > 0)
 		{
 			tinydir_dir dir;
 			tinydir_open(&dir, file_dir.c_str());
@@ -61,9 +62,9 @@ void LogRotationManager::Check(std::string const &filepath, LogRotationConfig co
 			}
 
 			tinydir_close(&dir);
-		}
 
-		std::sort(moved_nums.begin(), moved_nums.end(), std::greater<int>());
+			std::sort(moved_nums.begin(), moved_nums.end(), std::greater<int>());
+		}
 
 		auto filename_count = [&filepath](int count)
 		{
