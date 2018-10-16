@@ -196,7 +196,20 @@ void LogManager::Process()
 
 	do
 	{
-		m_QueueNotifier.wait(lk);
+		// we need to wake up in at least every minute to properly check for
+		// date-based log file rotation
+		m_QueueNotifier.wait_for(lk, std::chrono::seconds(45));
+
+		// check for date-based log file rotation
+		for (auto const &p : m_Loggers)
+		{
+			LogConfig log_config;
+			if (!LogConfigReader::Get()->GetLoggerConfig(p.first, log_config))
+				continue;
+
+			LogRotationManager::Get()->Check(GetLogFilePath(p.first), log_config.Rotation);
+		}
+
 		while (!m_LogMsgQueue.empty())
 		{
 			Message_t msg = std::move(m_LogMsgQueue.front());
