@@ -11,7 +11,7 @@ Logger::Logger(std::string modulename) :
 	_moduleName(std::move(modulename))
 {
 	LogManager::Get()->RegisterLogger(this);
-	LogConfigReader::Get()->GetLoggerConfig(_moduleName, _config);
+	LogConfig::Get()->GetLoggerConfig(_moduleName, _config);
 	if (_config.Append == false)
 	{
 		LogManager::Get()->QueueLogMessage(std::unique_ptr<Message>(new Message(

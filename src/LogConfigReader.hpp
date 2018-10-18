@@ -15,7 +15,7 @@
 using samplog::LogLevel;
 
 
-struct LogConfig
+struct LoggerConfig
 {
 	LogLevel Level = LogLevel::ERROR | LogLevel::WARNING | LogLevel::FATAL;
 	bool PrintToConsole = false;
@@ -35,15 +35,15 @@ struct GlobalConfig
 	bool EnableColors = false;
 };
 
-class LogConfigReader : public Singleton<LogConfigReader>
+class LogConfig : public Singleton<LogConfig>
 {
-	friend Singleton<LogConfigReader>;
+	friend Singleton<LogConfig>;
 private:
-	LogConfigReader() = default;
-	~LogConfigReader() = default;
+	LogConfig() = default;
+	~LogConfig() = default;
 
 private: // variables
-	std::unordered_map<std::string, LogConfig> _loggerConfigs;
+	std::unordered_map<std::string, LoggerConfig> _loggerConfigs;
 	std::map<LogLevel, LogLevelConfig> _levelConfigs;
 	GlobalConfig _globalConfig;
 	std::unique_ptr<FileChangeDetector> _fileWatcher;
@@ -53,7 +53,7 @@ private: // functions
 
 public: // functions
 	void Initialize();
-	bool GetLoggerConfig(std::string const &module_name, LogConfig &dest) const
+	bool GetLoggerConfig(std::string const &module_name, LoggerConfig &dest) const
 	{
 		auto it = _loggerConfigs.find(module_name);
 		if (it != _loggerConfigs.end())

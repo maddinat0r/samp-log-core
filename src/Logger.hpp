@@ -38,6 +38,6 @@ public:
 private:
 	std::string _moduleName;
 
-	LogConfig _config;
+	LoggerConfig _config;
 
 };

@@ -12,7 +12,7 @@ using samplog::AmxFuncCallInfo;
 
 AmxDebugManager::AmxDebugManager()
 {
-	if (LogConfigReader::Get()->GetGlobalConfig().DisableDebugInfo)
+	if (LogConfig::Get()->GetGlobalConfig().DisableDebugInfo)
 	{
 		// disable whole debug info functionality
 		_disableDebugInfo = true;

@@ -82,16 +82,16 @@ bool ParseFileSize(std::string const &size, unsigned int &dest_in_kb)
 	return true;
 }
 
-LogConfig GetInternalLogConfig()
+LoggerConfig GetInternalLogConfig()
 {
-	LogConfig config;
+	LoggerConfig config;
 	config.Level = LogLevel::ALL;
 	config.PrintToConsole = true;
 	return config;
 }
 
 
-void LogConfigReader::ParseConfigFile()
+void LogConfig::ParseConfigFile()
 {
 	YAML::Node root;
 	try
@@ -125,7 +125,7 @@ void LogConfigReader::ParseConfigFile()
 				fmt::format("could not parse logger config: invalid logger name"));
 			continue;
 		}
-		LogConfig config;
+		LoggerConfig config;
 
 		std::string const error_msg_loglevel = fmt::format(
 			"could not parse log level setting for logger '{}'", module_name);
@@ -259,7 +259,7 @@ void LogConfigReader::ParseConfigFile()
 		_globalConfig.DisableDebugInfo = disable_debug.as<bool>(_globalConfig.DisableDebugInfo);
 }
 
-void LogConfigReader::Initialize()
+void LogConfig::Initialize()
 {
 	ParseConfigFile();
 	_fileWatcher.reset(new FileChangeDetector(CONFIG_FILE_NAME, [this]()

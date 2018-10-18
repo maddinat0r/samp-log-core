@@ -122,7 +122,7 @@ LogManager::LogManager() :
 {
 	crashhandler::Install();
 
-	LogConfigReader::Get()->Initialize();
+	LogConfig::Get()->Initialize();
 
 	CreateFolder("logs");
 
@@ -191,8 +191,8 @@ void LogManager::Process()
 			std::lock_guard<std::mutex> lg(_loggersMutex);
 			for (auto const &p : _loggers)
 			{
-				LogConfig log_config;
-				if (!LogConfigReader::Get()->GetLoggerConfig(p.first, log_config))
+				LoggerConfig log_config;
+				if (!LogConfig::Get()->GetLoggerConfig(p.first, log_config))
 					continue;
 
 				LogRotationManager::Get()->Check(GetLogFilePath(p.first), log_config.Rotation);
@@ -229,7 +229,7 @@ void LogManager::Process()
 			if (msg->type == Message::Type::MESSAGE)
 			{
 				std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
-				auto const &time_format = LogConfigReader::Get()->GetGlobalConfig().LogTimeFormat;
+				auto const &time_format = LogConfig::Get()->GetGlobalConfig().LogTimeFormat;
 				std::string timestamp = fmt::format("{:" + time_format + "}", fmt::localtime(now_c));
 
 				const char *loglevel_str = GetLogLevelAsString(msg->loglevel);
@@ -251,8 +251,8 @@ void LogManager::Process()
 						"[" << loglevel_str << "] " <<
 						log_string << '\n' << std::flush;
 				}
-				LogConfig log_config;
-				LogConfigReader::Get()->GetLoggerConfig(modulename, log_config);
+				LoggerConfig log_config;
+				LogConfig::Get()->GetLoggerConfig(modulename, log_config);
 
 				LogRotationManager::Get()->Check(module_log_filename, log_config.Rotation);
 
@@ -274,11 +274,11 @@ void LogManager::Process()
 						log_string << '\n' << std::flush;
 				}
 
-				auto const &level_config = LogConfigReader::Get()->GetLogLevelConfig(msg->loglevel);
+				auto const &level_config = LogConfig::Get()->GetLogLevelConfig(msg->loglevel);
 
 				if (log_config.PrintToConsole || level_config.PrintToConsole)
 				{
-					if (LogConfigReader::Get()->GetGlobalConfig().EnableColors)
+					if (LogConfig::Get()->GetGlobalConfig().EnableColors)
 					{
 						EnsureTerminalColorSupport();
 
