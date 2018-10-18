@@ -130,6 +130,11 @@ void LogRotationManager::Check(std::string const &filepath, LogRotationConfig co
 			break;
 		}
 
+		auto const new_filename = fmt::format("{:s}.{:%Y%m%d-%H%M}", filepath, tm);
+		// check if file already exists
+		if (std::ifstream(new_filename))
+			return;
+
 		std::vector<std::string> logfile_dates;
 		if (config.BackupCount > 0)
 		{
@@ -172,7 +177,6 @@ void LogRotationManager::Check(std::string const &filepath, LogRotationConfig co
 
 		if (config.BackupCount != 0)
 		{
-			auto new_filename = fmt::format("{:s}.{:%Y%m%d-%H%M}", filepath, tm);
 			std::rename(filepath.c_str(), new_filename.c_str());
 		}
 		else
