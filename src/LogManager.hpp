@@ -10,17 +10,17 @@
 #include <condition_variable>
 #include <fstream>
 
-#include "CSingleton.hpp"
-#include "CMessage.hpp"
+#include "Singleton.hpp"
+#include "Message.hpp"
 
 #include <samplog/LogLevel.hpp>
 
 class Logger;
 
 
-class LogManager : public CSingleton<LogManager>
+class LogManager : public Singleton<LogManager>
 {
-	friend class CSingleton<LogManager>;
+	friend class Singleton<LogManager>;
 private:
 	LogManager();
 	~LogManager();
@@ -36,8 +36,9 @@ public:
 
 	void LogInternal(samplog::LogLevel level, std::string msg)
 	{
-		QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-			"log-core", level, msg, { })));
+		static std::string const module_name("log-core");
+		QueueLogMessage(std::unique_ptr<Message>(new Message(
+			module_name, level, std::move(msg), { })));
 	}
 
 private:
@@ -49,17 +50,17 @@ private:
 
 private:
 	std::ofstream
-		m_WarningLog,
-		m_ErrorLog,
-		m_FatalLog;
+		_warningLog,
+		_errorLog,
+		_fatalLog;
 
-	std::mutex m_LoggersMutex;
-	std::unordered_map<std::string, Logger *> m_Loggers;
+	std::mutex _loggersMutex;
+	std::unordered_map<std::string, Logger *> _loggers;
 
-	std::atomic<bool> m_ThreadRunning;
-	std::thread *m_Thread = nullptr;
+	std::atomic<bool> _threadRunning;
+	std::thread *_thread;
 
-	std::mutex m_QueueMtx;
-	std::condition_variable m_QueueNotifier;
-	std::queue<Message_t> m_LogMsgQueue;
+	std::mutex _queueMtx;
+	std::condition_variable _queueNotifier;
+	std::queue<Message_t> _messageQueue;
 };

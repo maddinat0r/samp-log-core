@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CSingleton.hpp"
+#include "Singleton.hpp"
 
 #include <string>
 #include <chrono>
@@ -31,9 +31,9 @@ struct LogRotationConfig
 	int BackupCount = 10;
 };
 
-class LogRotationManager : public CSingleton<LogRotationManager>
+class LogRotationManager : public Singleton<LogRotationManager>
 {
-	friend class CSingleton<LogRotationManager>;
+	friend class Singleton<LogRotationManager>;
 private:
 	LogRotationManager() = default;
 	~LogRotationManager() = default;

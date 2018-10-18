@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CSingleton.hpp"
+#include "Singleton.hpp"
 #include "samplog/LogLevel.hpp"
 #include "FileChangeDetector.hpp"
 #include "LogRotationManager.hpp"
@@ -35,16 +35,16 @@ struct GlobalConfig
 	bool EnableColors = false;
 };
 
-class LogConfigReader : public CSingleton<LogConfigReader>
+class LogConfigReader : public Singleton<LogConfigReader>
 {
-	friend CSingleton<LogConfigReader>;
+	friend Singleton<LogConfigReader>;
 private:
 	LogConfigReader() = default;
 	~LogConfigReader() = default;
 
 private: // variables
-	std::unordered_map<std::string, LogConfig> _logger_configs;
-	std::map<LogLevel, LogLevelConfig> _level_configs;
+	std::unordered_map<std::string, LogConfig> _loggerConfigs;
+	std::map<LogLevel, LogLevelConfig> _levelConfigs;
 	GlobalConfig _globalConfig;
 	std::unique_ptr<FileChangeDetector> _fileWatcher;
 
@@ -55,8 +55,8 @@ public: // functions
 	void Initialize();
 	bool GetLoggerConfig(std::string const &module_name, LogConfig &dest) const
 	{
-		auto it = _logger_configs.find(module_name);
-		if (it != _logger_configs.end())
+		auto it = _loggerConfigs.find(module_name);
+		if (it != _loggerConfigs.end())
 		{
 			dest = it->second;
 			return true;
@@ -65,7 +65,7 @@ public: // functions
 	}
 	LogLevelConfig const &GetLogLevelConfig(LogLevel level)
 	{
-		return _level_configs[level];
+		return _levelConfigs[level];
 	}
 	GlobalConfig const &GetGlobalConfig() const
 	{

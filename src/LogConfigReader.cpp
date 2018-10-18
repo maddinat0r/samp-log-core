@@ -110,10 +110,10 @@ void LogConfigReader::ParseConfigFile()
 		return;
 	}
 
-	_logger_configs.clear();
+	_loggerConfigs.clear();
 
 	// default settings for log-core logger
-	_logger_configs.emplace("log-core", GetInternalLogConfig());
+	_loggerConfigs.emplace("log-core", GetInternalLogConfig());
 
 	YAML::Node const &loggers = root["Logger"];
 	for (YAML::const_iterator y_it = loggers.begin(); y_it != loggers.end(); ++y_it)
@@ -225,10 +225,10 @@ void LogConfigReader::ParseConfigFile()
 		if (append_logs && append_logs.IsScalar())
 			config.Append = append_logs.as<bool>(config.Append);
 
-		_logger_configs.emplace(module_name, std::move(config));
+		_loggerConfigs.emplace(module_name, std::move(config));
 	}
 
-	_level_configs.clear();
+	_levelConfigs.clear();
 	YAML::Node const &levels = root["LogLevel"];
 	for (YAML::const_iterator y_it = levels.begin(); y_it != levels.end(); ++y_it)
 	{
@@ -241,7 +241,7 @@ void LogConfigReader::ParseConfigFile()
 		if (console_print_opt && console_print_opt.IsScalar())
 			config.PrintToConsole = console_print_opt.as<bool>(config.PrintToConsole);
 
-		_level_configs.emplace(level, std::move(config));
+		_levelConfigs.emplace(level, std::move(config));
 	}
 
 	//global config settings

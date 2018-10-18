@@ -1,4 +1,4 @@
-#include "CAmxDebugManager.hpp"
+#include "AmxDebugManager.hpp"
 #include "SampConfigReader.hpp"
 #include "LogConfigReader.hpp"
 
@@ -10,44 +10,42 @@
 using samplog::AmxFuncCallInfo;
 
 
-CAmxDebugManager::CAmxDebugManager()
+AmxDebugManager::AmxDebugManager()
 {
-	string use_debuginfo;
 	if (LogConfigReader::Get()->GetGlobalConfig().DisableDebugInfo)
 	{
 		// disable whole debug info functionality
-		m_DisableDebugInfo = true;
+		_disableDebugInfo = true;
 		return;
 	}
 
-	std::vector<string> gamemodes;
+	std::vector<std::string> gamemodes;
 	if (!SampConfigReader::Get()->GetGamemodeList(gamemodes))
 		return;
 
 	for (auto &g : gamemodes)
 	{
-		string amx_filepath = "gamemodes/" + g + ".amx";
-		InitDebugData(amx_filepath);
+		std::string amx_filepath = "gamemodes/" + g + ".amx";
+		InitDebugData(amx_filepath.c_str());
 	}
-	
 
 	//load ALL filterscripts (there's no other way since filterscripts can be dynamically (un)loaded
 	InitDebugDataDir("filterscripts");
 }
 
-CAmxDebugManager::~CAmxDebugManager()
+AmxDebugManager::~AmxDebugManager()
 {
-	for (auto &a : m_AvailableDebugInfo)
+	for (auto &a : _availableDebugInfo)
 	{
 		delete a.first;
 		delete a.second;
 	}
 }
 
-void CAmxDebugManager::InitDebugDataDir(string directory)
+void AmxDebugManager::InitDebugDataDir(const char *directory)
 {
 	tinydir_dir dir;
-	tinydir_open(&dir, directory.c_str());
+	tinydir_open(&dir, directory);
 
 	while (dir.has_next)
 	{
@@ -65,9 +63,9 @@ void CAmxDebugManager::InitDebugDataDir(string directory)
 	tinydir_close(&dir);
 }
 
-bool CAmxDebugManager::InitDebugData(string filepath)
+bool AmxDebugManager::InitDebugData(const char *filepath)
 {
-	FILE* amx_file = fopen(filepath.c_str(), "rb");
+	FILE* amx_file = fopen(filepath, "rb");
 	if (amx_file == nullptr)
 		return false;
 
@@ -92,44 +90,44 @@ bool CAmxDebugManager::InitDebugData(string filepath)
 	fclose(amx_file);
 
 	if (error == AMX_ERR_NONE)
-		m_AvailableDebugInfo.emplace(new AMX_HEADER(hdr), new AMX_DBG(amxdbg));
+		_availableDebugInfo.emplace(new AMX_HEADER(hdr), new AMX_DBG(amxdbg));
 
 	return (error == AMX_ERR_NONE);
 }
 
-void CAmxDebugManager::RegisterAmx(AMX *amx)
+void AmxDebugManager::RegisterAmx(AMX *amx)
 {
-	if (m_DisableDebugInfo)
+	if (_disableDebugInfo)
 		return;
 
-	if (m_AmxDebugMap.find(amx) != m_AmxDebugMap.end()) //amx already registered
+	if (_amxDebugMap.find(amx) != _amxDebugMap.end()) //amx already registered
 		return;
 
-	for (auto &d : m_AvailableDebugInfo)
+	for (auto &d : _availableDebugInfo)
 	{
 		if (memcmp(d.first, amx->base, sizeof(AMX_HEADER)) == 0)
 		{
-			m_AmxDebugMap.emplace(amx, d.second);
+			_amxDebugMap.emplace(amx, d.second);
 			break;
 		}
 	}
 }
 
-void CAmxDebugManager::EraseAmx(AMX *amx)
+void AmxDebugManager::EraseAmx(AMX *amx)
 {
-	if (m_DisableDebugInfo)
+	if (_disableDebugInfo)
 		return;
 
-	m_AmxDebugMap.erase(amx);
+	_amxDebugMap.erase(amx);
 }
 
-bool CAmxDebugManager::GetFunctionCall(AMX * const amx, ucell address, AmxFuncCallInfo &dest)
+bool AmxDebugManager::GetFunctionCall(AMX * const amx, ucell address, AmxFuncCallInfo &dest)
 {
-	if (m_DisableDebugInfo)
+	if (_disableDebugInfo)
 		return false;
 
-	auto it = m_AmxDebugMap.find(amx);
-	if (it == m_AmxDebugMap.end())
+	auto it = _amxDebugMap.find(amx);
+	if (it == _amxDebugMap.end())
 		return false;
 
 	AMX_DBG *amx_dbg = it->second;
@@ -163,13 +161,13 @@ bool CAmxDebugManager::GetFunctionCall(AMX * const amx, ucell address, AmxFuncCa
 	return true;
 }
 
-bool CAmxDebugManager::GetFunctionCallTrace(AMX * const amx, std::vector<AmxFuncCallInfo> &dest)
+bool AmxDebugManager::GetFunctionCallTrace(AMX * const amx, std::vector<AmxFuncCallInfo> &dest)
 {
-	if (m_DisableDebugInfo)
+	if (_disableDebugInfo)
 		return false;
 
-	auto it = m_AmxDebugMap.find(amx);
-	if (it == m_AmxDebugMap.end())
+	auto it = _amxDebugMap.find(amx);
+	if (it == _amxDebugMap.end())
 		return false;
 
 	AMX_DBG *amx_dbg = it->second;
@@ -214,12 +212,12 @@ bool CAmxDebugManager::GetFunctionCallTrace(AMX * const amx, std::vector<AmxFunc
 
 void samplog_RegisterAmx(AMX *amx)
 {
-	CAmxDebugManager::Get()->RegisterAmx(amx);
+	AmxDebugManager::Get()->RegisterAmx(amx);
 }
 
 void samplog_EraseAmx(AMX *amx)
 {
-	CAmxDebugManager::Get()->EraseAmx(amx);
+	AmxDebugManager::Get()->EraseAmx(amx);
 }
 
 bool samplog_GetLastAmxFunctionCall(AMX * const amx, samplog::AmxFuncCallInfo *destination)
@@ -227,7 +225,7 @@ bool samplog_GetLastAmxFunctionCall(AMX * const amx, samplog::AmxFuncCallInfo *d
 	if (destination == nullptr)
 		return false;
 
-	return CAmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, *destination);
+	return AmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, *destination);
 }
 
 unsigned int samplog_GetAmxFunctionCallTrace(AMX * const amx, samplog::AmxFuncCallInfo * destination, unsigned int max_size)
@@ -236,7 +234,7 @@ unsigned int samplog_GetAmxFunctionCallTrace(AMX * const amx, samplog::AmxFuncCa
 		return 0;
 
 	std::vector<AmxFuncCallInfo> calls;
-	if (!CAmxDebugManager::Get()->GetFunctionCallTrace(amx, calls))
+	if (!AmxDebugManager::Get()->GetFunctionCallTrace(amx, calls))
 		return 0;
 	
 	size_t size = std::min(calls.size(), max_size);

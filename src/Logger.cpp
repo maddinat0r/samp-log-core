@@ -1,5 +1,5 @@
 #include "Logger.hpp"
-#include "CAmxDebugManager.hpp"
+#include "AmxDebugManager.hpp"
 #include "LogManager.hpp"
 #include "amx/amx2.h"
 
@@ -8,14 +8,14 @@
 
 
 Logger::Logger(std::string modulename) :
-	_module_name(std::move(modulename))
+	_moduleName(std::move(modulename))
 {
 	LogManager::Get()->RegisterLogger(this);
-	LogConfigReader::Get()->GetLoggerConfig(_module_name, _config);
+	LogConfigReader::Get()->GetLoggerConfig(_moduleName, _config);
 	if (_config.Append == false)
 	{
-		LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-			_module_name, CMessage::Type::ACTION_CLEAR)));
+		LogManager::Get()->QueueLogMessage(std::unique_ptr<Message>(new Message(
+			_moduleName, Message::Type::ACTION_CLEAR)));
 	}
 }
 
@@ -30,8 +30,8 @@ bool Logger::Log(LogLevel level, const char *msg,
 	if (!IsLogLevel(level))
 		return false;
 	
-	LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-		_module_name, level, msg ? msg : "", std::vector<samplog::AmxFuncCallInfo>(call_info))));
+	LogManager::Get()->QueueLogMessage(std::unique_ptr<Message>(new Message(
+		_moduleName, level, msg ? msg : "", std::vector<samplog::AmxFuncCallInfo>(call_info))));
 	return true;
 }
 
@@ -40,8 +40,8 @@ bool Logger::Log(LogLevel level, const char *msg)
 	if (!IsLogLevel(level))
 		return false;
 
-	LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-		_module_name, level, msg ? msg : "", { })));
+	LogManager::Get()->QueueLogMessage(std::unique_ptr<Message>(new Message(
+		_moduleName, level, msg ? msg : "", { })));
 	return true;
 }
 
@@ -114,10 +114,10 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 	fmt::format_to(fmt_msg, ")");
 
 	std::vector<samplog::AmxFuncCallInfo> call_info;
-	CAmxDebugManager::Get()->GetFunctionCallTrace(amx, call_info);
+	AmxDebugManager::Get()->GetFunctionCallTrace(amx, call_info);
 
-	LogManager::Get()->QueueLogMessage(std::unique_ptr<CMessage>(new CMessage(
-		_module_name, LogLevel::DEBUG, fmt::to_string(fmt_msg), std::move(call_info))));
+	LogManager::Get()->QueueLogMessage(std::unique_ptr<Message>(new Message(
+		_moduleName, LogLevel::DEBUG, fmt::to_string(fmt_msg), std::move(call_info))));
 	return true;
 }
 

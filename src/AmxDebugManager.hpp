@@ -5,26 +5,23 @@
 #include <unordered_map>
 #include <vector>
 
-#include "CSingleton.hpp"
+#include "Singleton.hpp"
 #include "amx/amx.h"
 #include "amx/amxdbg.h"
 #include <samplog/export.h>
 #include <samplog/DebugInfo.hpp>
 
-using std::string;
-using std::unordered_map;
 
-
-class CAmxDebugManager : public CSingleton<CAmxDebugManager>
+class AmxDebugManager : public Singleton<AmxDebugManager>
 {
-	friend class CSingleton<CAmxDebugManager>;
+	friend class Singleton<AmxDebugManager>;
 private:
-	CAmxDebugManager();
-	~CAmxDebugManager();
+	AmxDebugManager();
+	~AmxDebugManager();
 
 private:
-	bool InitDebugData(string filepath);
-	void InitDebugDataDir(string directory);
+	bool InitDebugData(const char *filepath);
+	void InitDebugDataDir(const char *directory);
 
 public:
 	void RegisterAmx(AMX *amx);
@@ -34,7 +31,7 @@ public:
 	bool GetFunctionCallTrace(AMX * const amx, std::vector<samplog::AmxFuncCallInfo> &dest);
 
 private:
-	bool m_DisableDebugInfo = false;
-	unordered_map<AMX_HEADER *, AMX_DBG *> m_AvailableDebugInfo;
-	unordered_map<AMX *, AMX_DBG *> m_AmxDebugMap;
+	bool _disableDebugInfo = false;
+	std::unordered_map<AMX_HEADER *, AMX_DBG *> _availableDebugInfo;
+	std::unordered_map<AMX *, AMX_DBG *> _amxDebugMap;
 };

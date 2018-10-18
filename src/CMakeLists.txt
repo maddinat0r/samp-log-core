@@ -16,12 +16,12 @@ endif()
 set(LOGCORE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/samplog)
 
 add_library(log-core SHARED
-	CAmxDebugManager.cpp
-	CAmxDebugManager.hpp
+	AmxDebugManager.cpp
+	AmxDebugManager.hpp
 	SampConfigReader.cpp
 	SampConfigReader.hpp
-	CMessage.hpp
-	CSingleton.hpp
+	Message.hpp
+	Singleton.hpp
 	LogConfigReader.cpp
 	LogConfigReader.hpp
 	Logger.cpp

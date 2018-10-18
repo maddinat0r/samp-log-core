@@ -4,12 +4,12 @@
 #include <unordered_map>
 #include <vector>
 
-#include "CSingleton.hpp"
+#include "Singleton.hpp"
 
 
-class SampConfigReader : public CSingleton<SampConfigReader>
+class SampConfigReader : public Singleton<SampConfigReader>
 {
-	friend class CSingleton<SampConfigReader>;
+	friend class Singleton<SampConfigReader>;
 private:
 	SampConfigReader();
 	~SampConfigReader() = default;

@@ -32,11 +32,11 @@ public:
 
 	inline std::string GetModuleName() const
 	{
-		return _module_name;
+		return _moduleName;
 	}
 
 private:
-	std::string _module_name;
+	std::string _moduleName;
 
 	LogConfig _config;
 

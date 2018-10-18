@@ -117,7 +117,8 @@ void EnsureTerminalColorSupport()
 
 
 LogManager::LogManager() :
-	m_ThreadRunning(true)
+	_threadRunning(true),
+	_thread(nullptr)
 {
 	crashhandler::Install();
 
@@ -125,70 +126,70 @@ LogManager::LogManager() :
 
 	CreateFolder("logs");
 
-	m_WarningLog.open("logs/warnings.log");
-	m_ErrorLog.open("logs/errors.log");
-	m_FatalLog.open("logs/fatals.log");
+	_warningLog.open("logs/warnings.log");
+	_errorLog.open("logs/errors.log");
+	_fatalLog.open("logs/fatals.log");
 
-	m_Thread = new std::thread(std::bind(&LogManager::Process, this));
+	_thread = new std::thread(std::bind(&LogManager::Process, this));
 }
 
 LogManager::~LogManager()
 {
 	{
-		std::lock_guard<std::mutex> lg(m_QueueMtx);
-		m_ThreadRunning = false;
+		std::lock_guard<std::mutex> lg(_queueMtx);
+		_threadRunning = false;
 	}
-	m_QueueNotifier.notify_one();
-	m_Thread->join();
-	delete m_Thread;
+	_queueNotifier.notify_one();
+	_thread->join();
+	delete _thread;
 
-	m_WarningLog.close();
-	m_ErrorLog.close();
-	m_FatalLog.close();
+	_warningLog.close();
+	_errorLog.close();
+	_fatalLog.close();
 }
 
 void LogManager::RegisterLogger(Logger *logger)
 {
-	std::lock_guard<std::mutex> lg(m_LoggersMutex);
-	m_Loggers.emplace(logger->GetModuleName(), logger);
+	std::lock_guard<std::mutex> lg(_loggersMutex);
+	_loggers.emplace(logger->GetModuleName(), logger);
 }
 
 void LogManager::UnregisterLogger(Logger *logger)
 {
 	bool is_last = false;
 	{
-		std::lock_guard<std::mutex> lg(m_LoggersMutex);
-		m_Loggers.erase(logger->GetModuleName());
-		is_last = (m_Loggers.size() == 0);
+		std::lock_guard<std::mutex> lg(_loggersMutex);
+		_loggers.erase(logger->GetModuleName());
+		is_last = (_loggers.size() == 0);
 	}
 	if (is_last) //last logger
-		CSingleton::Destroy();
+		Singleton::Destroy();
 }
 
 void LogManager::QueueLogMessage(Message_t &&msg)
 {
 	{
-		std::lock_guard<std::mutex> lg(m_QueueMtx);
-		m_LogMsgQueue.push(std::move(msg));
+		std::lock_guard<std::mutex> lg(_queueMtx);
+		_messageQueue.push(std::move(msg));
 	}
-	m_QueueNotifier.notify_one();
+	_queueNotifier.notify_one();
 }
 
 void LogManager::Process()
 {
-	std::unique_lock<std::mutex> lk(m_QueueMtx);
+	std::unique_lock<std::mutex> lk(_queueMtx);
 	std::unordered_set<std::string> hashed_modules;
 
 	do
 	{
 		// we need to wake up in at least every minute to properly check for
 		// date-based log file rotation
-		m_QueueNotifier.wait_for(lk, std::chrono::seconds(45));
+		_queueNotifier.wait_for(lk, std::chrono::seconds(45));
 
 		// check for date-based log file rotation
 		{
-			std::lock_guard<std::mutex> lg(m_LoggersMutex);
-			for (auto const &p : m_Loggers)
+			std::lock_guard<std::mutex> lg(_loggersMutex);
+			for (auto const &p : _loggers)
 			{
 				LogConfig log_config;
 				if (!LogConfigReader::Get()->GetLoggerConfig(p.first, log_config))
@@ -198,10 +199,10 @@ void LogManager::Process()
 			}
 		}
 
-		while (!m_LogMsgQueue.empty())
+		while (!_messageQueue.empty())
 		{
-			Message_t msg = std::move(m_LogMsgQueue.front());
-			m_LogMsgQueue.pop();
+			Message_t msg = std::move(_messageQueue.front());
+			_messageQueue.pop();
 
 			//manually unlock mutex
 			//the whole write-to-file code below has no need to be locked with the
@@ -225,7 +226,7 @@ void LogManager::Process()
 			}
 
 
-			if (msg->type == CMessage::Type::MESSAGE)
+			if (msg->type == Message::Type::MESSAGE)
 			{
 				std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
 				auto const &time_format = LogConfigReader::Get()->GetGlobalConfig().LogTimeFormat;
@@ -259,11 +260,11 @@ void LogManager::Process()
 				//per-log-level logging
 				std::ofstream *loglevel_file = nullptr;
 				if (msg->loglevel == LogLevel::WARNING)
-					loglevel_file = &m_WarningLog;
+					loglevel_file = &_warningLog;
 				else if (msg->loglevel == LogLevel::ERROR)
-					loglevel_file = &m_ErrorLog;
+					loglevel_file = &_errorLog;
 				else if (msg->loglevel == LogLevel::FATAL)
-					loglevel_file = &m_FatalLog;
+					loglevel_file = &_fatalLog;
 
 				if (loglevel_file != nullptr)
 				{
@@ -300,7 +301,7 @@ void LogManager::Process()
 					}
 				}
 			}
-			else if (msg->type == CMessage::Type::ACTION_CLEAR)
+			else if (msg->type == Message::Type::ACTION_CLEAR)
 			{
 				// create file if it doesn't exist, and truncate whole content
 				std::ofstream logfile(module_log_filename, std::ofstream::trunc);
@@ -309,5 +310,5 @@ void LogManager::Process()
 			//lock the log message queue again (because while-condition and cv.wait)
 			lk.lock();
 		}
-	} while (m_ThreadRunning);
+	} while (_threadRunning);
 }
