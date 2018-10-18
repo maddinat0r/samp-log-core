@@ -122,8 +122,6 @@ LogManager::LogManager() :
 {
 	crashhandler::Install();
 
-	LogConfig::Get()->Initialize();
-
 	CreateFolder("logs");
 
 	_warningLog.open("logs/warnings.log");
@@ -177,14 +175,22 @@ void LogManager::QueueLogMessage(Message_t &&msg)
 
 void LogManager::Process()
 {
+	LogConfig::Get()->Initialize();
+
 	std::unique_lock<std::mutex> lk(_queueMtx);
 	std::unordered_set<std::string> hashed_modules;
 
 	do
 	{
-		// we need to wake up in at least every minute to properly check for
-		// date-based log file rotation
-		_queueNotifier.wait_for(lk, std::chrono::seconds(45));
+		// this check seems unnecessary at first, however it's needed in
+		// case internal log messages are already queued (for example 
+		// LogConfig::Initialize logs warnings if there are parsing errors)
+		if (_messageQueue.empty())
+		{
+			// we need to wake up in at least every minute to properly check for
+			// date-based log file rotation
+			_queueNotifier.wait_for(lk, std::chrono::seconds(45));
+		}
 
 		// check for date-based log file rotation
 		{
