@@ -90,6 +90,61 @@ LoggerConfig GetInternalLogConfig()
 	return config;
 }
 
+bool ValidateTimeFormat(std::string const &format)
+{
+	size_t idx = 0;
+	while (idx < format.size())
+	{
+		if (format.at(idx++) != '%')
+			continue;
+
+		switch (format.at(idx++))
+		{
+		case 'a':
+		case 'A':
+		case 'b':
+		case 'B':
+		case 'c':
+		case 'C':
+		case 'd':
+		case 'D':
+		case 'e':
+		case 'F':
+		case 'g':
+		case 'G':
+		case 'h':
+		case 'H':
+		case 'I':
+		case 'j':
+		case 'm':
+		case 'M':
+		case 'n':
+		case 'p':
+		case 'r':
+		case 'R':
+		case 'S':
+		case 't':
+		case 'T':
+		case 'u':
+		case 'U':
+		case 'V':
+		case 'w':
+		case 'W':
+		case 'x':
+		case 'X':
+		case 'y':
+		case 'Y':
+		case 'z':
+		case 'Z':
+		case '%':
+			continue;
+		default:
+			return false;
+		}
+	}
+	return true;
+}
+
 
 void LogConfig::ParseConfigFile()
 {
@@ -250,7 +305,19 @@ void LogConfig::ParseConfigFile()
 	_globalConfig = GlobalConfig();
 	YAML::Node const &logtime_format = root["LogTimeFormat"];
 	if (logtime_format && logtime_format.IsScalar())
-		_globalConfig.LogTimeFormat = logtime_format.as<std::string>(_globalConfig.LogTimeFormat);
+	{
+		auto const time_format = logtime_format.as<std::string>(_globalConfig.LogTimeFormat);
+		if (ValidateTimeFormat(time_format))
+		{
+			_globalConfig.LogTimeFormat = time_format;
+		}
+		else
+		{
+			LogManager::Get()->LogInternal(LogLevel::WARNING, fmt::format(
+				"could not parse log time format: '{:s}' " \
+				"is not a valid time format string", time_format));
+		}
+	}
 
 	YAML::Node const &enable_colors = root["EnableColors"];
 	if (enable_colors && enable_colors.IsScalar())
