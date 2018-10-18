@@ -246,9 +246,17 @@ void LogConfigReader::ParseConfigFile()
 
 	//global config settings
 	_globalConfig = GlobalConfig();
+	YAML::Node const &logtime_format = root["LogTimeFormat"];
+	if (logtime_format && logtime_format.IsScalar())
+		_globalConfig.LogTimeFormat = logtime_format.as<std::string>(_globalConfig.LogTimeFormat);
+
 	YAML::Node const &enable_colors = root["EnableColors"];
 	if (enable_colors && enable_colors.IsScalar())
 		_globalConfig.EnableColors = enable_colors.as<bool>(_globalConfig.EnableColors);
+
+	YAML::Node const &disable_debug = root["DisableDebugInfo"];
+	if (disable_debug && disable_debug.IsScalar())
+		_globalConfig.DisableDebugInfo = disable_debug.as<bool>(_globalConfig.DisableDebugInfo);
 }
 
 void LogConfigReader::Initialize()

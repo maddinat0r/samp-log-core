@@ -30,6 +30,8 @@ struct LogLevelConfig
 
 struct GlobalConfig
 {
+	std::string LogTimeFormat = "%x %X";
+	bool DisableDebugInfo = false;
 	bool EnableColors = false;
 };
 

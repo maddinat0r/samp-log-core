@@ -117,24 +117,9 @@ void EnsureTerminalColorSupport()
 
 
 LogManager::LogManager() :
-	m_ThreadRunning(true),
-	m_DateTimeFormat("{:%x %X}")
+	m_ThreadRunning(true)
 {
 	crashhandler::Install();
-
-	std::string cfg_time_format;
-	if (SampConfigReader::Get()->GetVar("logtimeformat", cfg_time_format))
-	{
-		//delete brackets
-		size_t pos = 0;
-		while ((pos = cfg_time_format.find_first_of("[]()")) != std::string::npos)
-			cfg_time_format.erase(pos, 1);
-
-		m_DateTimeFormat = "{:" + cfg_time_format + "}";
-		// quickly test out the format string
-		// will assert if invalid and on Windows
-		fmt::format(m_DateTimeFormat, fmt::localtime(std::time(nullptr)));
-	}
 
 	LogConfigReader::Get()->Initialize();
 
@@ -239,9 +224,9 @@ void LogManager::Process()
 
 			if (msg->type == CMessage::Type::MESSAGE)
 			{
-				std::string timestamp;
 				std::time_t now_c = std::chrono::system_clock::to_time_t(msg->timestamp);
-				timestamp = fmt::format(m_DateTimeFormat, fmt::localtime(now_c));
+				auto const &time_format = LogConfigReader::Get()->GetGlobalConfig().LogTimeFormat;
+				std::string timestamp = fmt::format("{:" + time_format + "}", fmt::localtime(now_c));
 
 				const char *loglevel_str = GetLogLevelAsString(msg->loglevel);
 

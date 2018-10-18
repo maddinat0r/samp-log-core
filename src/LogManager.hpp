@@ -62,6 +62,4 @@ private:
 	std::mutex m_QueueMtx;
 	std::condition_variable m_QueueNotifier;
 	std::queue<Message_t> m_LogMsgQueue;
-
-	std::string m_DateTimeFormat;
 };

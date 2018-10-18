@@ -1,5 +1,6 @@
 #include "CAmxDebugManager.hpp"
 #include "SampConfigReader.hpp"
+#include "LogConfigReader.hpp"
 
 #include <cassert>
 #include <tinydir.h>
@@ -12,10 +13,8 @@ using samplog::AmxFuncCallInfo;
 CAmxDebugManager::CAmxDebugManager()
 {
 	string use_debuginfo;
-	if (SampConfigReader::Get()->GetVar("logcore_debuginfo", use_debuginfo)
-		&& use_debuginfo.empty() == false && use_debuginfo.at(0) == '0')
+	if (LogConfigReader::Get()->GetGlobalConfig().DisableDebugInfo)
 	{
-		// server.cfg var "logcore_debuginfo" is set to '0', 
 		// disable whole debug info functionality
 		m_DisableDebugInfo = true;
 		return;
