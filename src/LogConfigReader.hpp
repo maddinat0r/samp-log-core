@@ -10,6 +10,7 @@
 #include <map>
 #include <unordered_map>
 #include <memory>
+#include <mutex>
 
 
 using samplog::LogLevel;
@@ -43,6 +44,7 @@ private:
 	~LogConfig() = default;
 
 private: // variables
+	std::mutex _configLock;
 	std::unordered_map<std::string, LoggerConfig> _loggerConfigs;
 	std::map<LogLevel, LogLevelConfig> _levelConfigs;
 	GlobalConfig _globalConfig;
@@ -53,8 +55,9 @@ private: // functions
 
 public: // functions
 	void Initialize();
-	bool GetLoggerConfig(std::string const &module_name, LoggerConfig &dest) const
+	bool GetLoggerConfig(std::string const &module_name, LoggerConfig &dest)
 	{
+		std::lock_guard<std::mutex> lock(_configLock);
 		auto it = _loggerConfigs.find(module_name);
 		if (it != _loggerConfigs.end())
 		{
@@ -65,10 +68,12 @@ public: // functions
 	}
 	LogLevelConfig const &GetLogLevelConfig(LogLevel level)
 	{
+		std::lock_guard<std::mutex> lock(_configLock);
 		return _levelConfigs[level];
 	}
-	GlobalConfig const &GetGlobalConfig() const
+	GlobalConfig const &GetGlobalConfig()
 	{
+		std::lock_guard<std::mutex> lock(_configLock);
 		return _globalConfig;
 	}
 };

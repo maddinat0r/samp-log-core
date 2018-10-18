@@ -110,6 +110,8 @@ void LogConfig::ParseConfigFile()
 		return;
 	}
 
+	std::lock_guard<std::mutex> lock(_configLock);
+
 	_loggerConfigs.clear();
 
 	// default settings for log-core logger
