@@ -183,8 +183,8 @@ void LogManager::Process()
 	do
 	{
 		// this check seems unnecessary at first, however it's needed in
-		// case internal log messages are already queued (for example 
-		// LogConfig::Initialize logs warnings if there are parsing errors)
+		// case internal log messages are already queued before this logger thread starts
+		// (for example LogConfig::Initialize logs warnings if there are parsing errors)
 		if (_messageQueue.empty())
 		{
 			// we need to wake up in at least every minute to properly check for
