@@ -1,16 +1,23 @@
 #pragma once
-#ifndef INC_SAMPLOG_ILOGGER_HPP
-#define INC_SAMPLOG_ILOGGER_HPP
 
 #include "LogLevel.hpp"
-#include "DebugInfo.hpp"
-#include "export.h"
 
 #include <vector>
+#include <stdint.h>
 
+
+typedef struct tagAMX AMX;
+typedef int32_t cell;
 
 namespace samplog
 {
+	struct AmxFuncCallInfo
+	{
+		int line;
+		const char *file;
+		const char *function;
+	};
+
 	class ILogger
 	{
 	public:
@@ -28,10 +35,3 @@ namespace samplog
 		virtual ~ILogger() = default;
 	};
 }
-
-extern "C" DLL_PUBLIC samplog::ILogger *samplog_CreateLogger(const char *module);
-
-
-#undef DLL_PUBLIC
-
-#endif /* INC_SAMPLOG_ILOGGER_HPP */

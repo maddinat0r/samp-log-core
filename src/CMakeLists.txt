@@ -16,6 +16,7 @@ endif()
 set(LOGCORE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/samplog)
 
 add_library(log-core SHARED
+	Api.cpp
 	AmxDebugManager.cpp
 	AmxDebugManager.hpp
 	SampConfigReader.cpp

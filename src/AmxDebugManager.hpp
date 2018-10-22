@@ -8,8 +8,7 @@
 #include "Singleton.hpp"
 #include "amx/amx.h"
 #include "amx/amxdbg.h"
-#include <samplog/export.h>
-#include <samplog/DebugInfo.hpp>
+#include <samplog/ILogger.hpp>
 
 
 class AmxDebugManager : public Singleton<AmxDebugManager>

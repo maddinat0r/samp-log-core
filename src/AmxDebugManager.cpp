@@ -208,38 +208,3 @@ bool AmxDebugManager::GetFunctionCallTrace(AMX * const amx, std::vector<AmxFuncC
 
 	return true;
 }
-
-
-void samplog_RegisterAmx(AMX *amx)
-{
-	AmxDebugManager::Get()->RegisterAmx(amx);
-}
-
-void samplog_EraseAmx(AMX *amx)
-{
-	AmxDebugManager::Get()->EraseAmx(amx);
-}
-
-bool samplog_GetLastAmxFunctionCall(AMX * const amx, samplog::AmxFuncCallInfo *destination)
-{
-	if (destination == nullptr)
-		return false;
-
-	return AmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, *destination);
-}
-
-unsigned int samplog_GetAmxFunctionCallTrace(AMX * const amx, samplog::AmxFuncCallInfo * destination, unsigned int max_size)
-{
-	if (destination == nullptr || max_size == 0)
-		return 0;
-
-	std::vector<AmxFuncCallInfo> calls;
-	if (!AmxDebugManager::Get()->GetFunctionCallTrace(amx, calls))
-		return 0;
-	
-	size_t size = std::min(calls.size(), max_size);
-	for (size_t i = 0; i < size; ++i)
-		destination[i] = calls.at(i);
-
-	return size;
-}

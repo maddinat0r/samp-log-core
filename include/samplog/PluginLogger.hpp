@@ -3,7 +3,7 @@
 #define INC_SAMPLOG_PLUGINLOGGER_HPP
 
 
-#include "Logger.hpp"
+#include "Api.hpp"
 
 #include <string>
 
@@ -14,7 +14,7 @@ namespace samplog
 	{
 	public:
 		explicit PluginLogger(std::string pluginname) :
-			_logger(CreateLogger(pluginname.insert(0, "plugins/").c_str()))
+			_logger(Api::Get()->CreateLogger(pluginname.insert(0, "plugins/").c_str()))
 		{ }
 		~PluginLogger() = default;
 		PluginLogger(PluginLogger const &rhs) = delete;
@@ -45,7 +45,7 @@ namespace samplog
 		inline bool Log(AMX * const amx, const LogLevel level, const char *msg)
 		{
 			std::vector<AmxFuncCallInfo> call_info;
-			return GetAmxFunctionCallTrace(amx, call_info)
+			return Api::Get()->GetAmxFunctionCallTrace(amx, call_info)
 				&& _logger->Log(level, msg, call_info);
 		}
 

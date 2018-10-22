@@ -120,11 +120,3 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 		_moduleName, LogLevel::DEBUG, fmt::to_string(fmt_msg), std::move(call_info))));
 	return true;
 }
-
-samplog::ILogger *samplog_CreateLogger(const char *module)
-{
-	if (strstr(module, "log-core") != nullptr)
-		return nullptr;
-
-	return new Logger(module);
-}
