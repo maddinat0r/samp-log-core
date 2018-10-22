@@ -132,7 +132,7 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 			{
 				// don't spam with change events
 				auto current_tp = std::chrono::steady_clock::now();
-				if (current_tp - last_execution_tp > std::chrono::milliseconds(100))
+				if (current_tp - last_execution_tp > std::chrono::milliseconds(1000))
 				{
 					_callback();
 					last_execution_tp = current_tp;
