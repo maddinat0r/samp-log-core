@@ -17,8 +17,7 @@ namespace samplog
 		WARNING = 4,
 		ERROR = 8,
 		FATAL = 16,
-		VERBOSE = 32,
-		ALL = VERBOSE * 2 - 1
+		VERBOSE = 32
 	};
 
 	inline LogLevel operator|(LogLevel a, LogLevel b)

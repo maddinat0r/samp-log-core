@@ -7,6 +7,12 @@
 
 static const std::string CONFIG_FILE_NAME = "log-config.yml";
 
+LogLevel GetAllLogLevel()
+{
+	return LogLevel::DEBUG | LogLevel::INFO | LogLevel::WARNING
+		| LogLevel::ERROR | LogLevel::FATAL | LogLevel::VERBOSE;
+}
+
 bool ParseLogLevel(YAML::Node const &level_node, LogLevel &dest, std::string const &error_msg)
 {
 	static const std::unordered_map<std::string, LogLevel> loglevel_str_map = {
@@ -16,7 +22,7 @@ bool ParseLogLevel(YAML::Node const &level_node, LogLevel &dest, std::string con
 		{ "Error",   LogLevel::ERROR },
 		{ "Fatal",   LogLevel::FATAL },
 		{ "Verbose", LogLevel::VERBOSE },
-		{ "All",     LogLevel::ALL }
+		{ "All",     GetAllLogLevel() }
 	};
 
 	auto const &level_str = level_node.as<std::string>(std::string());
@@ -85,7 +91,7 @@ bool ParseFileSize(std::string const &size, unsigned int &dest_in_kb)
 LoggerConfig GetInternalLogConfig()
 {
 	LoggerConfig config;
-	config.Level = LogLevel::ALL;
+	config.Level = GetAllLogLevel();
 	config.PrintToConsole = true;
 	return config;
 }
