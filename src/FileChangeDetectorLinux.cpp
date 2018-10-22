@@ -1,5 +1,3 @@
-#include "FileChangeDetector.hpp"
-
 #include <chrono>
 
 #include <limits.h>
@@ -11,6 +9,11 @@
 #include <string.h> // memset
 #include <unistd.h> // read
 #include <libgen.h> // dirname, basename
+
+#include "FileChangeDetector.hpp"
+#include "LogManager.hpp"
+
+#include "fmt/format.h"
 
 
 void FileChangeDetector::EventLoop(std::string const file_path)
@@ -30,12 +33,23 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 
 	int notifier = inotify_init1(IN_NONBLOCK);
 	if (notifier < 0)
-		return; // TODO error msg?
+	{
+		LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, fmt::format(
+			"file change detector: can't initialize inotify instance: {:d}",
+			errno));
+		return;
+	}
 
 	int change_notify = inotify_add_watch(notifier, dir_path,
 		IN_CREATE | IN_MODIFY | IN_MOVED_TO);
 	if (change_notify < 0)
-		return; // TODO error msg?
+	{
+		LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, fmt::format(
+			"file change detector: can't add watch for directory \"{:s}\" " \
+			"to inotify instance: {:d}",
+			dir_path, errno));
+		return;
+	}
 
 	fd_set notify_set;
 
@@ -69,25 +83,44 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 			break;
 
 		if (status < 0)
-			return; // TODO error msg
+		{
+			LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, fmt::format(
+				"file change detector: can't select inotify instance: {:d}",
+				errno));
+			return;
+		}
 
 		int length = read(notifier, buf, sizeof(buf));
 		if (length < 0)
-			return; // TODO: error msg
+		{
+			LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, fmt::format(
+				"file change detector: can't read inotify instance: {:d}",
+				errno));
+			return;
+		}
 
 		exit_thread = false;
 		for (int i = 0; i != length; )
 		{
 			struct inotify_event *event = (struct inotify_event *) &buf[i];
 			if (event->wd < 0 || event->mask & IN_Q_OVERFLOW)
-				continue; // TODO: warning: event queue overflowed
+			{
+				LogManager::Get()->LogInternal(samplog::LogLevel::WARNING, fmt::format(
+					"file change detector: event queue overflowed"));
+				continue;
+			}
 
 			if (event->wd != change_notify)
-				continue; // TODO: warning: unknown watcher in event (?this is very very unlikely?)
+			{
+				LogManager::Get()->LogInternal(samplog::LogLevel::WARNING, fmt::format(
+					"file change detector: unknown watcher in event"));
+				continue;
+			}
 
 			if (event->mask & IN_IGNORED || event->mask & IN_UNMOUNT)
 			{
-				// TODO: warning (or info?): watch was removed by system
+				LogManager::Get()->LogInternal(samplog::LogLevel::WARNING, fmt::format(
+					"file change detector: inotify watch was removed by the system"));
 				exit_thread = true;
 				break;
 			}

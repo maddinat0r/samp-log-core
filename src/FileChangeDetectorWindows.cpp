@@ -1,9 +1,12 @@
-#include "FileChangeDetector.hpp"
-
 #include <chrono>
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
+#include "FileChangeDetector.hpp"
+#include "LogManager.hpp"
+
+#include "fmt/format.h"
 
 
 void FileChangeDetector::EventLoop(std::string const file_path)
@@ -15,7 +18,12 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 	char *filename;
 
 	if (GetFullPathName(file_path.c_str(), sizeof(full_path), full_path, &filename) == 0)
-		return; // TODO: error msg: can't resolve file path
+	{
+		LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, fmt::format(
+			"file change detector: can't resolve file path \"{:s}\": {:d}",
+			file_path, GetLastError()));
+		return;
+	}
 	_splitpath_s(full_path, full_directory_path, sizeof(full_directory_path),
 		directory_path, sizeof(directory_path), nullptr, 0, nullptr, 0);
 	strcat_s(full_directory_path, directory_path);
@@ -27,7 +35,10 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 
 	if (dir_handle == INVALID_HANDLE_VALUE || dir_handle == nullptr)
 	{
-		return; // TODO: error msg: cannot open folder
+		LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, fmt::format(
+			"file change detector: can't open folder \"{:s}\": {:d}", 
+			full_directory_path, GetLastError()));
+		return;
 	}
 
 	OVERLAPPED polling_overlap;
@@ -43,8 +54,13 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 			FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE,
 			nullptr, &polling_overlap, nullptr);
 
-		if (result == FALSE)
-			return; // TODO: error msg: can't queue read change operation
+		if (result == 0)
+		{
+			LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, fmt::format(
+				"file change detector: can't queue read change operation: {:d}",
+				GetLastError()));
+			return;
+		}
 
 		bool end_thread = false;
 		do
@@ -55,12 +71,22 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 				end_thread = true;
 				break;
 			}
+
 			if (wait_res == WAIT_TIMEOUT)
+			{
 				continue;
+			}
 			else if (wait_res == WAIT_OBJECT_0)
+			{
 				break;
+			}
 			else // error
-				return; // TODO: error msg: error while waiting on overlapped i/o event
+			{
+				LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, fmt::format(
+					"file change detector: error while waiting on overlapped I/O event: {:d}",
+					GetLastError()));
+				return;
+			}
 		} while (true);
 
 		if (end_thread)
@@ -103,7 +129,8 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 					// we only care if the file is still valid and has the name that we want
 					break;
 				default:
-					// TODO: warning message: unknown file action
+					LogManager::Get()->LogInternal(samplog::LogLevel::WARNING, fmt::format(
+						"file change detector: unknown file action '{:d}'", notify_info->Action));
 					break;
 			}
 

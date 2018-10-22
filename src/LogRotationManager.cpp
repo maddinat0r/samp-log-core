@@ -1,5 +1,3 @@
-#include "LogRotationManager.hpp"
-
 #include <cstdio>
 #include <fstream>
 #include <vector>
@@ -7,6 +5,9 @@
 #include <fmt/format.h>
 #include <fmt/time.h>
 #include <tinydir.h>
+
+#include "LogRotationManager.hpp"
+#include "LogManager.hpp"
 
 
 void LogRotationManager::Check(std::string const &filepath, LogRotationConfig const &config)
@@ -28,7 +29,11 @@ void LogRotationManager::Check(std::string const &filepath, LogRotationConfig co
 		}
 
 		if (size == -1)
-			return; //TODO error
+		{
+			LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, 
+				fmt::format("log rotation: invalid size for file \"{:s}\"", filepath));
+			return;
+		}
 
 		if (size < (config.Value.FileSize * 1000))
 			return; // file not large enough
