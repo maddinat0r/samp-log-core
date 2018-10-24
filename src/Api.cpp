@@ -2,9 +2,14 @@
 #include "AmxDebugManager.hpp"
 #include "Logger.hpp"
 #include "LogManager.hpp"
+#include "LogConfig.hpp"
+#include "SampConfigReader.hpp"
 
 #include "fmt/format.h"
+#include <atomic>
 
+
+std::atomic<unsigned int> RefCounter{ 0 };
 
 class Api : public samplog::internal::IApi
 {
@@ -45,16 +50,20 @@ extern "C" DLL_PUBLIC samplog::internal::IApi *samplog_GetApi(int version)
 {
 	LogManager::Get(); // force init
 
+	samplog::internal::IApi *api = nullptr;
 	switch (version)
 	{
 	case 1:
-		return new Api;
+		api = new Api;
+		break;
 	default:
 		LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, 
 			fmt::format("unknown api version '{:d}'", version));
-		break;
+		return nullptr;
 	}
-	return nullptr;
+
+	RefCounter++;
+	return api;
 }
 
 extern "C" DLL_PUBLIC void samplog_DestroyApi(samplog::internal::IApi *api)
@@ -63,4 +72,13 @@ extern "C" DLL_PUBLIC void samplog_DestroyApi(samplog::internal::IApi *api)
 		return;
 
 	delete api;
+	RefCounter--;
+
+	if (RefCounter == 0)
+	{
+		LogRotationManager::Destroy();
+		SampConfigReader::Destroy();
+		LogConfig::Destroy();
+		LogManager::Destroy();
+	}
 }
