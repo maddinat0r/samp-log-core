@@ -2,6 +2,7 @@
 
 #include "LogLevel.hpp"
 
+#include <string>
 #include <vector>
 #include <stdint.h>
 
@@ -24,12 +25,12 @@ namespace samplog
 		virtual bool IsLogLevel(LogLevel log_level) const = 0;
 
 		virtual bool LogNativeCall(AMX * const amx, cell * const params, 
-			const char *name, const char *params_format) = 0;
+			std::string name, std::string params_format) = 0;
 
-		virtual bool Log(LogLevel level, const char *msg,
+		virtual bool Log(LogLevel level, std::string msg,
 			std::vector<AmxFuncCallInfo> const &call_info) = 0;
 
-		virtual bool Log(LogLevel level, const char *msg) = 0;
+		virtual bool Log(LogLevel level, std::string msg) = 0;
 
 		virtual void Destroy() = 0;
 		virtual ~ILogger() = default;

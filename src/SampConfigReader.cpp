@@ -1,7 +1,6 @@
 #include "SampConfigReader.hpp"
 
 #include <fstream>
-#include <algorithm>
 #include <fmt/format.h>
 
 

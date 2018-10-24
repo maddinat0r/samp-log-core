@@ -3,26 +3,18 @@
 #include "Singleton.hpp"
 #include "samplog/LogLevel.hpp"
 #include "FileChangeDetector.hpp"
-#include "LogRotationManager.hpp"
+#include "Logger.hpp"
 
-#include <chrono>
 #include <string>
 #include <map>
 #include <unordered_map>
 #include <memory>
 #include <mutex>
+#include <functional>
 
 
 using samplog::LogLevel;
 
-
-struct LoggerConfig
-{
-	LogLevel Level = LogLevel::ERROR | LogLevel::WARNING | LogLevel::FATAL;
-	bool PrintToConsole = false;
-	bool Append = true;
-	LogRotationConfig Rotation;
-};
 
 struct LogLevelConfig
 {
@@ -39,33 +31,51 @@ struct GlobalConfig
 class LogConfig : public Singleton<LogConfig>
 {
 	friend Singleton<LogConfig>;
+public:
+	using ConfigUpdateEvent_t = std::function<void(Logger::Config const &)>;
+
 private:
 	LogConfig() = default;
 	~LogConfig() = default;
 
 private: // variables
 	std::mutex _configLock;
-	std::unordered_map<std::string, LoggerConfig> _loggerConfigs;
+	std::unordered_map<std::string, Logger::Config> _loggerConfigs;
+	std::unordered_map<std::string, ConfigUpdateEvent_t> _loggerConfigEvents;
 	std::map<LogLevel, LogLevelConfig> _levelConfigs;
 	GlobalConfig _globalConfig;
 	std::unique_ptr<FileChangeDetector> _fileWatcher;
 
 private: // functions
 	void ParseConfigFile();
+	void AddLoggerConfig(std::string const &module_name, Logger::Config &&config)
+	{
+		auto entry = _loggerConfigs.emplace(module_name, std::move(config));
+
+		// trigger config refresh for logger
+		auto it = _loggerConfigEvents.find(module_name);
+		if (it != _loggerConfigEvents.end())
+			it->second(entry.first->second);
+	}
 
 public: // functions
 	void Initialize();
-	bool GetLoggerConfig(std::string const &module_name, LoggerConfig &dest)
+
+	inline void SubscribeLogger(Logger *logger, ConfigUpdateEvent_t &&cb)
 	{
+		_loggerConfigEvents.emplace(logger->GetModuleName(),
+			std::forward<ConfigUpdateEvent_t>(cb));
+
 		std::lock_guard<std::mutex> lock(_configLock);
-		auto it = _loggerConfigs.find(module_name);
+		auto it = _loggerConfigs.find(logger->GetModuleName());
 		if (it != _loggerConfigs.end())
-		{
-			dest = it->second;
-			return true;
-		}
-		return false;
+			cb(it->second);
 	}
+	inline void UnsubscribeLogger(Logger *logger)
+	{
+		_loggerConfigEvents.erase(logger->GetModuleName());
+	}
+
 	LogLevelConfig const &GetLogLevelConfig(LogLevel level)
 	{
 		std::lock_guard<std::mutex> lock(_configLock);

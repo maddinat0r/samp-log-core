@@ -21,20 +21,21 @@ add_library(log-core SHARED
 	AmxDebugManager.hpp
 	SampConfigReader.cpp
 	SampConfigReader.hpp
-	Message.hpp
 	Singleton.hpp
-	LogConfigReader.cpp
-	LogConfigReader.hpp
+	LogConfig.cpp
+	LogConfig.hpp
 	Logger.cpp
 	Logger.hpp
 	LogManager.cpp
 	LogManager.hpp
 	LogRotationManager.cpp
 	LogRotationManager.hpp
-	crashhandler.hpp
+	utils.cpp
+	utils.hpp
 	${CRASHHANDLER_CPP}
-	FileChangeDetector.hpp
+	crashhandler.hpp
 	${FILECHANGEDETECTOR_CPP}
+	FileChangeDetector.hpp
 	${LOGCORE_INCLUDE_DIR}/LogLevel.hpp
 	${LOGCORE_INCLUDE_DIR}/ILogger.hpp
 	${LOGCORE_INCLUDE_DIR}/export.h

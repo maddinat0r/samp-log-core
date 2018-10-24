@@ -1,52 +1,70 @@
 #include "Logger.hpp"
 #include "AmxDebugManager.hpp"
 #include "LogManager.hpp"
+#include "LogConfig.hpp"
 #include "amx/amx2.h"
+#include "utils.hpp"
 
 #include <fmt/format.h>
-#include <cstring>
+#include <fmt/time.h>
+#include <ctime>
 
 
-Logger::Logger(std::string modulename) :
-	_moduleName(std::move(modulename))
+Logger::Logger(std::string module_name) :
+	_moduleName(std::move(module_name)),
+	_logFilePath("logs/" + _moduleName + ".log")
 {
-	LogManager::Get()->RegisterLogger(this);
-	LogConfig::Get()->GetLoggerConfig(_moduleName, _config);
+	//create possibly non-existing folders before opening log file
+	size_t pos = 0;
+	while ((pos = _moduleName.find('/', pos)) != std::string::npos)
+		utils::CreateFolder("logs/" + _moduleName.substr(0, pos++));
+	
+	LogConfig::Get()->SubscribeLogger(this, 
+		std::bind(&Logger::OnConfigUpdate, this, std::placeholders::_1));
 	if (_config.Append == false)
 	{
-		LogManager::Get()->QueueLogMessage(std::unique_ptr<Message>(new Message(
-			_moduleName, Message::Type::ACTION_CLEAR)));
+		// create file if it doesn't exist, and truncate whole content
+		std::ofstream logfile(_logFilePath, std::ofstream::trunc);
 	}
 }
 
 Logger::~Logger()
 {
-	LogManager::Get()->UnregisterLogger(this);
+	LogConfig::Get()->UnsubscribeLogger(this);
+	LogRotationManager::Get()->UnregisterLogFile(_logFilePath);
 }
 
-bool Logger::Log(LogLevel level, const char *msg, 
+bool Logger::Log(LogLevel level, std::string msg,
 	std::vector<samplog::AmxFuncCallInfo> const &call_info)
 {
 	if (!IsLogLevel(level))
 		return false;
 	
-	LogManager::Get()->QueueLogMessage(std::unique_ptr<Message>(new Message(
-		_moduleName, level, msg ? msg : "", std::vector<samplog::AmxFuncCallInfo>(call_info))));
+	auto current_time = Clock::now();
+	LogManager::Get()->Queue([this, level, current_time, msg, call_info]()
+	{
+		std::string const
+			time_str = FormatTimestamp(current_time),
+			log_msg = FormatLogMessage(msg, call_info);
+
+		WriteLogString(time_str, level, log_msg);
+
+		auto const &level_config = LogConfig::Get()->GetLogLevelConfig(level);
+		if (_config.PrintToConsole || level_config.PrintToConsole)
+			PrintLogString(time_str, level, log_msg);
+	});
+
 	return true;
 }
 
-bool Logger::Log(LogLevel level, const char *msg)
+bool Logger::Log(LogLevel level, std::string msg)
 {
-	if (!IsLogLevel(level))
-		return false;
-
-	LogManager::Get()->QueueLogMessage(std::unique_ptr<Message>(new Message(
-		_moduleName, level, msg ? msg : "", { })));
-	return true;
+	static const std::vector<samplog::AmxFuncCallInfo> empty_call_info;
+	return Log(level, std::move(msg), empty_call_info);
 }
 
 bool Logger::LogNativeCall(AMX * const amx, cell * const params,
-	const char *name, const char *params_format)
+	std::string name, std::string params_format)
 {
 	if (amx == nullptr)
 		return false;
@@ -54,23 +72,18 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 	if (params == nullptr)
 		return false;
 
-	if (name == nullptr || strlen(name) == 0)
-		return false;
-
-	if (params_format == nullptr) // params_format == "" is valid (no parameters)
+	if (name.empty())
 		return false;
 
 	if (!IsLogLevel(LogLevel::DEBUG))
 		return false;
 
 
-	size_t const format_len = strlen(params_format);
-
 	fmt::memory_buffer fmt_msg;
 
 	fmt::format_to(fmt_msg, "{:s}(", name);
 
-	for (int i = 0; i != format_len; ++i)
+	for (int i = 0; i != params_format.length(); ++i)
 	{
 		if (i != 0)
 			fmt::format_to(fmt_msg, ", ");
@@ -116,7 +129,78 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 	std::vector<samplog::AmxFuncCallInfo> call_info;
 	AmxDebugManager::Get()->GetFunctionCallTrace(amx, call_info);
 
-	LogManager::Get()->QueueLogMessage(std::unique_ptr<Message>(new Message(
-		_moduleName, LogLevel::DEBUG, fmt::to_string(fmt_msg), std::move(call_info))));
-	return true;
+	return Log(LogLevel::DEBUG, fmt::to_string(fmt_msg).c_str(), call_info);
+}
+
+void Logger::OnConfigUpdate(Logger::Config const &config)
+{
+	_config = config;
+	LogRotationManager::Get()->RegisterLogFile(_logFilePath, _config.Rotation);
+}
+
+std::string Logger::FormatTimestamp(Clock::time_point time)
+{
+	std::time_t now_c = std::chrono::system_clock::to_time_t(time);
+	auto const &time_format = LogConfig::Get()->GetGlobalConfig().LogTimeFormat;
+	return fmt::format("{:" + time_format + "}", fmt::localtime(now_c));
+}
+
+std::string Logger::FormatLogMessage(std::string message,
+	std::vector<samplog::AmxFuncCallInfo> call_info)
+{
+	fmt::memory_buffer log_string_buf;
+
+	fmt::format_to(log_string_buf, "{:s}", message);
+
+	if (!call_info.empty())
+	{
+		fmt::format_to(log_string_buf, " (");
+		bool first = true;
+		for (auto const &ci : call_info)
+		{
+			if (!first)
+				fmt::format_to(log_string_buf, " -> ");
+			fmt::format_to(log_string_buf, "{:s}:{:d}", ci.file, ci.line);
+			first = false;
+		}
+		fmt::format_to(log_string_buf, ")");
+	}
+
+	return fmt::to_string(log_string_buf);
+}
+
+void Logger::WriteLogString(std::string const &time, LogLevel level, std::string const &message)
+{
+	std::ofstream logfile(_logFilePath,
+		std::ofstream::out | std::ofstream::app);
+	logfile <<
+		"[" << time << "] " <<
+		"[" << utils::GetLogLevelAsString(level) << "] " <<
+		message << '\n' << std::flush;
+}
+
+void Logger::PrintLogString(std::string const &time, LogLevel level, std::string const &message)
+{
+	auto *loglevel_str = utils::GetLogLevelAsString(level);
+	if (LogConfig::Get()->GetGlobalConfig().EnableColors)
+	{
+		utils::EnsureTerminalColorSupport();
+
+		fmt::print("[");
+		fmt::print(fmt::rgb(255, 255, 150), time);
+		fmt::print("] [");
+		fmt::print(fmt::color::sandy_brown, GetModuleName());
+		fmt::print("] [");
+		auto loglevel_color = utils::GetLogLevelColor(level);
+		if (level == LogLevel::FATAL)
+			fmt::print(fmt::color::white, loglevel_color, loglevel_str);
+		else
+			fmt::print(loglevel_color, loglevel_str);
+		fmt::print("] {:s}\n", message);
+	}
+	else
+	{
+		fmt::print("[{:s}] [{:s}] [{:s}] {:s}\n",
+			time, GetModuleName(), loglevel_str, message);
+	}
 }

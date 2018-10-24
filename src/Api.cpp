@@ -2,6 +2,7 @@
 #include "AmxDebugManager.hpp"
 #include "Logger.hpp"
 #include "LogManager.hpp"
+
 #include "fmt/format.h"
 
 
@@ -42,6 +43,8 @@ public:
 
 extern "C" DLL_PUBLIC samplog::internal::IApi *samplog_GetApi(int version)
 {
+	LogManager::Get(); // force init
+
 	switch (version)
 	{
 	case 1:

@@ -1,6 +1,7 @@
-#include "LogConfigReader.hpp"
+#include "LogConfig.hpp"
 #include "LogManager.hpp"
 #include "LogRotationManager.hpp"
+
 #include <yaml-cpp/yaml.h>
 #include <fmt/format.h>
 
@@ -88,9 +89,9 @@ bool ParseFileSize(std::string const &size, unsigned int &dest_in_kb)
 	return true;
 }
 
-LoggerConfig GetInternalLogConfig()
+Logger::Config GetInternalLogConfig()
 {
-	LoggerConfig config;
+	Logger::Config config;
 	config.Level = GetAllLogLevel();
 	config.PrintToConsole = true;
 	return config;
@@ -176,7 +177,7 @@ void LogConfig::ParseConfigFile()
 	_loggerConfigs.clear();
 
 	// default settings for log-core logger
-	_loggerConfigs.emplace("log-core", GetInternalLogConfig());
+	AddLoggerConfig("log-core", GetInternalLogConfig());
 
 	YAML::Node const &loggers = root["Logger"];
 	for (YAML::const_iterator y_it = loggers.begin(); y_it != loggers.end(); ++y_it)
@@ -188,7 +189,7 @@ void LogConfig::ParseConfigFile()
 				fmt::format("could not parse logger config: invalid logger name"));
 			continue;
 		}
-		LoggerConfig config;
+		Logger::Config config;
 
 		std::string const error_msg_loglevel = fmt::format(
 			"could not parse log level setting for logger '{}'", module_name);
@@ -288,7 +289,7 @@ void LogConfig::ParseConfigFile()
 		if (append_logs && append_logs.IsScalar())
 			config.Append = append_logs.as<bool>(config.Append);
 
-		_loggerConfigs.emplace(module_name, std::move(config));
+		AddLoggerConfig(module_name, std::move(config));
 	}
 
 	_levelConfigs.clear();

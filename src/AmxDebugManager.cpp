@@ -1,6 +1,6 @@
 #include "AmxDebugManager.hpp"
 #include "SampConfigReader.hpp"
-#include "LogConfigReader.hpp"
+#include "LogConfig.hpp"
 
 #include <cassert>
 #include <tinydir.h>
