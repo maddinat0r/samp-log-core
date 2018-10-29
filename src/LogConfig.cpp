@@ -23,7 +23,8 @@ bool ParseLogLevel(YAML::Node const &level_node, LogLevel &dest, std::string con
 		{ "Error",   LogLevel::ERROR },
 		{ "Fatal",   LogLevel::FATAL },
 		{ "Verbose", LogLevel::VERBOSE },
-		{ "All",     GetAllLogLevel() }
+		{ "All",     GetAllLogLevel() },
+		{ "None",	 LogLevel::NONE }
 	};
 
 	auto const &level_str = level_node.as<std::string>(std::string());
@@ -42,7 +43,11 @@ bool ParseLogLevel(YAML::Node const &level_node, LogLevel &dest, std::string con
 		return false;
 	}
 
-	dest |= (*it).second;
+	auto const &level = (*it).second;
+	if (level != LogLevel::NONE)
+		dest |= level;
+	else
+		dest = LogLevel::NONE;
 	return true;
 }
 
