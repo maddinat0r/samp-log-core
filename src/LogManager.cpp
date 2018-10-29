@@ -8,7 +8,6 @@
 #endif
 
 #include "LogManager.hpp"
-#include "LogConfig.hpp"
 #include "crashhandler.hpp"
 #include "utils.hpp"
 
@@ -77,8 +76,6 @@ void LogManager::WriteLevelLogString(std::string const &time, LogLevel level,
 
 void LogManager::Process()
 {
-	LogConfig::Get()->Initialize();
-
 	std::unique_lock<std::mutex> lk(_queueMtx);
 
 	do

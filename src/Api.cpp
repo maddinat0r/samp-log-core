@@ -48,7 +48,11 @@ public:
 
 extern "C" DLL_PUBLIC samplog::internal::IApi *samplog_GetApi(int version)
 {
-	LogManager::Get(); // force init
+	if (RefCounter == 0)
+	{
+		LogConfig::Get()->Initialize();
+		LogManager::Get(); // force init
+	}
 
 	samplog::internal::IApi *api = nullptr;
 	switch (version)
