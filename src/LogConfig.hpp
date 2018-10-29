@@ -63,13 +63,13 @@ public: // functions
 
 	inline void SubscribeLogger(Logger *logger, ConfigUpdateEvent_t &&cb)
 	{
-		_loggerConfigEvents.emplace(logger->GetModuleName(),
+		auto e_it = _loggerConfigEvents.emplace(logger->GetModuleName(),
 			std::forward<ConfigUpdateEvent_t>(cb));
 
 		std::lock_guard<std::mutex> lock(_configLock);
 		auto it = _loggerConfigs.find(logger->GetModuleName());
 		if (it != _loggerConfigs.end())
-			cb(it->second);
+			e_it.first->second(it->second);
 	}
 	inline void UnsubscribeLogger(Logger *logger)
 	{
