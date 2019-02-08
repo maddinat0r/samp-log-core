@@ -187,15 +187,15 @@ void Logger::PrintLogString(std::string const &time, LogLevel level, std::string
 		utils::EnsureTerminalColorSupport();
 
 		fmt::print("[");
-		fmt::print(fmt::rgb(255, 255, 150), time);
+		fmt::print(fmt::fg(fmt::rgb(255, 255, 150)), time);
 		fmt::print("] [");
-		fmt::print(fmt::color::sandy_brown, GetModuleName());
+		fmt::print(fmt::fg(fmt::color::sandy_brown), GetModuleName());
 		fmt::print("] [");
 		auto loglevel_color = utils::GetLogLevelColor(level);
 		if (level == LogLevel::FATAL)
-			fmt::print(fmt::color::white, loglevel_color, loglevel_str);
+			fmt::print(fmt::fg(fmt::color::white) | fmt::bg(loglevel_color), loglevel_str);
 		else
-			fmt::print(loglevel_color, loglevel_str);
+			fmt::print(fmt::fg(loglevel_color), loglevel_str);
 		fmt::print("] {:s}\n", message);
 	}
 	else
