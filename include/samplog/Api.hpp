@@ -25,6 +25,8 @@ namespace samplog
 				std::vector<AmxFuncCallInfo> &dest) = 0;
 
 			virtual samplog::ILogger *CreateLogger(const char *module) = 0;
+
+			virtual ~IApi() { }
 		};
 	}
 }
