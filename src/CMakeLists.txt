@@ -78,14 +78,14 @@ if(MSVC)
 endif()
 
 if(UNIX AND NOT APPLE)
-	target_link_libraries(log-core rt)
+	target_link_libraries(log-core PRIVATE rt)
 endif()
 
-add_dependencies(log-core amx fmt yaml-cpp)
-target_link_libraries(log-core
-	PRIVATE amx
-	PRIVATE fmt
-	PRIVATE yaml-cpp)
+target_link_libraries(log-core PRIVATE
+	amx
+	fmt
+	yaml-cpp
+)
 
 if(LOGCORE_INSTALL_DEV)
 	set(INCLUDE_INSTALL_DIR include)

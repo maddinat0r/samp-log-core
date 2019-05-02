@@ -1,0 +1,37 @@
+version: '{branch}-{build}'
+
+image:
+  - Ubuntu1604
+  - Visual Studio 2017
+
+environment:
+  global:
+    CMAKE_BUILD_PARALLEL_LEVEL: 2
+  matrix:
+    - BUILD_TYPE: Debug
+    - BUILD_TYPE: Release
+
+install:
+  # set appveyor build version based on git
+  - ps: Update-AppveyorBuild -Version "$(git describe --tags --always)"
+  # appveyor workaround: initialize all submodules
+  - git submodule update --init --recursive
+  - sh: sudo apt-get -qq update
+  - sh: sudo apt-get -qq -y install g++-multilib gcc-multilib
+  - sh: "echo g++ version: $(g++ --version | cut -d$'\n' -f1)"
+
+before_build:
+  - git clone --recursive --quiet https://github.com/jbeder/yaml-cpp.git
+  - git -C yaml-cpp describe --tags # print yaml-cpp version
+  - ps: cmake -Wno-dev --no-warn-unused-cli -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 -DCMAKE_INSTALL_PREFIX=yaml-cpp-install -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF -DYAML_CPP_BUILD_TESTS=OFF -DBUILD_GMOCK=OFF -S yaml-cpp -B yaml-cpp-build
+  - ps: cmake --build yaml-cpp-build --config $env:BUILD_TYPE --target install
+
+build_script:
+  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/lib/cmake/yaml-cpp -DLOGCORE_INSTALL_DEV=OFF -S . -B build
+  - ps: cmake --build build --target package --config $env:BUILD_TYPE
+  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/lib/cmake/yaml-cpp -DLOGCORE_INSTALL_DEV=ON -S . -B build
+  - ps: cmake --build build --target package --config $env:BUILD_TYPE
+
+artifacts:
+  - path: 'build/*.zip'
+  - path: 'build/*.tar.gz'
