@@ -167,7 +167,7 @@ void LogConfig::ParseConfigFile()
 	}
 	catch (const YAML::ParserException& e)
 	{
-		LogManager::Get()->LogInternal(LogLevel::ERROR, 
+		LogManager::Get()->LogInternal(LogLevel::ERROR,
 			fmt::format("could not parse log config file: {}", e.what()));
 		return;
 	}
@@ -235,32 +235,32 @@ void LogConfig::ParseConfigFile()
 					config.Rotation.Type = it->second;
 					switch (config.Rotation.Type)
 					{
-						case LogRotationType::DATE:
+					case LogRotationType::DATE:
+					{
+						auto time_str = trigger.as<std::string>("Daily");
+						if (!ParseDuration(time_str, config.Rotation.Value.Date))
 						{
-							auto time_str = trigger.as<std::string>("Daily");
-							if (!ParseDuration(time_str, config.Rotation.Value.Date))
-							{
-								config.Rotation.Value.Date = LogRotationTimeType::DAILY;
-								LogManager::Get()->LogInternal(LogLevel::WARNING,
-									fmt::format(
-										"could not parse date log rotation duration " \
-										"for logger '{}': invalid duration \"{}\"",
-										module_name, time_str));
-							}
-						} break;
-						case LogRotationType::SIZE:
+							config.Rotation.Value.Date = LogRotationTimeType::DAILY;
+							LogManager::Get()->LogInternal(LogLevel::WARNING,
+								fmt::format(
+									"could not parse date log rotation duration " \
+									"for logger '{}': invalid duration \"{}\"",
+									module_name, time_str));
+						}
+					} break;
+					case LogRotationType::SIZE:
+					{
+						auto size_str = trigger.as<std::string>("100MB");
+						if (!ParseFileSize(size_str, config.Rotation.Value.FileSize))
 						{
-							auto size_str = trigger.as<std::string>("100MB");
-							if (!ParseFileSize(size_str, config.Rotation.Value.FileSize))
-							{
-								config.Rotation.Value.FileSize = 100;
-								LogManager::Get()->LogInternal(LogLevel::WARNING,
-									fmt::format(
-										"could not parse file log rotation size " \
-										"for logger '{}': invalid size \"{}\"",
-										module_name, size_str));
-							}
-						} break;
+							config.Rotation.Value.FileSize = 100;
+							LogManager::Get()->LogInternal(LogLevel::WARNING,
+								fmt::format(
+									"could not parse file log rotation size " \
+									"for logger '{}': invalid size \"{}\"",
+									module_name, size_str));
+						}
+					} break;
 					}
 
 					YAML::Node const &backup_count = log_rotation["BackupCount"];
@@ -272,7 +272,7 @@ void LogConfig::ParseConfigFile()
 					LogManager::Get()->LogInternal(LogLevel::WARNING,
 						fmt::format(
 							"could not parse log rotation setting for logger '{}': " \
-							"invalid log rotation type '{}'", 
+							"invalid log rotation type '{}'",
 							module_name, type_str));
 				}
 			}
@@ -345,7 +345,7 @@ void LogConfig::Initialize()
 	ParseConfigFile();
 	_fileWatcher.reset(new FileChangeDetector(CONFIG_FILE_NAME, [this]()
 	{
-		LogManager::Get()->LogInternal(LogLevel::INFO, 
+		LogManager::Get()->LogInternal(LogLevel::INFO,
 			"config file change detected, reloading...");
 		ParseConfigFile();
 		LogManager::Get()->LogInternal(LogLevel::INFO,

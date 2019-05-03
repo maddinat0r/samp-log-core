@@ -51,7 +51,7 @@ void AmxDebugManager::InitDebugDataDir(const char *directory)
 	{
 		tinydir_file file;
 		tinydir_readfile(&dir, &file);
-		
+
 		if (file.is_dir && file.name[0] != '.')
 			InitDebugDataDir(file.path);
 		else if (!strcmp(file.extension, "amx"))

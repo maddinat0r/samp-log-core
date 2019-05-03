@@ -21,7 +21,7 @@
 #include <map>
 #include <mutex>
 
- // Linux/Clang, OSX/Clang, OSX/gcc
+// Linux/Clang, OSX/Clang, OSX/gcc
 #if (defined(__clang__) || defined(__APPLE__))
 #include <sys/ucontext.h>
 #else
@@ -32,27 +32,27 @@
 using samplog::LogLevel;
 
 
-namespace 
+namespace
 {
 	const std::map<int, std::string> Signals = {
-	   {SIGABRT, "SIGABRT"},
-	   {SIGFPE, "SIGFPE"},
-	   {SIGILL, "SIGILL"},
-	   {SIGSEGV, "SIGSEGV"},
-	   {SIGINT, "SIGINT"},
+		{SIGABRT, "SIGABRT"},
+		{SIGFPE, "SIGFPE"},
+		{SIGILL, "SIGILL"},
+		{SIGSEGV, "SIGSEGV"},
+		{SIGINT, "SIGINT"},
 	};
 
 	std::map<int, struct sigaction> OldSignalActions;
 
-	
-	bool IsFirstSignal() 
+
+	bool IsFirstSignal()
 	{
 		static std::atomic<int> first_exit{ 0 };
 		int const count = first_exit.fetch_add(1, std::memory_order_relaxed);
 		return (count == 0);
 	}
 
-	void RestoreSignalHandler(int signal_number) 
+	void RestoreSignalHandler(int signal_number)
 	{
 		//try restoring old action
 		auto it = OldSignalActions.find(signal_number);
@@ -70,7 +70,7 @@ namespace
 		raise(signal_number);
 	}
 
-	void SignalHandler(int signal_number, siginfo_t* info, void* unused_context) 
+	void SignalHandler(int signal_number, siginfo_t* info, void* unused_context)
 	{
 		//only one signal will be allowed past this point
 		if (!IsFirstSignal())
@@ -94,7 +94,7 @@ namespace
 
 namespace crashhandler
 {
-	void Install() 
+	void Install()
 	{
 		struct sigaction action, old_action;
 		memset(&action, 0, sizeof(action));
@@ -103,7 +103,7 @@ namespace crashhandler
 		action.sa_sigaction = &SignalHandler;
 		action.sa_flags = SA_SIGINFO;
 
-		for (const auto &signal : Signals) 
+		for (const auto &signal : Signals)
 		{
 			if (sigaction(signal.first, &action, &old_action) < 0)
 			{

@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace crashhandler 
+namespace crashhandler
 {
 	void Install();
 }

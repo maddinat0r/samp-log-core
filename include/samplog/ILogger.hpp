@@ -24,7 +24,7 @@ namespace samplog
 	public:
 		virtual bool IsLogLevel(LogLevel log_level) const = 0;
 
-		virtual bool LogNativeCall(AMX * const amx, cell * const params, 
+		virtual bool LogNativeCall(AMX * const amx, cell * const params,
 			std::string name, std::string params_format) = 0;
 
 		virtual bool Log(LogLevel level, std::string msg,

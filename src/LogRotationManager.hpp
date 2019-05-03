@@ -64,7 +64,7 @@ public:
 		auto it = _rotationEntries.find(file_path);
 		if (it != _rotationEntries.end())
 			_rotationEntries.erase(file_path);
-		
+
 		if (config.Type != LogRotationType::NONE)
 			_rotationEntries.emplace(file_path, config);
 	}

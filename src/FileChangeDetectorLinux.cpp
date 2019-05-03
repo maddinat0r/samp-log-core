@@ -24,7 +24,7 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 
 	// dirname and basename can modify the string passed,
 	// so we make a copy for the second call
-	std::string 
+	std::string
 		absolute_path(file_path),
 		absolute_path_copy(absolute_path);
 	const char

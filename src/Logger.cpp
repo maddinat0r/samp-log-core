@@ -18,8 +18,8 @@ Logger::Logger(std::string module_name) :
 	size_t pos = 0;
 	while ((pos = _moduleName.find('/', pos)) != std::string::npos)
 		utils::CreateFolder("logs/" + _moduleName.substr(0, pos++));
-	
-	LogConfig::Get()->SubscribeLogger(this, 
+
+	LogConfig::Get()->SubscribeLogger(this,
 		std::bind(&Logger::OnConfigUpdate, this, std::placeholders::_1));
 	if (_config.Append == false)
 	{
@@ -39,7 +39,7 @@ bool Logger::Log(LogLevel level, std::string msg,
 {
 	if (!IsLogLevel(level))
 		return false;
-	
+
 	auto current_time = Clock::now();
 	LogManager::Get()->Queue([this, level, current_time, msg, call_info]()
 	{
@@ -91,37 +91,37 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 		cell current_param = params[i + 1];
 		switch (params_format[i])
 		{
-			case 'd': //decimal
-			case 'i': //integer
-				fmt::format_to(fmt_msg, "{:d}", static_cast<int>(current_param));
-				break;
-			case 'f': //float
-				fmt::format_to(fmt_msg, "{:f}", amx_ctof(current_param));
-				break;
-			case 'h': //hexadecimal
-			case 'x': //
-				fmt::format_to(fmt_msg, "{:x}", current_param);
-				break;
-			case 'b': //binary
-				fmt::format_to(fmt_msg, "{:b}", current_param);
-				break;
-			case 's': //string
-				fmt::format_to(fmt_msg, "\"{:s}\"", amx_GetCppString(amx, current_param));
-				break;
-			case '*': //censored output
-				fmt::format_to(fmt_msg, "\"*****\"");
-				break;
-			case 'r': //reference
-			{
-				cell *addr_dest = nullptr;
-				amx_GetAddr(amx, current_param, &addr_dest);
-				fmt::format_to(fmt_msg, "{:#08x}", reinterpret_cast<unsigned int>(addr_dest));
-			}	break;
-			case 'p': //pointer-value
-				fmt::format_to(fmt_msg, "{:#08x}", current_param);
-				break;
-			default:
-				return false; //unrecognized format specifier
+		case 'd': //decimal
+		case 'i': //integer
+			fmt::format_to(fmt_msg, "{:d}", static_cast<int>(current_param));
+			break;
+		case 'f': //float
+			fmt::format_to(fmt_msg, "{:f}", amx_ctof(current_param));
+			break;
+		case 'h': //hexadecimal
+		case 'x': //
+			fmt::format_to(fmt_msg, "{:x}", current_param);
+			break;
+		case 'b': //binary
+			fmt::format_to(fmt_msg, "{:b}", current_param);
+			break;
+		case 's': //string
+			fmt::format_to(fmt_msg, "\"{:s}\"", amx_GetCppString(amx, current_param));
+			break;
+		case '*': //censored output
+			fmt::format_to(fmt_msg, "\"*****\"");
+			break;
+		case 'r': //reference
+		{
+			cell *addr_dest = nullptr;
+			amx_GetAddr(amx, current_param, &addr_dest);
+			fmt::format_to(fmt_msg, "{:#08x}", reinterpret_cast<unsigned int>(addr_dest));
+		}	break;
+		case 'p': //pointer-value
+			fmt::format_to(fmt_msg, "{:#08x}", current_param);
+			break;
+		default:
+			return false; //unrecognized format specifier
 		}
 	}
 	fmt::format_to(fmt_msg, ")");

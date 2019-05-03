@@ -34,7 +34,7 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 	if (dir_handle == INVALID_HANDLE_VALUE || dir_handle == nullptr)
 	{
 		LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, fmt::format(
-			"file change detector: can't open folder \"{:s}\": {:d}", 
+			"file change detector: can't open folder \"{:s}\": {:d}",
 			full_directory_path, GetLastError()));
 		return;
 	}
@@ -108,28 +108,28 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 			bool execute = false;
 			switch (notify_info->Action)
 			{
-				case FILE_ACTION_ADDED:
-				case FILE_ACTION_RENAMED_NEW_NAME:
-					execute = true;
-					break;
-				case FILE_ACTION_MODIFIED:
-				{
-					// skip every first update, because FILE_ACTION_MODIFIED seems
-					// to come in twice with a delay of several ms
-					static bool is_first = true;
-					if (!is_first)
-						execute = true;
-					is_first = !is_first;
-				}
+			case FILE_ACTION_ADDED:
+			case FILE_ACTION_RENAMED_NEW_NAME:
+				execute = true;
 				break;
-				case FILE_ACTION_REMOVED:
-				case FILE_ACTION_RENAMED_OLD_NAME:
-					// we only care if the file is still valid and has the name that we want
-					break;
-				default:
-					LogManager::Get()->LogInternal(samplog::LogLevel::WARNING, fmt::format(
-						"file change detector: unknown file action '{:d}'", notify_info->Action));
-					break;
+			case FILE_ACTION_MODIFIED:
+			{
+				// skip every first update, because FILE_ACTION_MODIFIED seems
+				// to come in twice with a delay of several ms
+				static bool is_first = true;
+				if (!is_first)
+					execute = true;
+				is_first = !is_first;
+			}
+			break;
+			case FILE_ACTION_REMOVED:
+			case FILE_ACTION_RENAMED_OLD_NAME:
+				// we only care if the file is still valid and has the name that we want
+				break;
+			default:
+				LogManager::Get()->LogInternal(samplog::LogLevel::WARNING, fmt::format(
+					"file change detector: unknown file action '{:d}'", notify_info->Action));
+				break;
 			}
 
 			if (execute)

@@ -23,12 +23,12 @@ public:
 		AmxDebugManager::Get()->EraseAmx(amx);
 	}
 
-	bool GetLastAmxFunctionCall(AMX * const amx, 
+	bool GetLastAmxFunctionCall(AMX * const amx,
 		samplog::AmxFuncCallInfo &destination) override
 	{
 		return AmxDebugManager::Get()->GetFunctionCall(amx, amx->cip, destination);
 	}
-	bool GetAmxFunctionCallTrace(AMX * const amx, 
+	bool GetAmxFunctionCallTrace(AMX * const amx,
 		std::vector<samplog::AmxFuncCallInfo> &dest) override
 	{
 		if (!AmxDebugManager::Get()->GetFunctionCallTrace(amx, dest))
@@ -61,7 +61,7 @@ extern "C" DLL_PUBLIC samplog::internal::IApi *samplog_GetApi(int version)
 		api = new Api;
 		break;
 	default:
-		LogManager::Get()->LogInternal(samplog::LogLevel::ERROR, 
+		LogManager::Get()->LogInternal(samplog::LogLevel::ERROR,
 			fmt::format("unknown api version '{:d}'", version));
 		return nullptr;
 	}
