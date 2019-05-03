@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
-project(samp-log-core)
+project(samp-log-core VERSION 0.4)
 
-set(LOGCORE_VERSION 0.4)
+if (NOT LOGCORE_VERSION) # allow version override
+	set(LOGCORE_VERSION ${PROJECT_VERSION})
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/libs/cmake")
 
 set(CMAKE_CXX_STANDARD 11) #required for fmt library
