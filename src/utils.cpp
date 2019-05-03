@@ -62,6 +62,13 @@ void utils::CreateFolder(std::string foldername)
 #endif
 }
 
+void utils::EnsureFolders(std::string const &path)
+{
+	size_t pos = 0;
+	while ((pos = path.find('/', pos)) != std::string::npos)
+		utils::CreateFolder(path.substr(0, pos++));
+}
+
 void utils::EnsureTerminalColorSupport()
 {
 	static bool enabled = false;

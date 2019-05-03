@@ -45,11 +45,6 @@ private:
 	void Process();
 
 private:
-	std::ofstream
-		_warningLog,
-		_errorLog,
-		_fatalLog;
-
 	std::atomic<bool> _threadRunning;
 	std::thread *_thread;
 

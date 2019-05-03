@@ -26,6 +26,7 @@ struct GlobalConfig
 	std::string LogTimeFormat = "%x %X";
 	bool DisableDebugInfo = false;
 	bool EnableColors = false;
+	std::string LogsRootFolder = "logs/";
 };
 
 class LogConfig : public Singleton<LogConfig>

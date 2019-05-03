@@ -338,6 +338,12 @@ void LogConfig::ParseConfigFile()
 	YAML::Node const &disable_debug = root["DisableDebugInfo"];
 	if (disable_debug && disable_debug.IsScalar())
 		_globalConfig.DisableDebugInfo = disable_debug.as<bool>(_globalConfig.DisableDebugInfo);
+
+	YAML::Node const &root_folder = root["LogsRootFolder"];
+	if (root_folder && root_folder.IsScalar())
+		_globalConfig.LogsRootFolder = root_folder.as<std::string>(_globalConfig.LogsRootFolder);
+	if (_globalConfig.LogsRootFolder.back() != '/')
+		_globalConfig.LogsRootFolder.push_back('/');
 }
 
 void LogConfig::Initialize()

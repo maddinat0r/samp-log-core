@@ -12,12 +12,10 @@
 
 Logger::Logger(std::string module_name) :
 	_moduleName(std::move(module_name)),
-	_logFilePath("logs/" + _moduleName + ".log")
+	_logFilePath(LogConfig::Get()->GetGlobalConfig().LogsRootFolder + _moduleName + ".log")
 {
 	//create possibly non-existing folders before opening log file
-	size_t pos = 0;
-	while ((pos = _moduleName.find('/', pos)) != std::string::npos)
-		utils::CreateFolder("logs/" + _moduleName.substr(0, pos++));
+	utils::EnsureFolders(_logFilePath);
 
 	LogConfig::Get()->SubscribeLogger(this,
 		std::bind(&Logger::OnConfigUpdate, this, std::placeholders::_1));

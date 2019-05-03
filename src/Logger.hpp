@@ -63,8 +63,8 @@ private:
 		std::string const &message);
 
 private:
-	std::string _moduleName;
-	std::string _logFilePath;
+	std::string const _moduleName;
+	std::string const _logFilePath;
 
 	Config _config;
 };

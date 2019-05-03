@@ -7,8 +7,12 @@
 #endif
 
 #include "LogManager.hpp"
+#include "LogConfig.hpp"
 #include "crashhandler.hpp"
 #include "utils.hpp"
+
+#include <memory>
+#include <map>
 
 using samplog::LogLevel;
 
@@ -19,12 +23,6 @@ LogManager::LogManager() :
 	_internalLogger("log-core")
 {
 	crashhandler::Install();
-
-	utils::CreateFolder("logs");
-
-	_warningLog.open("logs/warnings.log");
-	_errorLog.open("logs/errors.log");
-	_fatalLog.open("logs/fatals.log");
 
 	_thread = new std::thread(std::bind(&LogManager::Process, this));
 }
@@ -38,10 +36,6 @@ LogManager::~LogManager()
 	_queueNotifier.notify_one();
 	_thread->join();
 	delete _thread;
-
-	_warningLog.close();
-	_errorLog.close();
-	_fatalLog.close();
 }
 
 void LogManager::Queue(Action_t &&action)
@@ -56,17 +50,20 @@ void LogManager::Queue(Action_t &&action)
 void LogManager::WriteLevelLogString(std::string const &time, LogLevel level,
 	std::string const &module_name, std::string const &message)
 {
-	std::ofstream *loglevel_file = nullptr;
-	if (level == LogLevel::WARNING)
-		loglevel_file = &_warningLog;
-	else if (level == LogLevel::ERROR)
-		loglevel_file = &_errorLog;
-	else if (level == LogLevel::FATAL)
-		loglevel_file = &_fatalLog;
+	static const std::map<LogLevel, std::string> level_files{
+		{ LogLevel::WARNING, "warnings.log" },
+		{ LogLevel::ERROR, "errors.log" },
+		{ LogLevel::FATAL, "fatals.log" }
+	};
 
-	if (loglevel_file != nullptr)
+	auto it = level_files.find(level);
+	if (it != level_files.end())
 	{
-		(*loglevel_file) <<
+		auto file_path = LogConfig::Get()->GetGlobalConfig().LogsRootFolder + it->second;
+		utils::EnsureFolders(file_path);
+		std::ofstream loglevel_file(file_path,
+			std::ofstream::out | std::ofstream::app);
+		loglevel_file <<
 			"[" << time << "] " <<
 			"[" << module_name << "] " <<
 			message << '\n' << std::flush;

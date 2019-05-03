@@ -12,5 +12,6 @@ namespace utils
 	fmt::rgb GetLogLevelColor(samplog::LogLevel level);
 
 	void CreateFolder(std::string foldername);
+	void EnsureFolders(std::string const &path);
 	void EnsureTerminalColorSupport();
 }
