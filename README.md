@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/maddinat0r/samp-log-core.svg?branch=master)](https://travis-ci.org/maddinat0r/samp-log-core)
+[![Build status](https://ci.appveyor.com/api/projects/status/ebgu1ks49gxu2509/branch/master?svg=true)](https://ci.appveyor.com/project/maddinat0r/samp-log-core/branch/master)
+
 What is this?  
 -----
 This is a library which provides a full logging-system to be used in any SA-MP plugins. It can also use debug information in an AMX file to provide more information about a native-call (like in which PAWN file and on which line number it was called).
