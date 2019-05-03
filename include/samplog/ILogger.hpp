@@ -2,9 +2,9 @@
 
 #include "LogLevel.hpp"
 
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <stdint.h>
 
 
 typedef struct tagAMX AMX;
