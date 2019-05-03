@@ -19,7 +19,7 @@ namespace
 
 #define __CH_WIN32_STATUS_PAIR(stat) {STATUS_##stat, #stat}
 
-	const std::map<crashhandler::Signal, std::string> KnownExceptionsMap{
+	const std::map<DWORD, std::string> KnownExceptionsMap{
 		__CH_WIN32_STATUS_PAIR(ACCESS_VIOLATION),
 		__CH_WIN32_STATUS_PAIR(DATATYPE_MISALIGNMENT),
 		__CH_WIN32_STATUS_PAIR(BREAKPOINT),
@@ -51,7 +51,7 @@ namespace
 
 	LONG WINAPI GeneralExceptionHandler(LPEXCEPTION_POINTERS info, const char *handler)
 	{
-		const crashhandler::Signal fatal_signal = info->ExceptionRecord->ExceptionCode;
+		const DWORD fatal_signal = info->ExceptionRecord->ExceptionCode;
 		auto it = KnownExceptionsMap.find(fatal_signal);
 		const std::string signal_str = (it != KnownExceptionsMap.end()) ? it->second : "<unknown>";
 		const std::string err_msg = fmt::format(
@@ -73,7 +73,7 @@ namespace
 
 	LONG WINAPI VectoredExceptionHandler(PEXCEPTION_POINTERS p)
 	{
-		const crashhandler::Signal exc_code = p->ExceptionRecord->ExceptionCode;
+		const DWORD exc_code = p->ExceptionRecord->ExceptionCode;
 		if (KnownExceptionsMap.find(exc_code) == KnownExceptionsMap.end())
 			return EXCEPTION_CONTINUE_SEARCH; //not an exception we care for
 

@@ -34,7 +34,7 @@ using samplog::LogLevel;
 
 namespace 
 {
-	const std::map<crashhandler::Signal, std::string> Signals = {
+	const std::map<int, std::string> Signals = {
 	   {SIGABRT, "SIGABRT"},
 	   {SIGFPE, "SIGFPE"},
 	   {SIGILL, "SIGILL"},
@@ -42,7 +42,7 @@ namespace
 	   {SIGINT, "SIGINT"},
 	};
 
-	std::map<crashhandler::Signal, struct sigaction> OldSignalActions;
+	std::map<int, struct sigaction> OldSignalActions;
 
 	
 	bool IsFirstSignal() 
@@ -60,7 +60,7 @@ namespace
 			sigaction(signal_number, &(it->second), nullptr);
 	}
 
-	void ExitWithDefaultSignalHandler(crashhandler::Signal fatal_signal_id)
+	void ExitWithDefaultSignalHandler(int fatal_signal_id)
 	{
 		const int signal_number = static_cast<int>(fatal_signal_id);
 		RestoreSignalHandler(signal_number);
