@@ -12,8 +12,10 @@ environment:
     - BUILD_TYPE: Release
 
 install:
+  # set version environment variable
+  - ps: $env:GIT_REPO_VERSION = "$(git describe --tags --always)"
   # set appveyor build version based on git
-  - ps: Update-AppveyorBuild -Version "$(git describe --tags --always)"
+  - ps: Update-AppveyorBuild -Version "$env:GIT_REPO_VERSION"
   # appveyor workaround: initialize all submodules
   - git submodule update --init --recursive
   - sh: sudo apt-get -qq update
@@ -27,9 +29,9 @@ before_build:
   - ps: cmake --build yaml-cpp-build --config $env:BUILD_TYPE --target install
 
 build_script:
-  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/lib/cmake/yaml-cpp -DLOGCORE_INSTALL_DEV=OFF -S . -B build
+  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/lib/cmake/yaml-cpp -DLOGCORE_VERSION="$env:GIT_REPO_VERSION" -DLOGCORE_INSTALL_DEV=OFF -S . -B build
   - ps: cmake --build build --target package --config $env:BUILD_TYPE
-  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/lib/cmake/yaml-cpp -DLOGCORE_INSTALL_DEV=ON -S . -B build
+  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/lib/cmake/yaml-cpp -DLOGCORE_VERSION="$env:GIT_REPO_VERSION" -DLOGCORE_INSTALL_DEV=ON -S . -B build
   - ps: cmake --build build --target package --config $env:BUILD_TYPE
 
 artifacts:
