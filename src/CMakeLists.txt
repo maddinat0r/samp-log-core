@@ -73,9 +73,14 @@ target_include_directories(log-core PRIVATE
 	${YAML_CPP_INCLUDE_DIR}
 )
 
-add_definitions(-DIN_LOGCORE_PLUGIN)
+target_compile_definitions(log-core PRIVATE IN_LOGCORE_PLUGIN)
 if(MSVC)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DWIN32_LEAN_AND_MEAN -DNOGDI)
+	target_compile_definitions(log-core PRIVATE
+		_CRT_SECURE_NO_WARNINGS
+		NOMINMAX
+		WIN32_LEAN_AND_MEAN
+		NOGDI # disables ERROR define (conflicts with log level)
+	)
 endif()
 
 if(UNIX AND NOT APPLE)
