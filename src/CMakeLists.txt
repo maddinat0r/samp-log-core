@@ -66,6 +66,7 @@ target_compile_features(log-core PUBLIC
 )
 
 set_target_properties(log-core PROPERTIES PREFIX "")
+set_target_properties(log-core PROPERTIES OUTPUT_NAME "log-core2")
 
 target_include_directories(log-core PRIVATE 
 	${LOGCORE_LIBS_DIR}/tinydir
