@@ -2,6 +2,7 @@
 
 #include <string>
 #include <chrono>
+#include <atomic>
 
 #include <samplog/export.h>
 #include <samplog/ILogger.hpp>
@@ -65,6 +66,7 @@ private:
 private:
 	std::string const _moduleName;
 	std::string const _logFilePath;
+	std::atomic<unsigned int> _logCounter;
 
 	Config _config;
 };
