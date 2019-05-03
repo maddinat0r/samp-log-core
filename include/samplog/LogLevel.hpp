@@ -1,6 +1,4 @@
 #pragma once
-#ifndef INC_SAMPLOG_LOGLEVEL_HPP
-#define INC_SAMPLOG_LOGLEVEL_HPP
 
 #ifdef ERROR //because Microsoft
 #undef ERROR
@@ -29,6 +27,3 @@ namespace samplog
 		return in = in | val;
 	}
 }
-
-
-#endif /* INC_SAMPLOG_LOGLEVEL_HPP */

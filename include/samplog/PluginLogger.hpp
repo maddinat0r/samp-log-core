@@ -1,7 +1,4 @@
 #pragma once
-#ifndef INC_SAMPLOG_PLUGINLOGGER_HPP
-#define INC_SAMPLOG_PLUGINLOGGER_HPP
-
 
 #include "Api.hpp"
 
@@ -75,5 +72,3 @@ namespace samplog
 	typedef PluginLogger PluginLogger_t;
 
 }
-
-#endif /* INC_SAMPLOG_PLUGINLOGGER_HPP */
