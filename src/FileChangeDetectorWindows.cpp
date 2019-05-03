@@ -1,11 +1,10 @@
-#include <chrono>
-
-#include <Windows.h>
-
 #include "FileChangeDetector.hpp"
 #include "LogManager.hpp"
 
-#include "fmt/format.h"
+#include <Windows.h>
+#include <fmt/format.h>
+
+#include <chrono>
 
 
 void FileChangeDetector::EventLoop(std::string const file_path)

@@ -1,12 +1,12 @@
-#include <samplog/Api.hpp>
+#include "samplog/Api.hpp"
 #include "AmxDebugManager.hpp"
 #include "Logger.hpp"
 #include "LogManager.hpp"
 #include "LogConfig.hpp"
 #include "SampConfigReader.hpp"
 
-#include "fmt/format.h"
 #include <atomic>
+#include <fmt/format.h>
 
 
 std::atomic<unsigned int> RefCounter{ 0 };

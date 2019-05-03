@@ -1,9 +1,12 @@
 #include "crashhandler.hpp"
 
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__) && !defined(__GNUC__))
-#error "crashhandler_unix.cpp is used on a non-UNIX platform"
+#	error "crashhandler_unix.cpp is used on a non-UNIX platform"
 #endif
 
+#include "LogManager.hpp"
+
+#include <fmt/format.h>
 
 #include <csignal>
 #include <cstring>
@@ -17,7 +20,6 @@
 #include <atomic>
 #include <map>
 #include <mutex>
-#include <fmt/format.h>
 
  // Linux/Clang, OSX/Clang, OSX/gcc
 #if (defined(__clang__) || defined(__APPLE__))
@@ -26,7 +28,6 @@
 #include <ucontext.h>
 #endif
 
-#include "LogManager.hpp"
 
 using samplog::LogLevel;
 

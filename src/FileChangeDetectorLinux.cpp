@@ -1,4 +1,5 @@
-#include <chrono>
+#include "FileChangeDetector.hpp"
+#include "LogManager.hpp"
 
 #include <limits.h>
 #include <stdlib.h>
@@ -10,10 +11,9 @@
 #include <unistd.h> // read
 #include <libgen.h> // dirname, basename
 
-#include "FileChangeDetector.hpp"
-#include "LogManager.hpp"
+#include <fmt/format.h>
 
-#include "fmt/format.h"
+#include <chrono>
 
 
 void FileChangeDetector::EventLoop(std::string const file_path)
