@@ -2,7 +2,6 @@
 #error "crashhandler_windows.cpp is used on a non-Windows platform"
 #endif
 
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <fmt/format.h>
 #include <map>
