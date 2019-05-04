@@ -38,7 +38,7 @@ public:
 
 	inline void LogInternal(samplog::LogLevel level, std::string msg)
 	{
-		_internalLogger.Log(level, msg.c_str());
+		_internalLogger.Log(level, std::move(msg));
 	}
 
 private:

@@ -137,7 +137,7 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 	std::vector<samplog::AmxFuncCallInfo> call_info;
 	AmxDebugManager::Get()->GetFunctionCallTrace(amx, call_info);
 
-	return Log(LogLevel::DEBUG, fmt::to_string(fmt_msg).c_str(), call_info);
+	return Log(LogLevel::DEBUG, fmt::to_string(fmt_msg), call_info);
 }
 
 void Logger::OnConfigUpdate(Logger::Config const &config)
