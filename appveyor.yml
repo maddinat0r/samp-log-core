@@ -14,10 +14,9 @@ environment:
 install:
   # set version environment variable
   - ps: $env:GIT_REPO_VERSION = "$(git describe --tags --always)"
-  # set appveyor build version based on git
-  - ps: Update-AppveyorBuild -Version "$env:GIT_REPO_VERSION"
   # appveyor workaround: initialize all submodules
   - git submodule update --init --recursive
+  # install multilib compilers
   - sh: sudo apt-get -qq update
   - sh: sudo apt-get -qq -y install g++-multilib gcc-multilib
   - sh: "echo g++ version: $(g++ --version | cut -d$'\n' -f1)"
