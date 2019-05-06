@@ -173,6 +173,8 @@ void LogRotationManager::CheckSizeRotation(std::string const &file_path,
 	std::streamoff size = -1;
 	{
 		std::ifstream file(file_path, std::ifstream::in | std::ifstream::ate);
+		if (!file)
+			return; // file likely doesn't exist (yet)
 		size = file.tellg();
 	}
 
