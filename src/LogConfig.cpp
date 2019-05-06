@@ -253,7 +253,7 @@ void LogConfig::ParseConfigFile()
 						auto size_str = trigger.as<std::string>("100MB");
 						if (!ParseFileSize(size_str, config.Rotation.Value.FileSize))
 						{
-							config.Rotation.Value.FileSize = 100;
+							config.Rotation.Value.FileSize = 100000; // 100MB
 							LogManager::Get()->LogInternal(LogLevel::WARNING,
 								fmt::format(
 									"could not parse file log rotation size " \
