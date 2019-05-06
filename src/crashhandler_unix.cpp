@@ -64,7 +64,7 @@ namespace
 	{
 		const int signal_number = static_cast<int>(fatal_signal_id);
 		RestoreSignalHandler(signal_number);
-		std::cerr << "\n\n" << "[log-core] fatal signal '" << signal_number
+		std::cerr << "\n\n" << "[log-core] server crash detected: fatal signal '" << signal_number
 			<< "' (" << Signals.at(fatal_signal_id) << ") caught   \n\n" << std::flush;
 
 		raise(signal_number);
@@ -84,7 +84,8 @@ namespace
 			signal_number, Signals.at(signal_number), info->si_errno, info->si_code, info->si_status);
 
 		LogManager::Get()->LogInternal(LogLevel::INFO, err_msg);
-		LogManager::Get()->LogInternal(LogLevel::INFO, "log-core will now safely shut itself down");
+		LogManager::Get()->LogInternal(LogLevel::INFO,
+			"log-core has detected a server crash and will now safely shut itself down");
 		LogManager::Get()->Destroy();
 
 		ExitWithDefaultSignalHandler(signal_number);

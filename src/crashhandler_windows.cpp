@@ -59,7 +59,8 @@ namespace
 			fatal_signal, signal_str, handler ? handler : "invalid");
 
 		LogManager::Get()->LogInternal(LogLevel::INFO, err_msg);
-		LogManager::Get()->LogInternal(LogLevel::INFO, "log-core will now safely shut itself down");
+		LogManager::Get()->LogInternal(LogLevel::INFO,
+			"log-core has detected a server crash and will now safely shut itself down");
 		LogManager::Get()->Destroy();
 
 		return EXCEPTION_CONTINUE_EXECUTION;
