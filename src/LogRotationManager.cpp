@@ -185,7 +185,7 @@ void LogRotationManager::CheckSizeRotation(std::string const &file_path,
 		return;
 	}
 
-	if (size < (max_size * 1000))
+	if (size < (max_size * 1000ull))
 		return; // file not large enough
 
 	std::vector<int> moved_nums;
