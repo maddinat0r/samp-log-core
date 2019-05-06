@@ -105,18 +105,18 @@ if(LOGCORE_INSTALL_DEV)
 	
 	include(CMakePackageConfigHelpers)
 	write_basic_package_version_file(
-		"${CMAKE_CURRENT_BINARY_DIR}/log-core/log-core-ConfigVersion.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/log-core/log-coreConfigVersion.cmake"
 		VERSION ${LOGCORE_VERSION}
 		COMPATIBILITY SameMajorVersion
 	)
 
 	export(EXPORT log-core-targets
-		FILE "${CMAKE_CURRENT_BINARY_DIR}/log-core/log-core-Targets.cmake"
+		FILE "${CMAKE_CURRENT_BINARY_DIR}/log-core/log-coreTargets.cmake"
 	)
 	
 	configure_package_config_file(
-		${PROJECT_SOURCE_DIR}/cmake/log-core-Config.cmake.in
-		${CMAKE_CURRENT_BINARY_DIR}/log-core-Config.cmake
+		${PROJECT_SOURCE_DIR}/cmake/log-coreConfig.cmake.in
+		${CMAKE_CURRENT_BINARY_DIR}/log-coreConfig.cmake
 		INSTALL_DESTINATION cmake
 		PATH_VARS INCLUDE_INSTALL_DIR
 	)
@@ -124,14 +124,14 @@ if(LOGCORE_INSTALL_DEV)
 	set(ConfigPackageLocation cmake)
 	install(EXPORT log-core-targets
 	  FILE
-		log-core-Targets.cmake
+		log-coreTargets.cmake
 	  DESTINATION
 		${ConfigPackageLocation}
 	)
 	install(
 	  FILES
-		${CMAKE_CURRENT_BINARY_DIR}/log-core-Config.cmake
-		"${CMAKE_CURRENT_BINARY_DIR}/log-core/log-core-ConfigVersion.cmake"
+		${CMAKE_CURRENT_BINARY_DIR}/log-coreConfig.cmake
+		"${CMAKE_CURRENT_BINARY_DIR}/log-core/log-coreConfigVersion.cmake"
 	  DESTINATION
 		${ConfigPackageLocation}
 	  COMPONENT
