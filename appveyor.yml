@@ -28,9 +28,10 @@ before_build:
   - ps: cmake --build yaml-cpp-build --config $env:BUILD_TYPE --target install
 
 build_script:
-  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/share/cmake/yaml-cpp -DLOGCORE_VERSION="$env:GIT_REPO_VERSION" -DLOGCORE_INSTALL_DEV=OFF -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 -S . -B build
+  - ps: if ($isWindows) { $env:PLATFORM_ARG = "-A Win32" }
+  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/share/cmake/yaml-cpp -DLOGCORE_VERSION="$env:GIT_REPO_VERSION" -DLOGCORE_INSTALL_DEV=OFF -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 $env:PLATFORM_ARG -S . -B build
   - ps: cmake --build build --target package --config $env:BUILD_TYPE
-  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/share/cmake/yaml-cpp -DLOGCORE_VERSION="$env:GIT_REPO_VERSION" -DLOGCORE_INSTALL_DEV=ON -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 -S . -B build
+  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/share/cmake/yaml-cpp -DLOGCORE_VERSION="$env:GIT_REPO_VERSION" -DLOGCORE_INSTALL_DEV=ON -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 $env:PLATFORM_ARG -S . -B build
   - ps: cmake --build build --target package --config $env:BUILD_TYPE
 
 artifacts:
