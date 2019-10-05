@@ -88,9 +88,24 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if (MSVC)
+	# increase warning levels
+	target_compile_options(log-core PRIVATE
+		/W4
+		/WX
+		/permissive-
+	)
+
 	# enable multi-processor compilation
 	target_compile_options(log-core PRIVATE
 		/MP
+	)
+elseif(UNIX)
+	# increase warning levels
+	target_compile_options(log-core PRIVATE
+		-Wall
+		-Wextra
+		-pedantic
+		-Werror
 	)
 endif()
 
