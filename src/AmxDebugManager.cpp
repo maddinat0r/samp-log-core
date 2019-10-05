@@ -44,7 +44,7 @@ AmxDebugManager::~AmxDebugManager()
 
 void AmxDebugManager::InitDebugDataDir(const char *directory)
 {
-	tinydir_dir dir;
+	tinydir_dir dir = { 0 };
 	tinydir_open(&dir, directory);
 
 	while (dir.has_next)
