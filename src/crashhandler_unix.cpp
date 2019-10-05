@@ -70,7 +70,7 @@ namespace
 		raise(signal_number);
 	}
 
-	void SignalHandler(int signal_number, siginfo_t* info, void* unused_context)
+	void SignalHandler(int signal_number, siginfo_t* info, void*)
 	{
 		//only one signal will be allowed past this point
 		if (!IsFirstSignal())
