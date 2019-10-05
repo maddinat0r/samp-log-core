@@ -44,12 +44,14 @@ AmxDebugManager::~AmxDebugManager()
 
 void AmxDebugManager::InitDebugDataDir(const char *directory)
 {
-	tinydir_dir dir = { 0 };
+	tinydir_dir dir;
+	memset(&dir, 0, sizeof(decltype(dir)));
 	tinydir_open(&dir, directory);
 
 	while (dir.has_next)
 	{
 		tinydir_file file;
+		memset(&file, 0, sizeof(decltype(file)));
 		tinydir_readfile(&dir, &file);
 
 		if (file.is_dir && file.name[0] != '.')
