@@ -105,7 +105,6 @@ elseif(UNIX)
 		-Wall
 		-Wextra
 		-pedantic
-		-Werror
 	)
 endif()
 
