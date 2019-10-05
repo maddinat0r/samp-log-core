@@ -91,7 +91,7 @@ bool Logger::LogNativeCall(AMX * const amx, cell * const params,
 
 	fmt::format_to(fmt_msg, "{:s}(", name);
 
-	for (int i = 0; i != params_format.length(); ++i)
+	for (size_t i = 0; i != params_format.length(); ++i)
 	{
 		if (i != 0)
 			fmt::format_to(fmt_msg, ", ");

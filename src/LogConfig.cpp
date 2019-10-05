@@ -53,7 +53,8 @@ bool ParseLogLevel(YAML::Node const &level_node, LogLevel &dest, std::string con
 
 bool ParseDuration(std::string duration, LogRotationTimeType &dest)
 {
-	std::transform(duration.begin(), duration.end(), duration.begin(), tolower);
+	std::transform(duration.begin(), duration.end(), duration.begin(), 
+		[](char c) { return static_cast<char>(tolower(static_cast<int>(c))); });
 	if (duration == "daily")
 		dest = LogRotationTimeType::DAILY;
 	else if (duration == "weekly")

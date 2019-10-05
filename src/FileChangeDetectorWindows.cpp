@@ -100,6 +100,10 @@ void FileChangeDetector::EventLoop(std::string const file_path)
 			int filenamelen = WideCharToMultiByte(CP_ACP, 0, notify_info->FileName,
 				notify_info->FileNameLength / 2, change_filename, sizeof(change_filename),
 				NULL, NULL);
+
+			if (filenamelen == 0)
+				continue;
+
 			change_filename[notify_info->FileNameLength / 2] = '\0';
 
 			if (strcmp(filename, change_filename) != 0)

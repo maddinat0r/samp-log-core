@@ -166,11 +166,9 @@ bool AmxDebugManager::GetFunctionCallTrace(AMX * const amx, std::vector<AmxFuncC
 	if (_disableDebugInfo)
 		return false;
 
-	auto it = _amxDebugMap.find(amx);
-	if (it == _amxDebugMap.end())
+	if (_amxDebugMap.find(amx) != _amxDebugMap.end())
 		return false;
 
-	AMX_DBG *amx_dbg = it->second;
 	AmxFuncCallInfo call_info;
 
 	if (!GetFunctionCall(amx, amx->cip, call_info))
@@ -180,7 +178,6 @@ bool AmxDebugManager::GetFunctionCallTrace(AMX * const amx, std::vector<AmxFuncC
 
 	AMX_HEADER *base = reinterpret_cast<AMX_HEADER *>(amx->base);
 	cell dat = reinterpret_cast<cell>(amx->base + base->dat);
-	cell cod = reinterpret_cast<cell>(amx->base + base->cod);
 
 	cell frm_addr = amx->frm;
 
