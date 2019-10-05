@@ -108,10 +108,6 @@ if(LOGCORE_INSTALL_DEV)
 		"${CMAKE_CURRENT_BINARY_DIR}/log-core/log-coreConfigVersion.cmake"
 		VERSION ${LOGCORE_VERSION}
 		COMPATIBILITY SameMajorVersion
-		# this function checks pointer size of the running system, 
-		# but we're cross-compiling on our CI plattform, so we have
-		# to deactivate the architecture check
-		ARCH_INDEPENDENT
 	)
 
 	export(EXPORT log-core-targets
