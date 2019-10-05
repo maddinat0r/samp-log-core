@@ -21,7 +21,7 @@ install:
   - sh: sudo apt-get -qq -y install g++-multilib gcc-multilib
   - sh: "echo g++ version: $(g++ --version | cut -d$'\n' -f1)"
   # set CMake platform arg on MSVC
-  - ps: if ($isWindows) { $env:PLATFORM_ARG = "-A Win32" }
+  - ps: if ($isWindows) { $env:PLATFORM_ARG = "-AWin32 -Thost=x86" }
 
 before_build:
   - git clone --quiet https://github.com/jbeder/yaml-cpp.git yaml-cpp
