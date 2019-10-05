@@ -23,7 +23,7 @@ install:
 
 before_build:
   - git clone --branch 'yaml-cpp-0.6.3' --single-branch --recursive --quiet https://github.com/jbeder/yaml-cpp.git
-  - ps: cmake -Wno-dev --no-warn-unused-cli -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 -DCMAKE_INSTALL_PREFIX=yaml-cpp-install -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF -DYAML_CPP_BUILD_TESTS=OFF -DBUILD_GMOCK=OFF -S yaml-cpp -B yaml-cpp-build
+  - ps: cmake -Wno-dev --no-warn-unused-cli -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 -DCMAKE_INSTALL_PREFIX=yaml-cpp-install -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF -DYAML_CPP_BUILD_TESTS=OFF -DBUILD_GMOCK=OFF -DYAML_MSVC_SHARED_RT=OFF -S yaml-cpp -B yaml-cpp-build
   - ps: cmake --build yaml-cpp-build --config $env:BUILD_TYPE --target install
 
 build_script:

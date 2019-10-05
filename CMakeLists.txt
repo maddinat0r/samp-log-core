@@ -9,11 +9,22 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/libs/cmake")
 
 set(CMAKE_CXX_STANDARD 11) #required for fmt library
 
-if(UNIX)
+# build static libraries
+set(BUILD_SHARED_LIBS OFF)
+
+if (MSVC)
+	# static compile
+	add_compile_options(/MT)
+	add_link_options(/INCREMENTAL:NO /NODEFAULTLIB:MSVCRT)
+elseif(UNIX)
 	# hide non-exported symbols
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
 	set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
+
+	# static compile
+	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+	add_link_options("-static")
 endif()
 
 set(LOGCORE_LIBS_DIR "${PROJECT_SOURCE_DIR}/libs")
