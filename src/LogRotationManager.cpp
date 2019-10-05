@@ -62,6 +62,10 @@ void LogRotationManager::Process()
 				case LogRotationType::SIZE:
 					CheckSizeRotation(file_path, config.Value.FileSize, config.BackupCount);
 					break;
+				case LogRotationType::NONE:
+				default:
+					// do nothing
+					break;
 				}
 			}
 		}
