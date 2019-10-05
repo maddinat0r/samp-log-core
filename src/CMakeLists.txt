@@ -87,6 +87,13 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(log-core PRIVATE rt)
 endif()
 
+if (MSVC)
+	# enable multi-processor compilation
+	target_compile_options(log-core PRIVATE
+		/MP
+	)
+endif()
+
 target_link_libraries(log-core PRIVATE
 	amx
 	fmt
