@@ -262,6 +262,10 @@ void LogConfig::ParseConfigFile()
 									module_name, size_str));
 						}
 					} break;
+					case LogRotationType::NONE:
+					default:
+						// do nothing
+						break;
 					}
 
 					YAML::Node const &backup_count = log_rotation["BackupCount"];

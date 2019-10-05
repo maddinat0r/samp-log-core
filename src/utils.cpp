@@ -27,6 +27,10 @@ const char *utils::GetLogLevelAsString(samplog::LogLevel level)
 		return "FATAL";
 	case LogLevel::VERBOSE:
 		return "VERBOSE";
+	case LogLevel::NONE:
+	default:
+		// do nothing
+		break;
 	}
 	return "<unknown>";
 }
@@ -47,6 +51,10 @@ fmt::rgb utils::GetLogLevelColor(samplog::LogLevel level)
 		return fmt::color::red;
 	case LogLevel::VERBOSE:
 		return fmt::color::white_smoke;
+	case LogLevel::NONE:
+	default:
+		// do nothing
+		break;
 	}
 	return fmt::color::white;
 }
