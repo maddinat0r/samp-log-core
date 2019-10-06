@@ -23,21 +23,21 @@ install:
   # set CMake platform arg on MSVC
   - ps: |
       if ($isWindows) { 
-        $env:CMAKE_ARGS = "-AWin32", "-Thost=x86"
+        $CMAKE_ARGS = "-AWin32", "-Thost=x86"
       } else {
-        $env:CMAKE_ARGS = "-DCMAKE_CXX_FLAGS=-m32", "-DCMAKE_C_FLAGS=-m32"
+        $CMAKE_ARGS = "-DCMAKE_CXX_FLAGS=-m32", "-DCMAKE_C_FLAGS=-m32"
       }
 
 before_build:
   - git clone --quiet https://github.com/jbeder/yaml-cpp.git yaml-cpp
   - git -C yaml-cpp checkout tags/yaml-cpp-0.6.3
-  - ps: cmake -Wno-dev --no-warn-unused-cli -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCMAKE_INSTALL_PREFIX=yaml-cpp-install -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF -DYAML_CPP_BUILD_TESTS=OFF -DBUILD_GMOCK=OFF -DYAML_MSVC_SHARED_RT=OFF @env:CMAKE_ARGS -S yaml-cpp -B yaml-cpp-build
+  - ps: cmake -Wno-dev --no-warn-unused-cli -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCMAKE_INSTALL_PREFIX=yaml-cpp-install -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF -DYAML_CPP_BUILD_TESTS=OFF -DBUILD_GMOCK=OFF -DYAML_MSVC_SHARED_RT=OFF @CMAKE_ARGS -S yaml-cpp -B yaml-cpp-build
   - ps: cmake --build yaml-cpp-build --config $env:BUILD_TYPE --target install
 
 build_script:
-  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/share/cmake/yaml-cpp -DLOGCORE_VERSION="$env:GIT_REPO_VERSION" -DLOGCORE_INSTALL_DEV=OFF @env:CMAKE_ARGS -S . -B build
+  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/share/cmake/yaml-cpp -DLOGCORE_VERSION="$env:GIT_REPO_VERSION" -DLOGCORE_INSTALL_DEV=OFF @CMAKE_ARGS -S . -B build
   - ps: cmake --build build --target package --config $env:BUILD_TYPE
-  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/share/cmake/yaml-cpp -DLOGCORE_VERSION="$env:GIT_REPO_VERSION" -DLOGCORE_INSTALL_DEV=ON @env:CMAKE_ARGS -S . -B build
+  - ps: cmake -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -Dyaml-cpp_DIR=yaml-cpp-install/share/cmake/yaml-cpp -DLOGCORE_VERSION="$env:GIT_REPO_VERSION" -DLOGCORE_INSTALL_DEV=ON @CMAKE_ARGS -S . -B build
   - ps: cmake --build build --target package --config $env:BUILD_TYPE
 
 artifacts:
