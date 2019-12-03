@@ -22,7 +22,10 @@ elseif(UNIX)
 
 	# link runtime statically
 	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-	add_link_options("-static")
+	add_link_options(
+		"-static-libgcc"
+		"-static-libstdc++"
+	)
 endif()
 
 set(LOGCORE_LIBS_DIR "${PROJECT_SOURCE_DIR}/libs")
