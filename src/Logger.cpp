@@ -12,8 +12,7 @@
 
 Logger::Logger(std::string module_name) :
 	_moduleName(std::move(module_name)),
-	_logFilePath(LogConfig::Get()->GetGlobalConfig().LogsRootFolder + _moduleName + ".log"),
-	_logCounter(0)
+	_logFilePath(LogConfig::Get()->GetGlobalConfig().LogsRootFolder + _moduleName + ".log")
 {
 	//create possibly non-existing folders before opening log file
 	utils::EnsureFolders(_logFilePath);
@@ -31,11 +30,6 @@ Logger::~Logger()
 {
 	LogConfig::Get()->UnsubscribeLogger(this);
 	LogRotationManager::Get()->UnregisterLogFile(_logFilePath);
-
-	// wait until all log messages are processed, as we have this logger
-	// referenced in the action lambda and deleting it would be bad
-	while (_logCounter != 0)
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 bool Logger::Log(LogLevel level, std::string msg,
@@ -57,11 +51,8 @@ bool Logger::Log(LogLevel level, std::string msg,
 		auto const &level_config = LogConfig::Get()->GetLogLevelConfig(level);
 		if (_config.PrintToConsole || level_config.PrintToConsole)
 			PrintLogString(time_str, level, log_msg);
-
-		--_logCounter;
 	});
 
-	++_logCounter;
 	return true;
 }
 
