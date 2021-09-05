@@ -145,21 +145,27 @@ int AMXAPI dbg_LoadInfo(AMX_DBG *amxdbg, FILE *fp)
       amx_Align32((uint32_t*)&amxdbg->linetbl[index].line);
     } /* for */
   #endif
-  ptr += dbghdr.lines * sizeof(AMX_DBG_LINE);
 
-  /* detect dbghdr.lines overflow */
-  while ((line = (AMX_DBG_LINE *)ptr)
-         && (cell)line->address > (cell)(line - 1)->address) {
-    dbghdr.lines = -1;
-    #if BYTE_ORDER==BIG_ENDIAN
-      for (index = 0; index <= dbghdr.lines; index++) {
-        amx_AlignCell(&linetbl[index].address);
-        amx_Align32((uint32_t*)&linetbl[index].line);
-        line++;
-      } /* for */
-    #endif
-    ptr += ((uint32_t)dbghdr.lines + 1) * sizeof(AMX_DBG_LINE);
-  } /* while */
+  unsigned int biggest_possible_size = (
+    sizeof(AMX_DBG_HDR)
+    + dbghdr.files * (sizeof(AMX_DBG_FILE) + 33)
+    + dbghdr.lines * sizeof(AMX_DBG_LINE)
+    + dbghdr.symbols * (sizeof(AMX_DBG_SYMBOL) + 33)
+    + dbghdr.tags * (sizeof(AMX_DBG_TAG) + 33)
+    + dbghdr.automatons * (sizeof(AMX_DBG_MACHINE) + 33)
+    + dbghdr.states * (sizeof(AMX_DBG_STATE) + 33)
+  );
+  unsigned int lines_overflow_count = 0;
+
+  while(biggest_possible_size < dbghdr.size) {
+    biggest_possible_size += 0x10000 * sizeof(AMX_DBG_LINE);
+    ++lines_overflow_count;
+  }
+
+  ptr += (
+    dbghdr.lines * sizeof(AMX_DBG_LINE)
+    + lines_overflow_count * 0x10000 * sizeof(AMX_DBG_LINE)
+  );
 
   /* symbol table (plus index tags) */
   for (index = 0; index < dbghdr.symbols; index++) {
@@ -242,7 +248,7 @@ int AMXAPI dbg_LookupFile(AMX_DBG *amxdbg, ucell address, const char **filename)
   return AMX_ERR_NONE;
 }
 
-int AMXAPI dbg_LookupLine(AMX_DBG *amxdbg, ucell address, int *line)
+int AMXAPI dbg_LookupLine(AMX_DBG *amxdbg, ucell address, long *line)
 {
   int index;
 
@@ -256,7 +262,7 @@ int AMXAPI dbg_LookupLine(AMX_DBG *amxdbg, ucell address, int *line)
   if (--index < 0)
     return AMX_ERR_NOTFOUND;
 
-  *line = amxdbg->linetbl[index].line;
+  *line = (long)amxdbg->linetbl[index].line;
   return AMX_ERR_NONE;
 }
 
@@ -271,14 +277,14 @@ int AMXAPI dbg_LookupFunction(AMX_DBG *amxdbg, ucell address, const char **funcn
   assert(amxdbg != NULL);
   assert(funcname != NULL);
   *funcname = NULL;
-  for (index = amxdbg->hdr->symbols - 1; index >= 0; index--) {
+  for (index = 0; index < amxdbg->hdr->symbols; index++) {
     if (amxdbg->symboltbl[index]->ident == iFUNCTN
         && amxdbg->symboltbl[index]->codestart <= address
         && amxdbg->symboltbl[index]->codeend > address) {
       break;
     }
   } /* for */
-  if (index < 0)
+  if (index >= amxdbg->hdr->symbols)
     return AMX_ERR_NOTFOUND;
 
   *funcname = amxdbg->symboltbl[index]->name;

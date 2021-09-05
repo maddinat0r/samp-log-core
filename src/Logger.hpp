@@ -66,7 +66,6 @@ private:
 private:
 	std::string const _moduleName;
 	std::string const _logFilePath;
-	std::atomic<unsigned int> _logCounter;
 
 	Config _config;
 };

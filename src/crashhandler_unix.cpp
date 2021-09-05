@@ -74,10 +74,7 @@ namespace
 	{
 		//only one signal will be allowed past this point
 		if (!IsFirstSignal())
-		{
-			while (true)
-				std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
+			return;
 
 		const std::string err_msg = fmt::format(
 			"caught signal {:d} ({:s}) (errno: {}, signal code: {}, exit status: {})",
