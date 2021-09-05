@@ -17,7 +17,8 @@ public:
 	~FileChangeDetector()
 	{
 		_isThreadRunning = false;
-		_eventThread.join();
+		if(_eventThread.joinable())
+			_eventThread.join();
 	}
 
 private:
